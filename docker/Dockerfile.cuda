@@ -1,0 +1,65 @@
+# ==================================================================
+# EvoRS-Comm Docker Image for NVIDIA CUDA
+# ==================================================================
+# For GPU-based development and testing.
+# Code is mounted via docker-compose volume for hot-reload.
+# ==================================================================
+
+ARG CUDA_VERSION=12.1.1
+ARG BASE_IMAGE=nvidia/cuda:${CUDA_VERSION}-runtime-ubuntu22.04
+
+FROM ${BASE_IMAGE} AS base
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG=C.UTF-8
+
+# System dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3 \
+        python3-pip \
+        python3-dev \
+        git \
+        curl \
+        vim \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -sf /usr/bin/python3 /usr/bin/python
+
+WORKDIR /app
+
+# Python dependencies
+COPY requirements-base.txt /app/requirements-base.txt
+COPY requirements-vlm.txt /app/requirements-vlm.txt
+RUN pip3 install --no-cache-dir --upgrade pip \
+    && pip3 install --no-cache-dir \
+        pytest>=8 \
+        PyYAML>=6 \
+        numpy>=1.26 \
+        Pillow>=10 \
+        datasets>=2.19
+
+# PyTorch for CUDA (users should match their CUDA version)
+RUN pip3 install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu121 || \
+    pip3 install --no-cache-dir torch torchvision
+
+COPY pyproject.toml /app/pyproject.toml
+COPY src/ /app/src/
+RUN pip3 install --no-cache-dir -e .
+
+COPY scripts/ /app/scripts/
+COPY configs/ /app/configs/
+COPY tests/ /app/tests/
+
+CMD ["python3", "-m", "pytest", "-q", "--tb=short"]
+
+FROM base AS dev
+
+RUN pip3 install --no-cache-dir \
+        ipython \
+        jupyter \
+        matplotlib \
+        rich \
+        transformers>=4.49 \
+        accelerate>=1.0 \
+        peft>=0.13
+
+CMD ["tail", "-f", "/dev/null"]

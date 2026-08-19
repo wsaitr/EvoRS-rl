@@ -1,0 +1,76 @@
+# ==================================================================
+# EvoRS-Comm Docker Image for Ascend NPU
+# ==================================================================
+# Base: ascendai/cann - official CANN runtime
+# This image provides the Ascend NPU runtime environment.
+# Code is mounted via docker-compose volume for hot-reload.
+# ==================================================================
+
+ARG CANN_VERSION=8.0.RC3.beta1
+ARG BASE_IMAGE=ascendai/cann:${CANN_VERSION}-ubuntu22.04
+
+FROM ${BASE_IMAGE} AS base
+
+# Avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG=C.UTF-8
+
+# System dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3 \
+        python3-pip \
+        python3-dev \
+        git \
+        curl \
+        vim \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -sf /usr/bin/python3 /usr/bin/python
+
+# Working directory
+WORKDIR /app
+
+# Install Python dependencies first (for layer caching)
+COPY requirements-base.txt /app/requirements-base.txt
+COPY requirements-vlm.txt /app/requirements-vlm.txt
+RUN pip3 install --no-cache-dir --upgrade pip \
+    && pip3 install --no-cache-dir \
+        pytest>=8 \
+        PyYAML>=6 \
+        numpy>=1.26 \
+        Pillow>=10 \
+        datasets>=2.19
+
+# Install torch_npu (must match CANN version)
+# In production, pin the exact version from the compatibility matrix:
+# https://gitee.com/ascend/pytorch#torch_npu-version-mapping
+RUN pip3 install --no-cache-dir torch-npu || echo \
+    "WARN: torch_npu install skipped - install manually per CANN compatibility matrix"
+
+# Copy project metadata
+COPY pyproject.toml /app/pyproject.toml
+COPY src/ /app/src/
+
+# Install the package in editable mode (will be overridden by volume mount)
+RUN pip3 install --no-cache-dir -e .
+
+# Copy scripts and configs
+COPY scripts/ /app/scripts/
+COPY configs/ /app/configs/
+COPY tests/ /app/tests/
+
+# Default command: run smoke test
+CMD ["python3", "-m", "pytest", "-q", "--tb=short"]
+
+# ==================================================================
+# Development target: same image but with extra dev tools
+# ==================================================================
+FROM base AS dev
+
+RUN pip3 install --no-cache-dir \
+        ipython \
+        jupyter \
+        matplotlib \
+        rich
+
+# Keep container running for interactive use
+CMD ["tail", "-f", "/dev/null"]

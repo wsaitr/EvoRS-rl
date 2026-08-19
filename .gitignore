@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Outputs
+outputs/
+logs/
+*.log
+
+# Data
+data/
+*.npz
+*.pt
+*.pth
+*.onnx
+checkpoints/
+
+# Third party
+third_party/CoMLRL/
+third_party/MARTI/
+
+# Docker
+docker/volumes/
+
+# Temp
+_tmp_*/
+*.tmp
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/

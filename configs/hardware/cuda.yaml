@@ -1,0 +1,6 @@
+device: cuda
+distributed_backend: nccl
+inference_backend: transformers
+dtype: bfloat16
+latent_channel:
+  enabled: false

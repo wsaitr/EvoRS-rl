@@ -1,0 +1,26 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.git/
+.gitignore
+.idea/
+.vscode/
+
+# Data and outputs
+data/
+outputs/
+logs/
+checkpoints/
+*.log
+
+# Third party repos
+third_party/CoMLRL/
+third_party/MARTI/
+
+# Docs (large)
+doc/论文/1/EvoRS-Comm_论文草稿.pdf
+doc/论文/1指导书/RS-HMComm_三阶段计划_源码包.zip
+
+# Temp
+_tmp_*/

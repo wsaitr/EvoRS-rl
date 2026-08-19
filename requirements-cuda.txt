@@ -1,0 +1,3 @@
+-r requirements-base.txt
+-r requirements-vlm.txt
+# Install PyTorch CUDA and optional vLLM with versions matching your CUDA stack.

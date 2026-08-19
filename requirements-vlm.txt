@@ -1,0 +1,5 @@
+# Install a torch build matching your hardware first.
+transformers>=4.49
+accelerate>=1.0
+peft>=0.13
+Pillow>=10

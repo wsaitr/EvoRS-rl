@@ -1,0 +1,30 @@
+framework: comlrl
+algorithm: magrpo
+model: Qwen/Qwen2.5-VL-7B-Instruct
+training_mode: lora
+dataset: vrsbench
+train_samples: 2000
+max_agent_steps: 4
+communication_action:
+  recipient: true
+  spatial_level: true
+  modality: true
+  payload_nodes: true
+reward:
+  task: 1.0
+  communication_cost: 0.02
+  redundancy: 0.05
+  structure: 0.1
+  evidence: 0.1
+  novelty: 0.05
+hm_magrpo:
+  epsilon_task: 0.2
+  epsilon_comm: 0.2
+  kappa: 0.5
+  rho: 0.5
+  group_size: 4
+  learning_rate: 1.0e-5
+  max_epochs: 3
+  batch_size: 8
+latent_channel: false
+seeds: [1, 2, 3]

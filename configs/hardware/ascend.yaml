@@ -1,0 +1,9 @@
+device: npu
+distributed_backend: hccl
+inference_backend: transformers
+dtype: bfloat16
+latent_channel:
+  enabled: false
+notes:
+  - Install CANN + torch_npu according to the official compatibility matrix.
+  - Use vllm-ascend for high-throughput inference after smoke tests.

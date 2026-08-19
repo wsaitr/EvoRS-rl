@@ -1,0 +1,8 @@
+model: Qwen/Qwen2.5-VL-7B-Instruct
+dataset: vrsbench
+sample_limit: 100
+max_agent_steps: 4
+agents: [global, local, hierarchy, verifier]
+structured_channel: true
+latent_channel: false
+controller: rule

@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rs-hmcomm"
+version = "0.1.0"
+description = "Hierarchical multimodal communication starter for remote-sensing multi-agent RL"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+data = ["datasets>=2.19", "Pillow>=10", "PyYAML>=6"]
+vlm = ["torch>=2.2", "transformers>=4.49", "accelerate>=1.0", "peft>=0.13", "Pillow>=10"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

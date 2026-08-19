@@ -1,0 +1,95 @@
+# ==================================================================
+# EvoRS-Comm Docker Compose
+# ==================================================================
+# Usage:
+#   Ascend NPU:  docker compose up ascend
+#   NVIDIA GPU:  docker compose up cuda
+#   CPU (test):  docker compose up cpu
+#
+# Code is hot-mounted via volume so local edits are reflected
+# inside the container without rebuilding.
+# ==================================================================
+
+services:
+  # ---------------------------------------------------------------
+  # Ascend NPU service
+  # ---------------------------------------------------------------
+  ascend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.ascend
+      target: dev
+    container_name: evors-comm-ascend
+    volumes:
+      # Hot-mount source code - edits on host are reflected immediately
+      - ./src:/app/src:rw
+      - ./tests:/app/tests:rw
+      - ./scripts:/app/scripts:rw
+      - ./configs:/app/configs:rw
+      # Persistent outputs
+      - ./outputs:/app/outputs:rw
+      - ./logs:/app/logs:rw
+    # Ascend NPU device passthrough
+    devices:
+      - /dev/davinci0:/dev/davinci0
+      - /dev/davinci_manager:/dev/davinci_manager
+      - /dev/devmm_svm:/dev/devmm_svm
+      - /dev/hisi_hdc:/dev/hisi_hdc
+    # Shared memory for multi-process training
+    shm_size: "8g"
+    environment:
+      - ASCEND_VISIBLE_DEVICES=0,1,2,3
+      - HCCL_WHITELIST_DISABLE=1
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    command: ["tail", "-f", "/dev/null"]
+
+  # ---------------------------------------------------------------
+  # NVIDIA CUDA service
+  # ---------------------------------------------------------------
+  cuda:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.cuda
+      target: dev
+    container_name: evors-comm-cuda
+    volumes:
+      - ./src:/app/src:rw
+      - ./tests:/app/tests:rw
+      - ./scripts:/app/scripts:rw
+      - ./configs:/app/configs:rw
+      - ./outputs:/app/outputs:rw
+      - ./logs:/app/logs:rw
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    shm_size: "8g"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    command: ["tail", "-f", "/dev/null"]
+
+  # ---------------------------------------------------------------
+  # CPU-only service (for smoke tests, CI)
+  # ---------------------------------------------------------------
+  cpu:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.cuda
+      target: base
+    container_name: evors-comm-cpu
+    volumes:
+      - ./src:/app/src:rw
+      - ./tests:/app/tests:rw
+      - ./scripts:/app/scripts:rw
+      - ./configs:/app/configs:rw
+      - ./outputs:/app/outputs:rw
+    working_dir: /app
+    command: ["python3", "-m", "pytest", "-q", "--tb=short"]

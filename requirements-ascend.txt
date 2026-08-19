@@ -1,0 +1,4 @@
+-r requirements-base.txt
+-r requirements-vlm.txt
+# Do not blindly pin torch_npu here.
+# Install CANN + torch + torch_npu + optional vllm-ascend using the official compatibility matrix.
