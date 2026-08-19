@@ -82,8 +82,7 @@ services:
   cpu:
     build:
       context: .
-      dockerfile: docker/Dockerfile.cuda
-      target: base
+      dockerfile: docker/Dockerfile.cpu
     container_name: evors-comm-cpu
     volumes:
       - ./src:/app/src:rw
