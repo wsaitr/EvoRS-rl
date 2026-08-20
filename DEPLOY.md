@@ -63,99 +63,96 @@ docker compose run --rm cpu
 .venv/bin/python scripts/download_data.py --all
 ```
 
-### 3. GPU 服务器 (Ascend 910B)
+### 3. GPU 服务器 (Ascend 910B) — 推荐方案（venv，无Docker）
+
+GPU 服务器预装了 PyTorch 2.9.0 / CANN 8.5.1 / verl 0.8.0 / Python 3.11。
+使用 venv（`--system-site-packages`）直接复用预装环境，只补装轻量依赖。
 
 ```bash
-# 代码同步 (方式一: 从 GitHub pull)
-cd /opt/evors-comm && git pull
+# ===== 一键设置 =====
+# 代码已从 OBS (lws2) 自动解压，venv 自动创建
+bash scripts/setup_gpu_venv.sh
 
-# 代码同步 (方式二: 从前置服务器 rsync)
-# 在前置服务器上:
-rsync -avz /root/EvoRS-rl/ gpu-server:/opt/evors-comm/ \
-    --exclude='__pycache__' --exclude='.git' --exclude='data' --exclude='outputs'
+# ===== 验证环境 =====
+bash scripts/setup_gpu_venv.sh verify
 
-# 启动 Docker 容器
-docker compose -f docker-compose.npu.yml up -d npu
+# ===== 开始训练 =====
+bash scripts/setup_gpu_venv.sh run configs/experiments/stage2_pilot.yaml
 
-# 进入容器
-docker compose -f docker-compose.npu.yml exec npu bash
-
-# 验证 NPU
-python3 -c "import torch; import torch_npu; print(torch.npu.device_count())"
-
-# 下载 OBS 数据
-python3 scripts/download_data.py --all
-
-# 运行训练 (单卡)
-python3 scripts/train_npu.py --config configs/experiments/stage2_pilot.yaml
-
-# 运行训练 (多卡分布式)
-torchrun --nproc_per_node=8 scripts/train_npu.py \
-    --config configs/experiments/stage2_pilot.yaml \
-    --distributed --output outputs/distributed_training
+# ===== 其他命令 =====
+bash scripts/setup_gpu_venv.sh shell    # 进入激活的 venv shell
+bash scripts/setup_gpu_venv.sh test     # 运行 pytest
 ```
+
+**GPU 启动流程（零构建）：**
+
+```
+lws2 并行文件系统               GPU 服务器
+──────────────                ──────────────────
+evors-comm/                    setup_gpu_venv.sh
+├── src/          ──────────>  解压代码
+├── configs/                   创建 venv (--system-site-packages)
+├── scripts/                   pip install 轻量依赖
+└── evors-comm.tar.gz          source .env.gpu
+                               开始训练！
+```
+
+| 环境变量 | 默认值 | 说明 |
+|---------|--------|------|
+| `WORK_DIR` | `/home/ma-user/evors-comm` | 工作目录 |
+| `PIP_MIRROR` | 阿里云 | pip 镜像源 |
+| `PFS_MOUNT` | 自动探测 | lws2 挂载点 |
+| `NPU_DEVICES` | `0,1,2,3,4,5,6,7` | 可见 NPU |
 
 ## 并行文件系统 (lws2) 部署流程
 
-前置服务器和 GPU 服务器共享 lws2 并行文件系统。代码和 Docker 镜像通过 PFS 传递，GPU 服务器不需要 git pull 或 docker build。
+前置服务器和 GPU 服务器共享 lws2 并行文件系统（OBS POSIX 桶）。
+代码通过 obsutil 上传到 `obs://lws2/evors-comm/`，GPU 服务器自动挂载后直接使用。
 
 ### 架构图
 
 ```
 前置服务器 (x86)              lws2 并行文件系统          GPU 服务器 (ARM64)
 ──────────────              ──────────────────          ──────────────────
-git pull                    /lws2/evors-comm/
-docker buildx build          ├── src/        ← 代码
-docker save → tar  ──────→   ├── images/     ← Docker tar
-rsync code    ──────→        ├── configs/    ← 配置
-                             ├── data/       ← 数据(OBS)
+git pull                    /lws2/evors-comm/            setup_gpu_venv.sh
+obsutil upload               ├── src/        ← 代码        ├── 解压代码
+  ──────────────→            ├── configs/    ← 配置        ├── 创建 venv
+                             ├── scripts/    ← 脚本        ├── pip install
+                             ├── data/       ← 数据        └── 开始训练！
                              └── outputs/    ← 训练输出
-                                                          docker load < tar
-                                                          docker run -v /lws2/...
-                                                          训练开始
 ```
 
 ### 前置服务器操作
 
 ```bash
-# 1. 同步代码到 PFS
+# 同步代码到 OBS（GPU 服务器立即可见）
 ./scripts/sync_to_pfs.sh
 
-# 2. 构建 ARM64 Docker 镜像并保存到 PFS (首次或依赖变更时)
-./scripts/sync_to_pfs.sh --image
-
-# 3. 完整初始化 (代码+镜像+目录)
+# 完整初始化（代码 + 目录占位）
 ./scripts/sync_to_pfs.sh --full
 ```
 
 ### GPU 服务器操作
 
 ```bash
-# 加载镜像并运行 (从 PFS 读取)
-./scripts/run_on_gpu.sh           # MockBackend dry run
-./scripts/run_on_gpu.sh train     # 开始训练
-./scripts/run_on_gpu.sh test      # 跑测试
-./scripts/run_on_gpu.sh shell     # 交互式 shell
+# 一键设置（自动从 PFS 解压代码 + 创建 venv）
+bash scripts/setup_gpu_venv.sh
 
-# 仅加载镜像 (已加载过的跳过)
-./scripts/run_on_gpu.sh load
+# 开始训练
+bash scripts/setup_gpu_venv.sh run configs/experiments/stage2_pilot.yaml
 ```
 
 ### 日常更新流程
 
 ```bash
-# 前置服务器: 更新代码
+# 前置服务器: 更新代码并上传到 OBS
 git pull
 ./scripts/sync_to_pfs.sh          # 代码立即对 GPU 服务器可见
 
-# GPU 服务器: 直接运行 (代码从 PFS 读取，无需 pull)
-./scripts/run_on_gpu.sh train
-
-# 只有依赖变了才需要重建镜像:
-# 前置服务器:
-./scripts/sync_to_pfs.sh --image  # 重新 build + save
-# GPU 服务器:
-./scripts/run_on_gpu.sh load      # 重新 load
+# GPU 服务器: 代码已在 PFS 上，venv 不需要重建
+# 如果代码结构变了（新增模块），只需重新解压：
+rm -rf /home/ma-user/evors-comm/src
+bash scripts/setup_gpu_venv.sh    # 重新解压 + 验证
 ```
 
 ### PFS 环境变量
