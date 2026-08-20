@@ -51,3 +51,4 @@ _tmp_*/
 .pytest_cache/
 .coverage
 htmlcov/
+src.zip
