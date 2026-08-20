@@ -1,84 +1,92 @@
 #!/usr/bin/env bash
 # ==================================================================
-# Sync code and Docker image to lws2 parallel file system
+# Sync code to lws2 OBS bucket (POSIX)
 # ==================================================================
 # Run on the prep server (1.95.150.79)
+#
+# lws2 is an OBS POSIX bucket, auto-mounted on the GPU server.
+# This script packages code and uploads via obsutil.
+#
 # Usage:
-#   ./scripts/sync_to_pfs.sh              # Sync code only
-#   ./scripts/sync_to_pfs.sh --image      # Also build and save Docker image
-#   ./scripts/sync_to_pfs.sh --full       # Full: code + image + data dirs
+#   ./scripts/sync_to_pfs.sh              # Upload code tar.gz
+#   ./scripts/sync_to_pfs.sh --docker     # Also build & save Docker image
+#   ./scripts/sync_to_pfs.sh --full       # Code + Docker + data dirs
 # ==================================================================
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
-# PFS mount point (shared between prep server and GPU server)
-PFS_ROOT="${PFS_ROOT:-/lws2/evors-comm}"
+# OBS paths
+OBSUTIL="${OBSUTIL:-/root/obsutil_linux_amd64_5.8.3/obsutil}"
+OBS_BUCKET="${OBS_BUCKET:-obs://lws2}"
+OBS_PREFIX="${OBS_PREFIX:-${OBS_BUCKET}/evors-comm}"
+
+# Docker image
 IMAGE_NAME="${IMAGE_NAME:-evors-rl-npu}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
 
 usage() {
-    echo "Usage: $0 [--image] [--full]"
+    echo "Usage: $0 [--docker] [--full]"
+    echo ""
+    echo "Uploads code to OBS (lws2). GPU server auto-mounts the bucket."
     echo ""
     echo "Options:"
-    echo "  (none)     Sync code to PFS only"
-    echo "  --image    Also build ARM64 Docker image and save to PFS"
-    echo "  --full     Full sync: code + image + create data directories"
+    echo "  (none)     Upload code archive only"
+    echo "  --docker   Also build ARM64 Docker image and upload"
+    echo "  --full     Full: code + Docker + create data dirs on OBS"
     echo ""
     echo "Environment:"
-    echo "  PFS_ROOT   PFS mount point (default: /lws2/evors-comm)"
-    echo "  IMAGE_TAG  Docker image tag (default: latest)"
+    echo "  OBSUTIL     obsutil path (default: /root/obsutil_linux_amd64_5.8.3/obsutil)"
+    echo "  OBS_PREFIX  OBS target (default: obs://lws2/evors-comm)"
     exit 1
 }
 
-sync_code() {
-    echo "=== Syncing code to PFS ==="
-    echo "Source: ${PROJECT_DIR}"
-    echo "Target: ${PFS_ROOT}"
+upload_code() {
+    echo "=== Packaging code ==="
+    local ARCHIVE="/tmp/evors-comm-$(date +%Y%m%d-%H%M%S).tar.gz"
 
-    mkdir -p "${PFS_ROOT}"
-
-    rsync -av --progress \
+    cd "${PROJECT_DIR}"
+    tar czf "${ARCHIVE}" \
         --exclude='__pycache__' \
         --exclude='.pytest_cache' \
         --exclude='.git' \
         --exclude='*.pyc' \
-        --exclude='outputs/' \
-        --exclude='data/cache/' \
+        --exclude='outputs' \
+        --exclude='data/cache' \
         --exclude='*.egg-info' \
-        "${PROJECT_DIR}/src/" "${PFS_ROOT}/src/"
+        src/ scripts/ configs/ tests/ \
+        pyproject.toml requirements-*.txt \
+        docker-compose*.yml docker/ \
+        deploy.sh DEPLOY.md CLAUDE.md
 
-    rsync -av --progress \
-        --exclude='__pycache__' \
-        "${PROJECT_DIR}/scripts/" "${PFS_ROOT}/scripts/"
+    local SIZE
+    SIZE=$(du -h "${ARCHIVE}" | cut -f1)
+    echo "Archive: ${ARCHIVE} (${SIZE})"
 
-    rsync -av --progress "${PROJECT_DIR}/configs/" "${PFS_ROOT}/configs/"
-    rsync -av --progress "${PROJECT_DIR}/tests/" "${PFS_ROOT}/tests/"
+    echo "=== Uploading to ${OBS_PREFIX}/ ==="
+    "${OBSUTIL}" cp "${ARCHIVE}" "${OBS_PREFIX}/evors-comm.tar.gz" -f
+    echo "Uploaded: ${OBS_PREFIX}/evors-comm.tar.gz"
 
-    # Copy project metadata
-    cp "${PROJECT_DIR}/pyproject.toml" "${PFS_ROOT}/pyproject.toml"
-    cp "${PROJECT_DIR}/requirements-base.txt" "${PFS_ROOT}/requirements-base.txt" 2>/dev/null || true
-    cp "${PROJECT_DIR}/requirements-ascend.txt" "${PFS_ROOT}/requirements-ascend.txt" 2>/dev/null || true
-    cp "${PROJECT_DIR}/docker-compose.npu.yml" "${PFS_ROOT}/docker-compose.npu.yml"
-    cp "${PROJECT_DIR}/docker/Dockerfile.ascend" "${PFS_ROOT}/docker/Dockerfile.ascend" 2>/dev/null || \
-        (mkdir -p "${PFS_ROOT}/docker" && cp "${PROJECT_DIR}/docker/Dockerfile.ascend" "${PFS_ROOT}/docker/Dockerfile.ascend")
-
-    echo "Code synced to ${PFS_ROOT}"
+    # On GPU server (where lws2 is mounted at e.g. /mnt/lws2):
+    #   cd /mnt/lws2/evors-comm && tar xzf evors-comm.tar.gz
 }
 
-build_and_save_image() {
+build_and_upload_docker() {
     echo "=== Building ARM64 Docker image ==="
-
-    # Build for ARM64 (GPU server architecture)
-    # Using docker buildx for cross-platform build
     cd "${PROJECT_DIR}"
 
-    if docker buildx inspect arm64builder &>/dev/null; then
-        echo "Using existing buildx builder"
-    else
-        echo "Creating buildx builder for linux/arm64..."
+    # Check if buildx is available
+    if ! docker buildx version &>/dev/null; then
+        echo "ERROR: docker buildx not available. Install first."
+        exit 1
+    fi
+
+    # Create/use ARM64 builder
+    if ! docker buildx inspect arm64builder &>/dev/null; then
         docker buildx create --name arm64builder --platform linux/arm64 --use
+    else
+        docker buildx use arm64builder
     fi
 
     docker buildx build \
@@ -88,43 +96,41 @@ build_and_save_image() {
         --load \
         .
 
-    echo "=== Saving Docker image to PFS ==="
-    mkdir -p "${PFS_ROOT}/images"
-    IMAGE_PATH="${PFS_ROOT}/images/${IMAGE_NAME}-${IMAGE_TAG}.tar"
+    echo "=== Saving Docker image ==="
+    local IMAGE_TAR="/tmp/${IMAGE_NAME}-${IMAGE_TAG}.tar"
+    docker save "${IMAGE_NAME}:${IMAGE_TAG}" -o "${IMAGE_TAR}"
 
-    docker save "${IMAGE_NAME}:${IMAGE_TAG}" -o "${IMAGE_PATH}"
+    local SIZE
+    SIZE=$(du -h "${IMAGE_TAR}" | cut -f1)
+    echo "Image: ${IMAGE_TAR} (${SIZE})"
 
-    echo "Image saved: ${IMAGE_PATH} ($(du -h "${IMAGE_PATH}" | cut -f1))"
-    echo ""
-    echo "GPU server can load with:"
-    echo "  docker load -i ${IMAGE_PATH}"
+    echo "=== Uploading Docker image to ${OBS_PREFIX}/images/ ==="
+    "${OBSUTIL}" cp "${IMAGE_TAR}" "${OBS_PREFIX}/images/${IMAGE_NAME}-${IMAGE_TAG}.tar" -f
+    echo "Uploaded: ${OBS_PREFIX}/images/${IMAGE_NAME}-${IMAGE_TAG}.tar"
 }
 
-create_data_dirs() {
-    echo "=== Creating PFS directories ==="
-    mkdir -p "${PFS_ROOT}/data/cache"
-    mkdir -p "${PFS_ROOT}/data/vrsbench"
-    mkdir -p "${PFS_ROOT}/data/choice"
-    mkdir -p "${PFS_ROOT}/data/xlrs-bench"
-    mkdir -p "${PFS_ROOT}/data/geobench-vlm"
-    mkdir -p "${PFS_ROOT}/outputs"
-    mkdir -p "${PFS_ROOT}/logs"
-    echo "Directories created under ${PFS_ROOT}"
+create_obs_dirs() {
+    echo "=== Creating OBS directories ==="
+    # OBS doesn't need explicit dir creation, but we upload placeholder files
+    for dir in data/cache data/vrsbench data/choice outputs logs; do
+        echo "placeholder" | "${OBSUTIL}" cp - "${OBS_PREFIX}/${dir}/.keep" -f 2>/dev/null || true
+    done
+    echo "Directories created under ${OBS_PREFIX}"
 }
 
 # Main
 case "${1:-}" in
-    --image)
-        sync_code
-        build_and_save_image
+    --docker)
+        upload_code
+        build_and_upload_docker
         ;;
     --full)
-        sync_code
-        build_and_save_image
-        create_data_dirs
+        upload_code
+        build_and_upload_docker
+        create_obs_dirs
         ;;
     "")
-        sync_code
+        upload_code
         ;;
     *)
         usage
@@ -132,6 +138,9 @@ case "${1:-}" in
 esac
 
 echo ""
-echo "=== Sync complete ==="
-echo "PFS root: ${PFS_ROOT}"
-du -sh "${PFS_ROOT}" 2>/dev/null || true
+echo "=== Upload complete ==="
+echo "OBS prefix: ${OBS_PREFIX}"
+echo ""
+echo "On GPU server (lws2 auto-mounted):"
+echo "  cd <mount_point>/evors-comm"
+echo "  tar xzf evors-comm.tar.gz"
