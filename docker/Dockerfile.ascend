@@ -34,7 +34,7 @@ RUN pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/ \
 
 WORKDIR /app
 
-# Install project dependencies
+# Install all pip dependencies (the "heavy" part)
 COPY requirements-base.txt /app/requirements-base.txt
 COPY requirements-ascend.txt /app/requirements-ascend.txt
 RUN pip3 install --no-cache-dir -r requirements-base.txt \
@@ -44,11 +44,10 @@ RUN pip3 install --no-cache-dir -r requirements-base.txt \
         rich \
         tqdm
 
-# Copy project metadata only (code is hot-mounted via volume)
-COPY pyproject.toml /app/pyproject.toml
-RUN pip3 install --no-cache-dir -e .
+# Code is hot-mounted via volume, not baked into the image
+ENV PYTHONPATH=/app/src
 
-# Create data directories
+# Create output directories
 RUN mkdir -p /app/data/cache /app/outputs /app/logs
 
 # Verify installation

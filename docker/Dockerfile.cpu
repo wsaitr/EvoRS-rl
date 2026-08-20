@@ -25,7 +25,7 @@ WORKDIR /app
 RUN pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/ \
     && pip3 config set global.trusted-host mirrors.aliyun.com
 
-COPY requirements-base.txt /app/requirements-base.txt
+# Install all pip dependencies (the "heavy" part)
 RUN pip3 install --no-cache-dir --upgrade pip \
     && pip3 install --no-cache-dir \
         pytest>=8 \
@@ -34,11 +34,8 @@ RUN pip3 install --no-cache-dir --upgrade pip \
         Pillow>=10 \
         datasets>=2.19
 
-COPY pyproject.toml /app/pyproject.toml
-# Copy src/ only for pip install -e (needed at build time to resolve package)
-# At runtime, volume mount ./src:/app/src overrides this - no rebuild needed for code changes
-COPY src/ /app/src/
-RUN pip3 install --no-cache-dir -e .
-# scripts/, configs/, tests/ are NOT copied — hot-mounted via volume at runtime
+# Code is hot-mounted via volume, not baked into the image
+# PYTHONPATH lets Python find src/rs_hmcomm without pip install
+ENV PYTHONPATH=/app/src
 
 CMD ["python3", "-m", "pytest", "-q", "--tb=short"]
