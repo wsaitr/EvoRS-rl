@@ -8,8 +8,13 @@ num_devices: 8
 arm_architecture: true
 
 # CANN configuration
-cann_version: "8.0"
-torch_npu_version: "2.1.0"
+cann_version: "8.5.1"
+torch_version: "2.9.0"
+python_version: "3.11"
+
+# verl (Volcano Engine RL) - pre-installed on ModelArts
+verl_version: "0.8.0"
+hce_version: "2.0.2512"
 
 # Memory management
 shm_size: "32g"
@@ -28,7 +33,9 @@ latent_channel:
   enabled: false
 
 notes:
+  - ModelArts pre-installed: verl 0.8.0, PyTorch 2.9.0, CANN 8.5.1
   - Use float16 for 910B (not bfloat16 which is less optimized)
   - HCCL for distributed communication
   - ARM architecture - use aarch64 Docker images
   - Use O2 AMP level for best performance on 910B
+  - verl provides GRPO/PPO trainer infrastructure - integrate HM-MAGRPO via verl

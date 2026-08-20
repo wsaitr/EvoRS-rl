@@ -8,9 +8,10 @@
 # - CANN 8.0 + torch_npu
 # ==================================================================
 
-# Use official Ascend PyTorch image for 910B
+# Use official Ascend PyTorch image for 910B with CANN 8.5.1
+# ModelArts pre-installed: verl_0.8.0-pytorch_2.9.0-cann_8.5.1-py_3.11
 # For China servers, use the mirror: swr.cn-north-4.myhuaweicloud.com
-ARG BASE_IMAGE=ascendai/pytorch:2.1.0-torch2.1.0-ubuntu22.04-arm64-cann8.0
+ARG BASE_IMAGE=ascendai/pytorch:2.9.0-py3.11-ubuntu22.04-arm64-cann8.5.1
 
 FROM ${BASE_IMAGE}
 
