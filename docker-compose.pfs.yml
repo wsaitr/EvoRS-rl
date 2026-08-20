@@ -1,0 +1,75 @@
+# ==================================================================
+# EvoRS-Comm Docker Compose for PFS (Parallel File System) deployment
+# ==================================================================
+# Usage on the GPU server:
+#   Code is on PFS (lws2), Docker image is loaded from PFS.
+#   All paths are relative to PFS_ROOT.
+#
+#   docker compose -f docker-compose.pfs.yml up -d npu
+#   docker compose -f docker-compose.pfs.yml exec npu bash
+# ==================================================================
+
+services:
+  npu:
+    image: evors-rl-npu:latest
+    container_name: evors-comm-npu
+    volumes:
+      # Code from PFS (read-only, synced by prep server)
+      - ${PFS_ROOT:-/lws2/evors-comm}/src:/app/src:ro
+      - ${PFS_ROOT:-/lws2/evors-comm}/scripts:/app/scripts:ro
+      - ${PFS_ROOT:-/lws2/evors-comm}/configs:/app/configs:ro
+      - ${PFS_ROOT:-/lws2/evors-comm}/tests:/app/tests:ro
+      # Data and outputs (read-write)
+      - ${PFS_ROOT:-/lws2/evors-comm}/data:/app/data:rw
+      - ${PFS_ROOT:-/lws2/evors-comm}/outputs:/app/outputs:rw
+      - ${PFS_ROOT:-/lws2/evors-comm}/logs:/app/logs:rw
+    # Ascend 910B NPU device passthrough
+    devices:
+      - /dev/davinci0:/dev/davinci0
+      - /dev/davinci1:/dev/davinci1
+      - /dev/davinci2:/dev/davinci2
+      - /dev/davinci3:/dev/davinci3
+      - /dev/davinci4:/dev/davinci4
+      - /dev/davinci5:/dev/davinci5
+      - /dev/davinci6:/dev/davinci6
+      - /dev/davinci7:/dev/davinci7
+      - /dev/davinci_manager:/dev/davinci_manager
+      - /dev/devmm_svm:/dev/devmm_svm
+      - /dev/hisi_hdc:/dev/hisi_hdc
+    shm_size: "32g"
+    environment:
+      - ASCEND_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+      - HCCL_WHITELIST_DISABLE=1
+      - OBS_ENDPOINT=${OBS_ENDPOINT:-}
+      - OBS_BUCKET=${OBS_BUCKET:-evors-data}
+      - OBS_ACCESS_KEY_ID=${OBS_ACCESS_KEY_ID:-}
+      - OBS_SECRET_ACCESS_KEY=${OBS_SECRET_ACCESS_KEY:-}
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    network_mode: host
+    command: ["tail", "-f", "/dev/null"]
+
+  train:
+    image: evors-rl-npu:latest
+    volumes:
+      - ${PFS_ROOT:-/lws2/evors-comm}/src:/app/src:ro
+      - ${PFS_ROOT:-/lws2/evors-comm}/scripts:/app/scripts:ro
+      - ${PFS_ROOT:-/lws2/evors-comm}/configs:/app/configs:ro
+      - ${PFS_ROOT:-/lws2/evors-comm}/data:/app/data:rw
+      - ${PFS_ROOT:-/lws2/evors-comm}/outputs:/app/outputs:rw
+      - ${PFS_ROOT:-/lws2/evors-comm}/logs:/app/logs:rw
+    devices:
+      - /dev/davinci0:/dev/davinci0
+      - /dev/davinci_manager:/dev/davinci_manager
+      - /dev/devmm_svm:/dev/devmm_svm
+      - /dev/hisi_hdc:/dev/hisi_hdc
+    shm_size: "16g"
+    environment:
+      - ASCEND_VISIBLE_DEVICES=0
+      - OBS_ENDPOINT=${OBS_ENDPOINT:-}
+      - OBS_BUCKET=${OBS_BUCKET:-evors-data}
+      - OBS_ACCESS_KEY_ID=${OBS_ACCESS_KEY_ID:-}
+      - OBS_SECRET_ACCESS_KEY=${OBS_SECRET_ACCESS_KEY:-}
+    working_dir: /app
+    command: ["python3", "scripts/train_npu.py", "--config", "configs/experiments/stage2_pilot.yaml", "--distributed"]

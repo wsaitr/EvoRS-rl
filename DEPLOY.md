@@ -95,6 +95,78 @@ torchrun --nproc_per_node=8 scripts/train_npu.py \
     --distributed --output outputs/distributed_training
 ```
 
+## 并行文件系统 (lws2) 部署流程
+
+前置服务器和 GPU 服务器共享 lws2 并行文件系统。代码和 Docker 镜像通过 PFS 传递，GPU 服务器不需要 git pull 或 docker build。
+
+### 架构图
+
+```
+前置服务器 (x86)              lws2 并行文件系统          GPU 服务器 (ARM64)
+──────────────              ──────────────────          ──────────────────
+git pull                    /lws2/evors-comm/
+docker buildx build          ├── src/        ← 代码
+docker save → tar  ──────→   ├── images/     ← Docker tar
+rsync code    ──────→        ├── configs/    ← 配置
+                             ├── data/       ← 数据(OBS)
+                             └── outputs/    ← 训练输出
+                                                          docker load < tar
+                                                          docker run -v /lws2/...
+                                                          训练开始
+```
+
+### 前置服务器操作
+
+```bash
+# 1. 同步代码到 PFS
+./scripts/sync_to_pfs.sh
+
+# 2. 构建 ARM64 Docker 镜像并保存到 PFS (首次或依赖变更时)
+./scripts/sync_to_pfs.sh --image
+
+# 3. 完整初始化 (代码+镜像+目录)
+./scripts/sync_to_pfs.sh --full
+```
+
+### GPU 服务器操作
+
+```bash
+# 加载镜像并运行 (从 PFS 读取)
+./scripts/run_on_gpu.sh           # MockBackend dry run
+./scripts/run_on_gpu.sh train     # 开始训练
+./scripts/run_on_gpu.sh test      # 跑测试
+./scripts/run_on_gpu.sh shell     # 交互式 shell
+
+# 仅加载镜像 (已加载过的跳过)
+./scripts/run_on_gpu.sh load
+```
+
+### 日常更新流程
+
+```bash
+# 前置服务器: 更新代码
+git pull
+./scripts/sync_to_pfs.sh          # 代码立即对 GPU 服务器可见
+
+# GPU 服务器: 直接运行 (代码从 PFS 读取，无需 pull)
+./scripts/run_on_gpu.sh train
+
+# 只有依赖变了才需要重建镜像:
+# 前置服务器:
+./scripts/sync_to_pfs.sh --image  # 重新 build + save
+# GPU 服务器:
+./scripts/run_on_gpu.sh load      # 重新 load
+```
+
+### PFS 环境变量
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `PFS_ROOT` | `/lws2/evors-comm` | PFS 挂载点 |
+| `NPU_DEVICES` | `0,1,2,3,4,5,6,7` | 暴露的 NPU 设备 |
+| `IMAGE_NAME` | `evors-rl-npu` | Docker 镜像名 |
+| `IMAGE_TAG` | `latest` | 镜像 tag |
+
 ## 数据管道
 
 数据存储在华为云 OBS:
