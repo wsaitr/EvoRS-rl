@@ -1,0 +1,61 @@
+# ==================================================================
+# EvoRS-Comm Docker Image for GPU Server (ARM64)
+# ==================================================================
+# This is a THIN image: only project Python deps.
+# CANN, PyTorch, torch_npu, verl come from the GPU server's
+# pre-installed environment (bind-mounted at runtime).
+# ==================================================================
+# Build on prep server (x86, cross-compile via buildx):
+#   docker buildx build --platform linux/arm64 -f docker/Dockerfile.gpu \
+#     -t evors-rl-gpu:latest --load .
+#   docker save evors-rl-gpu:latest -o /tmp/evors-rl-gpu.tar
+#   obsutil cp /tmp/evors-rl-gpu.tar obs://lws2/evors-comm/images/
+#
+# Load on GPU server:
+#   docker load -i <mount>/images/evors-rl-gpu.tar
+# ==================================================================
+
+FROM --platform=linux/arm64 ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG=C.UTF-8
+
+# Use Chinese mirrors
+RUN sed -i 's|archive.ubuntu.com|mirrors.aliyun.com|g' /etc/apt/sources.list \
+    && sed -i 's|ports.ubuntu.com|mirrors.aliyun.com|g' /etc/apt/sources.list \
+    && sed -i 's|security.ubuntu.com|mirrors.aliyun.com|g' /etc/apt/sources.list
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3 \
+        python3-pip \
+        python3-venv \
+        git \
+        curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -sf /usr/bin/python3 /usr/bin/python
+
+# Chinese PyPI mirror
+RUN pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/ \
+    && pip3 config set global.trusted-host mirrors.aliyun.com
+
+WORKDIR /app
+
+# Install project Python dependencies (the "heavy" pip part)
+RUN pip3 install --no-cache-dir --upgrade pip \
+    && pip3 install --no-cache-dir \
+        pytest>=8 \
+        PyYAML>=6 \
+        numpy>=1.26 \
+        Pillow>=10 \
+        datasets>=2.19 \
+        esdk-obs-python>=3.0 \
+        rich \
+        tqdm \
+        transformers>=4.49 \
+        accelerate>=1.0 \
+        peft>=0.13
+
+# Code is hot-mounted via volume, not baked in
+ENV PYTHONPATH=/app/src
+
+CMD ["python3", "-m", "pytest", "-q", "--tb=short"]
