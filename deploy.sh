@@ -2,13 +2,19 @@
 # ==================================================================
 # EvoRS-Comm Deployment Script
 # ==================================================================
+# Hot-mount workflow:
+#   1. Build image ONCE:       ./deploy.sh build
+#   2. After code changes:     git pull (no rebuild needed!)
+#      Code is volume-mounted, changes are reflected immediately.
+#   3. Only rebuild when:      pyproject.toml / requirements / Dockerfile change
+# ==================================================================
 # Usage:
-#   ./deploy.sh build     - Build Docker image
+#   ./deploy.sh build     - Build Docker image (first time or deps change)
 #   ./deploy.sh test      - Run tests in container
 #   ./deploy.sh shell     - Open interactive shell in container
 #   ./deploy.sh train     - Run Stage 2 training
 #   ./deploy.sh dry-run   - Run Stage 1 dry run
-#   ./deploy.sh pull      - Git pull and rebuild
+#   ./deploy.sh pull      - Git pull (auto-detects if rebuild needed)
 # ==================================================================
 set -euo pipefail
 
@@ -29,7 +35,7 @@ usage() {
     echo "  train       Run Stage 2 HM-MAGRPO training"
     echo "  dry-run     Run Stage 1 dry run"
     echo "  smoke       Quick smoke test (pytest + dry_run)"
-    echo "  pull        Git pull + rebuild"
+    echo "  pull        Git pull (no rebuild if code-only change)"
     echo "  logs        View container logs"
     echo "  stop        Stop container"
     echo "  deploy-npu  Create NPU deployment package (tar.gz)"
@@ -95,11 +101,20 @@ cmd_smoke() {
 }
 
 cmd_pull() {
-    echo "=== Git pull + rebuild ==="
+    echo "=== Git pull (hot-mount, no rebuild) ==="
     git pull --ff-only
-    docker compose build "${SERVICE}"
-    echo "=== Done. Restart container to apply changes. ==="
+
+    # Only rebuild if dependencies changed (not for code changes)
+    if git diff HEAD@{1} --name-only 2>/dev/null | grep -qE '(pyproject\.toml|requirements|Dockerfile|docker-compose)'; then
+        echo "Dependencies/Dockerfile changed, rebuilding image..."
+        docker compose build "${SERVICE}"
+    else
+        echo "Code-only change. No rebuild needed (hot-mount)."
+    fi
+
+    # Ensure container is running (no-op if already up)
     docker compose up -d "${SERVICE}"
+    echo "=== Done. ==="
 }
 
 cmd_logs() {

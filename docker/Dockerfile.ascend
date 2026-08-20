@@ -44,14 +44,9 @@ RUN pip3 install --no-cache-dir -r requirements-base.txt \
         rich \
         tqdm
 
-# Copy project
+# Copy project metadata only (code is hot-mounted via volume)
 COPY pyproject.toml /app/pyproject.toml
-COPY src/ /app/src/
 RUN pip3 install --no-cache-dir -e .
-
-COPY scripts/ /app/scripts/
-COPY configs/ /app/configs/
-COPY tests/ /app/tests/
 
 # Create data directories
 RUN mkdir -p /app/data/cache /app/outputs /app/logs
