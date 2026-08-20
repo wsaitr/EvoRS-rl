@@ -1,4 +1,6 @@
 -r requirements-base.txt
 -r requirements-vlm.txt
-# Do not blindly pin torch_npu here.
-# Install CANN + torch + torch_npu + optional vllm-ascend using the official compatibility matrix.
+# Ascend NPU specific
+# Install CANN + torch + torch_npu using the official compatibility matrix
+# https://gitee.com/ascend/pytorch#torch_npu-version-mapping
+esdk-obs-python>=3.0

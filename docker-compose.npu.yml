@@ -1,0 +1,80 @@
+# ==================================================================
+# EvoRS-Comm Docker Compose for Ascend 910B NPU Server
+# ==================================================================
+# Usage on the GPU server:
+#   docker compose -f docker-compose.npu.yml up -d
+#   docker compose -f docker-compose.npu.yml exec npu bash
+# ==================================================================
+
+services:
+  npu:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.ascend
+    container_name: evors-comm-npu
+    volumes:
+      # Hot-mount source code
+      - ./src:/app/src:rw
+      - ./tests:/app/tests:rw
+      - ./scripts:/app/scripts:rw
+      - ./configs:/app/configs:rw
+      # Persistent outputs and data
+      - ./outputs:/app/outputs:rw
+      - ./logs:/app/logs:rw
+      - ./data:/app/data:rw
+    # Ascend 910B NPU device passthrough
+    devices:
+      - /dev/davinci0:/dev/davinci0
+      - /dev/davinci1:/dev/davinci1
+      - /dev/davinci2:/dev/davinci2
+      - /dev/davinci3:/dev/davinci3
+      - /dev/davinci4:/dev/davinci4
+      - /dev/davinci5:/dev/davinci5
+      - /dev/davinci6:/dev/davinci6
+      - /dev/davinci7:/dev/davinci7
+      - /dev/davinci_manager:/dev/davinci_manager
+      - /dev/devmm_svm:/dev/devmm_svm
+      - /dev/hisi_hdc:/dev/hisi_hdc
+    # Shared memory for multi-NPU training
+    shm_size: "32g"
+    environment:
+      - ASCEND_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+      - HCCL_WHITELIST_DISABLE=1
+      # OBS credentials (set on host)
+      - OBS_ENDPOINT=${OBS_ENDPOINT:-}
+      - OBS_BUCKET=${OBS_BUCKET:-evors-data}
+      - OBS_ACCESS_KEY_ID=${OBS_ACCESS_KEY_ID:-}
+      - OBS_SECRET_ACCESS_KEY=${OBS_SECRET_ACCESS_KEY:-}
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    network_mode: host
+    command: ["tail", "-f", "/dev/null"]
+
+  # Single-NPU training job
+  train:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.ascend
+    volumes:
+      - ./src:/app/src:rw
+      - ./tests:/app/tests:rw
+      - ./scripts:/app/scripts:rw
+      - ./configs:/app/configs:rw
+      - ./outputs:/app/outputs:rw
+      - ./logs:/app/logs:rw
+      - ./data:/app/data:rw
+    devices:
+      - /dev/davinci0:/dev/davinci0
+      - /dev/davinci_manager:/dev/davinci_manager
+      - /dev/devmm_svm:/dev/devmm_svm
+      - /dev/hisi_hdc:/dev/hisi_hdc
+    shm_size: "16g"
+    environment:
+      - ASCEND_VISIBLE_DEVICES=0
+      - OBS_ENDPOINT=${OBS_ENDPOINT:-}
+      - OBS_BUCKET=${OBS_BUCKET:-evors-data}
+      - OBS_ACCESS_KEY_ID=${OBS_ACCESS_KEY_ID:-}
+      - OBS_SECRET_ACCESS_KEY=${OBS_SECRET_ACCESS_KEY:-}
+    working_dir: /app
+    command: ["python3", "scripts/train_stage2.py", "--config", "configs/experiments/stage2_pilot.yaml"]

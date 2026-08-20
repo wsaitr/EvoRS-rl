@@ -1,0 +1,6 @@
+# Huawei Cloud OBS configuration
+# Set actual values via environment variables or edit this file
+endpoint: "obs.cn-north-4.myhuaweicloud.com"
+bucket: "evors-data"
+access_key_id: ""  # Set via OBS_ACCESS_KEY_ID env var
+secret_access_key: ""  # Set via OBS_SECRET_ACCESS_KEY env var

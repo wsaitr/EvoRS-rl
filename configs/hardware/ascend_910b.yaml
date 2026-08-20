@@ -1,0 +1,34 @@
+# Ascend 910B NPU configuration
+# Target: modelarts.bm.npu.arm.1snt9b1
+device: npu
+distributed_backend: hccl
+inference_backend: transformers
+dtype: float16  # 910B supports fp16 natively
+num_devices: 8
+arm_architecture: true
+
+# CANN configuration
+cann_version: "8.0"
+torch_npu_version: "2.1.0"
+
+# Memory management
+shm_size: "32g"
+max_memory_per_npu: "28g"  # 32GB HBM per 910B, reserve 4GB
+
+# Distributed training
+gradient_accumulation_steps: 4
+batch_size_per_device: 2
+total_batch_size: 64  # 8 devices * 2 batch * 4 accum
+
+# Mixed precision
+mixed_precision: true
+amp_level: "O2"  # Ascend AMP level
+
+latent_channel:
+  enabled: false
+
+notes:
+  - Use float16 for 910B (not bfloat16 which is less optimized)
+  - HCCL for distributed communication
+  - ARM architecture - use aarch64 Docker images
+  - Use O2 AMP level for best performance on 910B

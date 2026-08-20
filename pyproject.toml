@@ -13,6 +13,7 @@ dependencies = []
 dev = ["pytest>=8"]
 data = ["datasets>=2.19", "Pillow>=10", "PyYAML>=6"]
 vlm = ["torch>=2.2", "transformers>=4.49", "accelerate>=1.0", "peft>=0.13", "Pillow>=10"]
+obs = ["esdk-obs-python>=3.0"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
