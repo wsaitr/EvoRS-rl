@@ -1,0 +1,29 @@
+schema_version: evors.phase5-config.v1
+seed: 17
+epochs: 40
+learning_rate: 0.10
+baseline_rate: 0.10
+entropy_coefficient: 0.015
+max_gradient: 5.0
+reward:
+  task: 1.0
+  evidence_gain: 0.04
+  structure_gain: 0.04
+  message_text_token: 0.00005
+  message_structure_byte: 0.000002
+  message_latent_byte: 0.000001
+  agent_call: 0.12
+  tool_call: 0.005
+  model_call: 0.01
+  repeated_agent: 0.08
+  invalid_action: 0.5
+  error: 0.25
+  non_completion: 0.75
+environment:
+  runtime: langgraph
+  disclosure_mode: scoped
+  max_steps: 6
+  experts_frozen: true
+  fixture: deterministic_mechanism_gate
+  scientific_claim: false
+output_dir: evidence/2026-09-03_phase5_routing

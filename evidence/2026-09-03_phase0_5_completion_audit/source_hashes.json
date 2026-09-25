@@ -1,0 +1,9 @@
+{
+  "doc/论文/1/EvoRS-Comm_论文源码.pdf": "f809a29f66c29c02f5f6967d6f88b50d8b0d0e14ab4b0343b237cc6fe174ac21",
+  "evidence/2026-09-01_single_agent_perception_gate/events.jsonl": "8d3d5c4b06e37274a95659df94e92e1a2e9be1da47b9295d43a56e50b3fe41cf",
+  "evidence/2026-09-02_phase4_comparison/summary.json": "1abd2112a22cc6082b08b6e1c99473dcebbe069116397d9412d12fffc4cff2bf",
+  "evidence/2026-09-03_phase5_real_qwen_hybrid_smoke/events.jsonl": "b8aed3199dac9071fca52a98036baaf0afae823e9f90eea21c41b92fed8aaa5b",
+  "evidence/2026-09-03_phase5_real_qwen_smoke/events.jsonl": "efc4a09cd21b9a7e32e552c9ab357ccaef834a36d2c3821074d0c132104a28c7",
+  "evidence/2026-09-03_phase5_routing/checkpoint.json": "781429dde40df9eb32892a005bfc76578053cd534dee3018093cf34049fc5c12",
+  "outputs/completion_audit/phase0": "e6474c334b48ead58b3710f235d6d24ec25d0a2fa2b361c2381c533054150076"
+}

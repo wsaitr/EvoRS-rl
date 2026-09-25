@@ -1,0 +1,247 @@
+{
+  "checks": [
+    {
+      "detail": [
+        "episode_started",
+        "agent_dispatched",
+        "model_called",
+        "record_added",
+        "episode_finished"
+      ],
+      "name": "event_contract",
+      "passed": true,
+      "phase": 0
+    },
+    {
+      "detail": {
+        "event_count": 5,
+        "final": {
+          "stop_reason": "completed"
+        }
+      },
+      "name": "schema_sequence_and_completion",
+      "passed": true,
+      "phase": 0
+    },
+    {
+      "detail": {
+        "status": "passed",
+        "validation_scope": "mock_control_flow_only"
+      },
+      "name": "generalist_end_to_end_mechanism",
+      "passed": true,
+      "phase": 1
+    },
+    {
+      "detail": {
+        "events": 40,
+        "model": "evors/qwen3.8-27b-q4",
+        "provenance_valid": true
+      },
+      "name": "real_qwen_paired_gate_integrity",
+      "passed": true,
+      "phase": 1
+    },
+    {
+      "detail": {
+        "direct": 10,
+        "samples": 20,
+        "single_agent": 12
+      },
+      "name": "single_agent_exceeds_direct_vlm",
+      "passed": true,
+      "phase": 1
+    },
+    {
+      "detail": {
+        "counterfactual_sample_count": 0,
+        "evidence_semantics": "structural_provenance_only",
+        "evolution_mechanism_checked": true,
+        "expected_model_id": null,
+        "passed": true,
+        "preflight_failures": [],
+        "require_tool": true,
+        "requirements": [
+          "private_candidate_variation_fitness_selection"
+        ],
+        "strict": false
+      },
+      "name": "candidate_variation_fitness_selection_mechanism",
+      "passed": true,
+      "phase": 2
+    },
+    {
+      "detail": {
+        "samples_with_generations": [
+          "vrsbench-val-001",
+          "vrsbench-val-003",
+          "vrsbench-val-004",
+          "vrsbench-val-006",
+          "vrsbench-val-008",
+          "vrsbench-val-009"
+        ]
+      },
+      "name": "real_perception_linked_private_evolution_trace",
+      "passed": true,
+      "phase": 2
+    },
+    {
+      "detail": {
+        "latent_bytes": 48,
+        "levels": [
+          "scene",
+          "object"
+        ],
+        "workspace_binary": false
+      },
+      "name": "workspace_hierarchy_artifactstore_latent_mechanism",
+      "passed": true,
+      "phase": 3
+    },
+    {
+      "detail": {
+        "policies": [
+          "fixed",
+          "all_agent",
+          "rule"
+        ],
+        "runs": 6
+      },
+      "name": "controller_router_expert_pool_mechanism",
+      "passed": true,
+      "phase": 4
+    },
+    {
+      "detail": {
+        "checksums": "verified",
+        "claim_scope": "development gate only",
+        "correct": {
+          "direct_vlm": 10,
+          "multi_agent": 14,
+          "single_agent": 12
+        }
+      },
+      "name": "real_qwen_paired_three_arm_development_gate",
+      "passed": true,
+      "phase": 4
+    },
+    {
+      "detail": {
+        "checksums": "verified",
+        "eval": {
+          "accuracy": 1.0,
+          "episodes": 6,
+          "mean_agent_calls": 3.3333333333333335,
+          "mean_reward": 0.5690486666666669,
+          "paths": {
+            "visual->knowledge->reasoning->verification": 2,
+            "visual->reasoning->verification": 4
+          }
+        },
+        "steps": 720
+      },
+      "name": "learned_policy_training_and_replay",
+      "passed": true,
+      "phase": 5
+    },
+    {
+      "detail": {
+        "airport_classification": [
+          "dispatch_visual",
+          "dispatch_knowledge",
+          "dispatch_reasoning_text_structure",
+          "dispatch_verification",
+          "finish"
+        ],
+        "object_existence": [
+          "dispatch_visual",
+          "dispatch_reasoning_hybrid",
+          "dispatch_verification",
+          "finish"
+        ],
+        "object_quantity": [
+          "dispatch_visual",
+          "dispatch_reasoning_text_structure",
+          "dispatch_verification",
+          "finish"
+        ]
+      },
+      "name": "task_conditioned_activation_and_modality",
+      "passed": true,
+      "phase": 5
+    },
+    {
+      "detail": {
+        "communicated_latent_bytes": 0,
+        "native_latent_artifacts": 3,
+        "reasoning_latent_count": 0
+      },
+      "name": "real_qwen_text_structure_denies_latent",
+      "passed": true,
+      "phase": 5
+    },
+    {
+      "detail": {
+        "communicated_latent_bytes": 20480,
+        "correct": true,
+        "reasoning_latent_count": 1
+      },
+      "name": "real_qwen_hybrid_authorizes_and_charges_latent",
+      "passed": true,
+      "phase": 5
+    },
+    {
+      "detail": {
+        "pdf_bytes": 253161,
+        "source": "doc\\论文\\1\\EvoRS-Comm_论文源码.tex"
+      },
+      "name": "source_and_pdf_present",
+      "passed": true,
+      "phase": "paper"
+    },
+    {
+      "detail": {
+        "validated": [
+          "docker-compose.yml",
+          "docker-compose.pfs.yml",
+          "docker-compose.npu.yml"
+        ]
+      },
+      "name": "cpu_pfs_npu_compose_contracts",
+      "passed": true,
+      "phase": 5
+    },
+    {
+      "detail": "Not executed: complete baselines, ablations, multiple seeds, and cost curves remain Phase 6.",
+      "name": "phase6_not_claimed",
+      "passed": true,
+      "phase": 6
+    },
+    {
+      "detail": "........................................................................ [ 88%]\n....................................                                     [100%]\n321 passed, 3 skipped in 1141.37s (0:19:01)",
+      "name": "full_offline_suite",
+      "passed": true,
+      "phase": "tests"
+    }
+  ],
+  "completed_scope": "Phase 0 through Phase 5 implementation and development gates",
+  "deployment": {
+    "ascend_execution": "not claimed; target host execution evidence pending",
+    "local_controller_training": "completed",
+    "reason": "The current 7x21 controller is intentionally CPU-trained.",
+    "verl_token_policy_training": "not claimed; adapter only"
+  },
+  "excluded_scope": "Phase 6 paper-level experiments and statistical claims",
+  "failure_count": 0,
+  "phases": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+  },
+  "schema_version": "evors.phase0-5-completion-audit.v1",
+  "scientific_claim": false,
+  "status": "passed"
+}

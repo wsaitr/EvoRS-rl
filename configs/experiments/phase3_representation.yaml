@@ -1,0 +1,13 @@
+phase: 3
+
+dataset:
+  manifest: tests/fixtures/phase0/manifest.jsonl
+  limit: 1
+
+latent:
+  enabled: true
+  roi: [0.2, 0.2, 0.8, 0.8]
+  consumer_id: reasoning
+
+logging:
+  output: outputs/phase3/representation-summary.json

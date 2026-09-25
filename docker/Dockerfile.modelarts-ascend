@@ -1,0 +1,44 @@
+# syntax=docker/dockerfile:1.7
+
+# This base is an account-owned, already registered ARM64/Ascend 910B image.
+# It is deliberately used instead of the 21+ GiB ModelArts preset verl image so
+# the resulting custom image remains within ModelArts custom-image size limits.
+ARG BASE_IMAGE=swr.cn-southwest-2.myhuaweicloud.com/roadtoken3d/training:ascend-native-910b-1p4p-20260907
+FROM ${BASE_IMAGE}
+
+ARG BUILD_DATE=unknown
+ARG VCS_REF=unknown
+
+LABEL org.opencontainers.image.title="EvoRS-Comm Ascend experiments" \
+      org.opencontainers.image.description="EvoRS-Comm ARM64/Ascend SNT9B experiment runtime" \
+      org.opencontainers.image.revision="${VCS_REF}" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      ai.modelarts.flavor="ASCEND_SNT9B" \
+      ai.modelarts.default_uid="1000"
+
+ENV EVORS_ROOT=/opt/evors \
+    EVORS_OUTPUT_DIR=/home/ma-user/evors-output \
+    PYTHONPATH=/opt/evors/src:/opt/evors/vendor \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    ASCEND_VISIBLE_DEVICES=all \
+    HCCL_WHITELIST_DISABLE=1
+
+WORKDIR /opt/evors
+
+# No RUN instruction is used. This makes the image reproducibly buildable for
+# linux/arm64 on an x86 workstation without executing target-architecture code.
+COPY --link --chown=1000:1000 src/ /opt/evors/src/
+COPY --link --chown=1000:1000 scripts/ /opt/evors/scripts/
+COPY --link --chown=1000:1000 configs/ /opt/evors/configs/
+COPY --link --chown=1000:1000 tests/ /opt/evors/tests/
+COPY --link --chown=1000:1000 pyproject.toml requirements-base.txt requirements-vlm.txt requirements-ascend.txt /opt/evors/
+COPY --link --chown=1000:1000 .modelarts/vendor/ /opt/evors/vendor/
+COPY --link --chown=1000:1000 evidence/2026-09-03_phase5_routing/checkpoint.json /opt/evors/checkpoints/phase5-routing.json
+COPY --link --chown=1000:1000 --chmod=0755 docker/modelarts-entrypoint.sh /usr/local/bin/evors-modelarts
+
+# ModelArts requires the default image user to have UID 1000.
+USER 1000:1000
+
+ENTRYPOINT ["/usr/local/bin/evors-modelarts"]
+CMD ["verify"]

@@ -1,0 +1,61 @@
+﻿sample_id,task_type,question,reference_answer,arm,answer,correct,error,agent_calls,tool_calls,model_calls,model_input_tokens,model_output_tokens,wall_time_ms,message_text_tokens,message_structure_bytes,message_latent_bytes
+vrsbench-val-000,object_quantity,How many roundabouts are visible in the image?,2,direct_vlm,2,True,,0,0,1,306,2,7454.462499939837,0,0,0
+vrsbench-val-000,object_quantity,How many roundabouts are visible in the image?,2,single_agent,2,True,,1,1,3,1727,82,30626.264100079425,0,0,0
+vrsbench-val-000,object_quantity,How many roundabouts are visible in the image?,2,multi_agent,2,True,,3,1,5,2455,109,57059.90829993971,296,867,0
+vrsbench-val-001,object_quantity,How many windmills are visible in the image?,6,direct_vlm,2,False,,0,0,1,307,2,7785.219899960794,0,0,0
+vrsbench-val-001,object_quantity,How many windmills are visible in the image?,6,single_agent,6,True,,1,1,4,2846,191,102632.44209997356,0,0,0
+vrsbench-val-001,object_quantity,How many windmills are visible in the image?,6,multi_agent,6,True,,3,1,6,3580,218,125059.94180007838,398,1139,0
+vrsbench-val-002,object_quantity,How many vehicles are visible at the intersection?,1,direct_vlm,2,False,,0,0,1,305,2,7439.242099993862,0,0,0
+vrsbench-val-002,object_quantity,How many vehicles are visible at the intersection?,1,single_agent,2,False,,1,1,3,1724,52,22512.01049995143,0,0,0
+vrsbench-val-002,object_quantity,How many vehicles are visible at the intersection?,1,multi_agent,2,False,,3,1,5,2450,79,44085.21130005829,296,867,0
+vrsbench-val-003,object_quantity,How many small vehicles are visible?,1,direct_vlm,2,False,,0,0,1,303,2,7730.065200012177,0,0,0
+vrsbench-val-003,object_quantity,How many small vehicles are visible?,1,single_agent,2,False,,1,1,3,1718,92,33412.17150015291,0,0,0
+vrsbench-val-003,object_quantity,How many small vehicles are visible?,1,multi_agent,2,False,,3,1,5,2440,119,54862.98940004781,336,973,0
+vrsbench-val-004,object_quantity,How many small vehicles can be observed in the image?,2,direct_vlm,3,False,,0,0,1,307,2,8943.702000076883,0,0,0
+vrsbench-val-004,object_quantity,How many small vehicles can be observed in the image?,2,single_agent,3,False,,1,1,3,1730,153,73455.42349980678,0,0,0
+vrsbench-val-004,object_quantity,How many small vehicles can be observed in the image?,2,multi_agent,4,False,,3,1,5,2460,180,95284.65189982671,336,973,0
+vrsbench-val-005,object_quantity,How many storage tanks are visible?,2,direct_vlm,2,True,,0,0,1,303,2,7661.793699953705,0,0,0
+vrsbench-val-005,object_quantity,How many storage tanks are visible?,2,single_agent,2,True,,1,1,3,1718,61,45583.86489993427,0,0,0
+vrsbench-val-005,object_quantity,How many storage tanks are visible?,2,multi_agent,2,True,,3,1,5,2440,88,67101.89189994708,296,867,0
+vrsbench-val-006,object_quantity,How many windmills are present in the image?,2,direct_vlm,2,True,,0,0,1,307,2,8054.921899922192,0,0,0
+vrsbench-val-006,object_quantity,How many windmills are present in the image?,2,single_agent,2,True,,1,1,3,1730,70,47723.825499997474,0,0,0
+vrsbench-val-006,object_quantity,How many windmills are present in the image?,2,multi_agent,2,True,,3,1,5,2460,96,69361.0064999666,316,920,0
+vrsbench-val-007,object_quantity,How many vehicles are visible in the image?,3,direct_vlm,3,True,,0,0,1,305,2,7870.101000065915,0,0,0
+vrsbench-val-007,object_quantity,How many vehicles are visible in the image?,3,single_agent,3,True,,1,1,3,1724,80,49781.72689990606,0,0,0
+vrsbench-val-007,object_quantity,How many vehicles are visible in the image?,3,multi_agent,3,True,,3,1,5,2450,106,71674.82189985458,316,920,0
+vrsbench-val-008,object_quantity,How many vehicles can be identified in the image?,1,direct_vlm,12,False,,0,0,1,306,3,7801.4449999900535,0,0,0
+vrsbench-val-008,object_quantity,How many vehicles can be identified in the image?,1,single_agent,1,True,,1,6,9,5771,1086,414856.5897999797,0,0,0
+vrsbench-val-008,object_quantity,How many vehicles can be identified in the image?,1,multi_agent,1,True,,3,6,11,6499,1113,436713.86150002945,390,1124,0
+vrsbench-val-009,object_quantity,How many ships are visible in the image?,2,direct_vlm,0,False,,0,0,1,305,2,7494.543400011025,0,0,0
+vrsbench-val-009,object_quantity,How many ships are visible in the image?,2,single_agent,0,False,,1,1,3,1724,51,42964.98200006317,0,0,0
+vrsbench-val-009,object_quantity,How many ships are visible in the image?,2,multi_agent,0,False,,3,1,5,2450,78,65009.353000088595,296,867,0
+vrsbench-val-010,object_existence,Is there a road running underneath the overpass?,yes,direct_vlm,Yes,True,,0,0,1,307,2,7402.9712999472395,0,0,0
+vrsbench-val-010,object_existence,Is there a road running underneath the overpass?,yes,single_agent,Yes,True,,1,0,1,307,2,955.9538000030443,0,0,0
+vrsbench-val-010,object_existence,Is there a road running underneath the overpass?,yes,multi_agent,Yes,True,,3,0,3,1034,29,22822.67119991593,194,591,0
+vrsbench-val-011,object_existence,Is there a large building adjacent to the west side of the stadium?,no,direct_vlm,Yes,False,,0,0,1,311,2,7757.585300016217,0,0,0
+vrsbench-val-011,object_existence,Is there a large building adjacent to the west side of the stadium?,no,single_agent,Yes,False,,1,0,1,311,2,885.9299999894574,0,0,0
+vrsbench-val-011,object_existence,Is there a large building adjacent to the west side of the stadium?,no,multi_agent,Yes,False,,3,0,3,1046,21,21669.193500070833,194,591,0
+vrsbench-val-012,object_existence,Is there any vegetation present in the image?,no,direct_vlm,No,True,,0,0,1,306,2,8747.61960003525,0,0,0
+vrsbench-val-012,object_existence,Is there any vegetation present in the image?,no,single_agent,No,True,,1,0,1,306,2,880.1790999714285,0,0,0
+vrsbench-val-012,object_existence,Is there any vegetation present in the image?,no,multi_agent,No,True,,3,0,3,1031,29,23884.824199951254,194,591,0
+vrsbench-val-013,object_existence,Is there a swimming pool in the image?,yes,direct_vlm,Yes,True,,0,0,1,306,2,9713.890700018965,0,0,0
+vrsbench-val-013,object_existence,Is there a swimming pool in the image?,yes,single_agent,Yes,True,,1,0,1,306,2,856.3529999228194,0,0,0
+vrsbench-val-013,object_existence,Is there a swimming pool in the image?,yes,multi_agent,Yes,True,,3,0,3,1031,29,23543.551700073294,194,591,0
+vrsbench-val-014,object_existence,Are roads present in the image?,yes,direct_vlm,Yes,True,,0,0,1,304,2,7708.925700047985,0,0,0
+vrsbench-val-014,object_existence,Are roads present in the image?,yes,single_agent,Yes,True,,1,0,1,304,2,1016.8728998396546,0,0,0
+vrsbench-val-014,object_existence,Are roads present in the image?,yes,multi_agent,Yes,True,,3,0,3,1025,29,23781.826499965973,194,591,0
+vrsbench-val-015,object_existence,Are there any boats in the harbor?,no,direct_vlm,Yes,False,,0,0,1,305,2,8179.3034001020715,0,0,0
+vrsbench-val-015,object_existence,Are there any boats in the harbor?,no,single_agent,Yes,False,,1,0,1,305,2,852.1931000286713,0,0,0
+vrsbench-val-015,object_existence,Are there any boats in the harbor?,no,multi_agent,No,True,,3,0,3,1028,28,23434.406199958175,194,591,0
+vrsbench-val-016,object_existence,Is there more than one ship visible in the image?,no,direct_vlm,Yes,False,,0,0,1,308,2,8068.591500050388,0,0,0
+vrsbench-val-016,object_existence,Is there more than one ship visible in the image?,no,single_agent,Yes,False,,1,0,1,308,2,928.697400027886,0,0,0
+vrsbench-val-016,object_existence,Is there more than one ship visible in the image?,no,multi_agent,No,True,,3,0,3,1037,29,23248.22429998312,194,591,0
+vrsbench-val-017,object_existence,Is there vegetation visible in the image?,yes,direct_vlm,Yes,True,,0,0,1,305,2,8537.52509993501,0,0,0
+vrsbench-val-017,object_existence,Is there vegetation visible in the image?,yes,single_agent,Yes,True,,1,0,1,305,2,873.0261001037434,0,0,0
+vrsbench-val-017,object_existence,Is there vegetation visible in the image?,yes,multi_agent,Yes,True,,3,0,3,1028,29,24039.204200031236,194,591,0
+vrsbench-val-018,object_existence,Is there a visible fence in the image?,yes,direct_vlm,No,False,,0,0,1,306,2,8512.932499987073,0,0,0
+vrsbench-val-018,object_existence,Is there a visible fence in the image?,yes,single_agent,No,False,,1,0,1,306,2,841.3543000351638,0,0,0
+vrsbench-val-018,object_existence,Is there a visible fence in the image?,yes,multi_agent,No,False,,3,0,3,1031,21,22344.085499993525,194,591,0
+vrsbench-val-019,object_existence,Are there any vehicles on the bridge?,no,direct_vlm,No,True,,0,0,1,305,2,8203.0373000307,0,0,0
+vrsbench-val-019,object_existence,Are there any vehicles on the bridge?,no,single_agent,No,True,,1,0,1,305,2,864.4019000930712,0,0,0
+vrsbench-val-019,object_existence,Are there any vehicles on the bridge?,no,multi_agent,No,True,,3,0,3,1028,29,23931.71160016209,194,591,0

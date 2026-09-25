@@ -2,9 +2,9 @@
 # EvoRS-Comm Docker Image for Ascend 910B (ARM)
 # ==================================================================
 # Target: ModelArts bm.npu.arm.1snt9b1
-# - N × Ascend 910B NPUs
-# - 24 vCPUs (ARM/aarch64)
-# - 192 GiB RAM
+# - 4 × Ascend 910B-class NPUs
+# - 96 vCPUs (ARM/aarch64)
+# - 768 GiB RAM
 # - CANN 8.0 + torch_npu
 # ==================================================================
 
@@ -41,6 +41,7 @@ RUN pip3 install --no-cache-dir -r requirements-base.txt \
     && pip3 install --no-cache-dir -r requirements-ascend.txt \
     && pip3 install --no-cache-dir \
         esdk-obs-python>=3.0 \
+        pytest>=8 \
         rich \
         tqdm
 
@@ -48,7 +49,7 @@ RUN pip3 install --no-cache-dir -r requirements-base.txt \
 ENV PYTHONPATH=/app/src
 
 # Create output directories
-RUN mkdir -p /app/data/cache /app/outputs /app/logs
+RUN mkdir -p /app/data/cache /app/outputs /app/evidence /app/logs
 
 # Verify installation
 RUN python3 -c "import torch; import torch_npu; print(f'torch={torch.__version__}, NPU available={torch.npu.is_available()}')" || echo "WARN: torch_npu verification failed"

@@ -1,4 +1,3 @@
-from .types import TaskAction, CommunicationAction
 from .rewards import (
     RewardWeights,
     team_reward,
@@ -10,21 +9,28 @@ from .rewards import (
     message_novelty,
     communication_reward,
 )
-from .comlrl_adapter import CoMLRLTrajectoryAdapter
-from .hmagrpo import (
-    TrajectoryStep,
-    Trajectory,
-    GroupTrajectories,
-    CommunicationPolicyHead,
-    RolloutGenerator,
-    GroupRelativeAdvantage,
-    HMMAGRPOConfig,
-    HMMAGRPOTrainer,
+from .routing import (
+    RoutingPolicyTrainer,
+    RoutingRewardBreakdown,
+    RoutingRewardManager,
+    RoutingRewardWeights,
+    RoutingTrainerConfig,
+    RoutingTrainingResult,
+    RoutingTrainingSample,
+    audit_action_causality,
+    fingerprint_expert_types,
+    score_answer,
+    summarize_events,
+)
+from .verl_adapter import (
+    EvoRSAgentLoop,
+    EvoRSAgentLoopResult,
+    VerlRoutingAdapter,
+    compute_score as verl_compute_score,
+    verl_environment_status,
 )
 
 __all__ = [
-    "TaskAction",
-    "CommunicationAction",
     "RewardWeights",
     "team_reward",
     "communication_cost",
@@ -34,14 +40,20 @@ __all__ = [
     "evidence_reward",
     "message_novelty",
     "communication_reward",
-    "CoMLRLTrajectoryAdapter",
-    # HM-MAGRPO
-    "TrajectoryStep",
-    "Trajectory",
-    "GroupTrajectories",
-    "CommunicationPolicyHead",
-    "RolloutGenerator",
-    "GroupRelativeAdvantage",
-    "HMMAGRPOConfig",
-    "HMMAGRPOTrainer",
+    "RoutingPolicyTrainer",
+    "RoutingRewardBreakdown",
+    "RoutingRewardManager",
+    "RoutingRewardWeights",
+    "RoutingTrainerConfig",
+    "RoutingTrainingResult",
+    "RoutingTrainingSample",
+    "audit_action_causality",
+    "fingerprint_expert_types",
+    "score_answer",
+    "summarize_events",
+    "EvoRSAgentLoop",
+    "EvoRSAgentLoopResult",
+    "VerlRoutingAdapter",
+    "verl_compute_score",
+    "verl_environment_status",
 ]

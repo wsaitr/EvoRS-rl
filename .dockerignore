@@ -4,6 +4,12 @@ __pycache__/
 .pytest_cache/
 .git/
 .gitignore
+.env
+CLAUDE.md
+.models/
+.codex_work/
+.venv/
+venv/
 .idea/
 .vscode/
 
@@ -12,15 +18,29 @@ data/
 outputs/
 logs/
 checkpoints/
+evidence/*
+!evidence/2026-09-03_phase5_routing/
+evidence/2026-09-03_phase5_routing/*
+!evidence/2026-09-03_phase5_routing/checkpoint.json
 *.log
 
 # Third party repos
 third_party/CoMLRL/
 third_party/MARTI/
+third_party/
 
 # Docs (large)
 doc/论文/1/EvoRS-Comm_论文草稿.pdf
 doc/论文/1指导书/RS-HMComm_三阶段计划_源码包.zip
+doc/
+src.zip
 
 # Temp
 _tmp_*/
+tmp/
+
+# Local cloud/build state. Only the prepared target-platform vendor tree is
+# intentionally sent to BuildKit.
+.modelarts/*
+!.modelarts/vendor/
+!.modelarts/vendor/**

@@ -1,0 +1,14 @@
+# Python packages added on top of the account-owned Ascend base image.
+# Do not add torch/torch_npu here: their versions must stay aligned with CANN.
+datasets==2.21.0
+Pillow==11.3.0
+PyYAML==6.0.3
+langgraph==1.2.11
+transformers==4.57.3
+accelerate==1.10.1
+peft==0.17.1
+huggingface-hub==0.36.0
+qwen-vl-utils==0.0.14
+pytest==8.4.2
+rich==14.2.0
+tqdm==4.67.1

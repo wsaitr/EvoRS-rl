@@ -1,0 +1,437 @@
+{
+  "arms": {
+    "direct_vlm": {
+      "accuracy": 0.5,
+      "accuracy_wilson_95": [
+        0.2992949144298199,
+        0.7007050855701801
+      ],
+      "completed": 20,
+      "correct": 10,
+      "errors": 0,
+      "mean_cost": {
+        "agent_calls": 0.0,
+        "message_latent_bytes": 0.0,
+        "message_structure_bytes": 0.0,
+        "message_text_tokens": 0.0,
+        "model_calls": 1.0,
+        "model_input_tokens": 305.85,
+        "model_output_tokens": 2.05,
+        "tool_calls": 0.0,
+        "wall_time_ms": 8053.393955004867
+      },
+      "total_cost": {
+        "agent_calls": 0.0,
+        "message_latent_bytes": 0.0,
+        "message_structure_bytes": 0.0,
+        "message_text_tokens": 0.0,
+        "model_calls": 20.0,
+        "model_input_tokens": 6117.0,
+        "model_output_tokens": 41.0,
+        "tool_calls": 0.0,
+        "wall_time_ms": 161067.87910009734
+      }
+    },
+    "multi_agent": {
+      "accuracy": 0.7,
+      "accuracy_wilson_95": [
+        0.4810232237710206,
+        0.854524726031006
+      ],
+      "completed": 20,
+      "correct": 14,
+      "errors": 0,
+      "mean_cost": {
+        "agent_calls": 3.0,
+        "message_latent_bytes": 0.0,
+        "message_structure_bytes": 771.35,
+        "message_text_tokens": 260.8,
+        "model_calls": 4.35,
+        "model_input_tokens": 2000.15,
+        "model_output_tokens": 122.95,
+        "tool_calls": 0.75,
+        "wall_time_ms": 65945.66681999713
+      },
+      "total_cost": {
+        "agent_calls": 60.0,
+        "message_latent_bytes": 0.0,
+        "message_structure_bytes": 15427.0,
+        "message_text_tokens": 5216.0,
+        "model_calls": 87.0,
+        "model_input_tokens": 40003.0,
+        "model_output_tokens": 2459.0,
+        "tool_calls": 15.0,
+        "wall_time_ms": 1318913.3363999426
+      }
+    },
+    "single_agent": {
+      "accuracy": 0.6,
+      "accuracy_wilson_95": [
+        0.3865779423152061,
+        0.7811960325858074
+      ],
+      "completed": 20,
+      "correct": 12,
+      "errors": 0,
+      "mean_cost": {
+        "agent_calls": 1.0,
+        "message_latent_bytes": 0.0,
+        "message_structure_bytes": 0.0,
+        "message_text_tokens": 0.0,
+        "model_calls": 2.35,
+        "model_input_tokens": 1273.75,
+        "model_output_tokens": 96.9,
+        "tool_calls": 0.75,
+        "wall_time_ms": 43625.213119992986
+      },
+      "total_cost": {
+        "agent_calls": 20.0,
+        "message_latent_bytes": 0.0,
+        "message_structure_bytes": 0.0,
+        "message_text_tokens": 0.0,
+        "model_calls": 47.0,
+        "model_input_tokens": 25475.0,
+        "model_output_tokens": 1938.0,
+        "tool_calls": 15.0,
+        "wall_time_ms": 872504.2623998597
+      }
+    }
+  },
+  "by_task_type": {
+    "object_existence": {
+      "direct_vlm": {
+        "accuracy": 0.6,
+        "accuracy_wilson_95": [
+          0.3126695474501864,
+          0.8318224187964902
+        ],
+        "completed": 10,
+        "correct": 6,
+        "errors": 0,
+        "mean_cost": {
+          "agent_calls": 0.0,
+          "message_latent_bytes": 0.0,
+          "message_structure_bytes": 0.0,
+          "message_text_tokens": 0.0,
+          "model_calls": 1.0,
+          "model_input_tokens": 306.3,
+          "model_output_tokens": 2.0,
+          "tool_calls": 0.0,
+          "wall_time_ms": 8283.23824001709
+        },
+        "total_cost": {
+          "agent_calls": 0.0,
+          "message_latent_bytes": 0.0,
+          "message_structure_bytes": 0.0,
+          "message_text_tokens": 0.0,
+          "model_calls": 10.0,
+          "model_input_tokens": 3063.0,
+          "model_output_tokens": 20.0,
+          "tool_calls": 0.0,
+          "wall_time_ms": 82832.3824001709
+        }
+      },
+      "multi_agent": {
+        "accuracy": 0.8,
+        "accuracy_wilson_95": [
+          0.49015684672072335,
+          0.9433190520193067
+        ],
+        "completed": 10,
+        "correct": 8,
+        "errors": 0,
+        "mean_cost": {
+          "agent_calls": 3.0,
+          "message_latent_bytes": 0.0,
+          "message_structure_bytes": 591.0,
+          "message_text_tokens": 194.0,
+          "model_calls": 3.0,
+          "model_input_tokens": 1031.9,
+          "model_output_tokens": 27.3,
+          "tool_calls": 0.0,
+          "wall_time_ms": 23269.969890010543
+        },
+        "total_cost": {
+          "agent_calls": 30.0,
+          "message_latent_bytes": 0.0,
+          "message_structure_bytes": 5910.0,
+          "message_text_tokens": 1940.0,
+          "model_calls": 30.0,
+          "model_input_tokens": 10319.0,
+          "model_output_tokens": 273.0,
+          "tool_calls": 0.0,
+          "wall_time_ms": 232699.69890010543
+        }
+      },
+      "single_agent": {
+        "accuracy": 0.6,
+        "accuracy_wilson_95": [
+          0.3126695474501864,
+          0.8318224187964902
+        ],
+        "completed": 10,
+        "correct": 6,
+        "errors": 0,
+        "mean_cost": {
+          "agent_calls": 1.0,
+          "message_latent_bytes": 0.0,
+          "message_structure_bytes": 0.0,
+          "message_text_tokens": 0.0,
+          "model_calls": 1.0,
+          "model_input_tokens": 306.3,
+          "model_output_tokens": 2.0,
+          "tool_calls": 0.0,
+          "wall_time_ms": 895.496160001494
+        },
+        "total_cost": {
+          "agent_calls": 10.0,
+          "message_latent_bytes": 0.0,
+          "message_structure_bytes": 0.0,
+          "message_text_tokens": 0.0,
+          "model_calls": 10.0,
+          "model_input_tokens": 3063.0,
+          "model_output_tokens": 20.0,
+          "tool_calls": 0.0,
+          "wall_time_ms": 8954.96160001494
+        }
+      }
+    },
+    "object_quantity": {
+      "direct_vlm": {
+        "accuracy": 0.4,
+        "accuracy_wilson_95": [
+          0.16817758120350967,
+          0.6873304525498135
+        ],
+        "completed": 10,
+        "correct": 4,
+        "errors": 0,
+        "mean_cost": {
+          "agent_calls": 0.0,
+          "message_latent_bytes": 0.0,
+          "message_structure_bytes": 0.0,
+          "message_text_tokens": 0.0,
+          "model_calls": 1.0,
+          "model_input_tokens": 305.4,
+          "model_output_tokens": 2.1,
+          "tool_calls": 0.0,
+          "wall_time_ms": 7823.549669992644
+        },
+        "total_cost": {
+          "agent_calls": 0.0,
+          "message_latent_bytes": 0.0,
+          "message_structure_bytes": 0.0,
+          "message_text_tokens": 0.0,
+          "model_calls": 10.0,
+          "model_input_tokens": 3054.0,
+          "model_output_tokens": 21.0,
+          "tool_calls": 0.0,
+          "wall_time_ms": 78235.49669992644
+        }
+      },
+      "multi_agent": {
+        "accuracy": 0.6,
+        "accuracy_wilson_95": [
+          0.3126695474501864,
+          0.8318224187964902
+        ],
+        "completed": 10,
+        "correct": 6,
+        "errors": 0,
+        "mean_cost": {
+          "agent_calls": 3.0,
+          "message_latent_bytes": 0.0,
+          "message_structure_bytes": 951.7,
+          "message_text_tokens": 327.6,
+          "model_calls": 5.7,
+          "model_input_tokens": 2968.4,
+          "model_output_tokens": 218.6,
+          "tool_calls": 1.5,
+          "wall_time_ms": 108621.36374998372
+        },
+        "total_cost": {
+          "agent_calls": 30.0,
+          "message_latent_bytes": 0.0,
+          "message_structure_bytes": 9517.0,
+          "message_text_tokens": 3276.0,
+          "model_calls": 57.0,
+          "model_input_tokens": 29684.0,
+          "model_output_tokens": 2186.0,
+          "tool_calls": 15.0,
+          "wall_time_ms": 1086213.6374998372
+        }
+      },
+      "single_agent": {
+        "accuracy": 0.6,
+        "accuracy_wilson_95": [
+          0.3126695474501864,
+          0.8318224187964902
+        ],
+        "completed": 10,
+        "correct": 6,
+        "errors": 0,
+        "mean_cost": {
+          "agent_calls": 1.0,
+          "message_latent_bytes": 0.0,
+          "message_structure_bytes": 0.0,
+          "message_text_tokens": 0.0,
+          "model_calls": 3.7,
+          "model_input_tokens": 2241.2,
+          "model_output_tokens": 191.8,
+          "tool_calls": 1.5,
+          "wall_time_ms": 86354.93007998448
+        },
+        "total_cost": {
+          "agent_calls": 10.0,
+          "message_latent_bytes": 0.0,
+          "message_structure_bytes": 0.0,
+          "message_text_tokens": 0.0,
+          "model_calls": 37.0,
+          "model_input_tokens": 22412.0,
+          "model_output_tokens": 1918.0,
+          "tool_calls": 15.0,
+          "wall_time_ms": 863549.3007998448
+        }
+      }
+    }
+  },
+  "completed_sample_count": 20,
+  "design": "paired_frozen_perception",
+  "expected_sample_count": 20,
+  "integrity": {
+    "all_arms_error_free": true,
+    "multi_agent_paths_valid": true,
+    "multi_agent_replay_material_present": true,
+    "multi_agent_task_label_isolation": true,
+    "unique_sample_ids": true
+  },
+  "paired": {
+    "multi_vs_direct": {
+      "changed_answers": [
+        {
+          "left_answer": "6",
+          "reference_answer": "6",
+          "right_answer": "2",
+          "sample_id": "vrsbench-val-001"
+        },
+        {
+          "left_answer": "4",
+          "reference_answer": "2",
+          "right_answer": "3",
+          "sample_id": "vrsbench-val-004"
+        },
+        {
+          "left_answer": "1",
+          "reference_answer": "1",
+          "right_answer": "12",
+          "sample_id": "vrsbench-val-008"
+        },
+        {
+          "left_answer": "No",
+          "reference_answer": "no",
+          "right_answer": "Yes",
+          "sample_id": "vrsbench-val-015"
+        },
+        {
+          "left_answer": "No",
+          "reference_answer": "no",
+          "right_answer": "Yes",
+          "sample_id": "vrsbench-val-016"
+        }
+      ],
+      "exact_mcnemar_p_two_sided": 0.125,
+      "left": "multi_agent",
+      "loss_sample_ids": [],
+      "losses": 0,
+      "paired_samples": 20,
+      "right": "direct_vlm",
+      "ties": 16,
+      "win_sample_ids": [
+        "vrsbench-val-001",
+        "vrsbench-val-008",
+        "vrsbench-val-015",
+        "vrsbench-val-016"
+      ],
+      "wins": 4
+    },
+    "multi_vs_single": {
+      "changed_answers": [
+        {
+          "left_answer": "4",
+          "reference_answer": "2",
+          "right_answer": "3",
+          "sample_id": "vrsbench-val-004"
+        },
+        {
+          "left_answer": "No",
+          "reference_answer": "no",
+          "right_answer": "Yes",
+          "sample_id": "vrsbench-val-015"
+        },
+        {
+          "left_answer": "No",
+          "reference_answer": "no",
+          "right_answer": "Yes",
+          "sample_id": "vrsbench-val-016"
+        }
+      ],
+      "exact_mcnemar_p_two_sided": 0.5,
+      "left": "multi_agent",
+      "loss_sample_ids": [],
+      "losses": 0,
+      "paired_samples": 20,
+      "right": "single_agent",
+      "ties": 18,
+      "win_sample_ids": [
+        "vrsbench-val-015",
+        "vrsbench-val-016"
+      ],
+      "wins": 2
+    },
+    "single_vs_direct": {
+      "changed_answers": [
+        {
+          "left_answer": "6",
+          "reference_answer": "6",
+          "right_answer": "2",
+          "sample_id": "vrsbench-val-001"
+        },
+        {
+          "left_answer": "1",
+          "reference_answer": "1",
+          "right_answer": "12",
+          "sample_id": "vrsbench-val-008"
+        }
+      ],
+      "exact_mcnemar_p_two_sided": 0.5,
+      "left": "single_agent",
+      "loss_sample_ids": [],
+      "losses": 0,
+      "paired_samples": 20,
+      "right": "direct_vlm",
+      "ties": 18,
+      "win_sample_ids": [
+        "vrsbench-val-001",
+        "vrsbench-val-008"
+      ],
+      "wins": 2
+    }
+  },
+  "provenance": {
+    "baseline_events": "evidence\\2026-09-01_single_agent_perception_gate\\events.jsonl",
+    "baseline_events_sha256": "8d3d5c4b06e37274a95659df94e92e1a2e9be1da47b9295d43a56e50b3fe41cf",
+    "git_branch": "codex/phases0-4",
+    "git_commit": "310200c7d6d284ad4e6c0bc9cc2c858a58e7f0b8",
+    "git_dirty": true,
+    "manifest": "configs\\experiments\\vrsbench20_manifest.jsonl",
+    "manifest_sha256": "1ba99639595b57e04e3cd3bda6714553c2ba946197640cfcacb0512ca705c046",
+    "model_config": "configs\\models\\qwen38_27b_q4_local.yaml",
+    "model_config_sha256": "ee30ae9b41d4f617c2554a967649554a1ebd17e35882ea3740806e7957a7fe3b",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.15 | packaged by Anaconda, Inc. | (main, Jun 11 2026, 15:12:53) [MSC v.1942 64 bit (AMD64)]",
+    "seed": 20260831
+  },
+  "schema_version": "evors.phase4-paired-comparison.v1",
+  "scientific_claim": false,
+  "status": "completed"
+}

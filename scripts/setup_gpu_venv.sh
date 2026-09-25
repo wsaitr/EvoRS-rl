@@ -23,7 +23,7 @@
 #   PIP_MIRROR      pip 镜像源（默认阿里云）
 #   OBS_TARBALL     OBS 上的代码压缩包路径
 #   PFS_MOUNT       lws2 并行文件系统挂载点（若已自动挂载则自动探测）
-#   NPU_DEVICES     可见 NPU 设备列表（默认 0,1,2,3,4,5,6,7）
+#   NPU_DEVICES     可见 NPU 设备列表（默认 0,1,2,3）
 #   PYTHON_BIN      系统 Python 路径（默认自动探测 python3.11）
 # ==================================================================
 set -euo pipefail
@@ -33,7 +33,7 @@ WORK_DIR="${WORK_DIR:-/home/ma-user/evors-comm}"
 PIP_MIRROR="${PIP_MIRROR:-https://mirrors.aliyun.com/pypi/simple/}"
 OBS_TARBALL="${OBS_TARBALL:-obs://lws2/evors-comm/evors-comm.tar.gz}"
 PFS_MOUNT="${PFS_MOUNT:-}"          # 留空则自动探测
-NPU_DEVICES="${NPU_DEVICES:-0,1,2,3,4,5,6,7}"
+NPU_DEVICES="${NPU_DEVICES:-0,1,2,3}"
 PYTHON_BIN="${PYTHON_BIN:-}"        # 留空则自动探测
 TRAIN_SCRIPT="${TRAIN_SCRIPT:-scripts/train_npu.py}"
 
@@ -64,7 +64,7 @@ ${BOLD}用法:${NC}
 
 ${BOLD}命令:${NC}
   setup (默认)     创建 venv，解压代码，安装依赖，验证环境
-  run <config>     设置后直接启动训练（如 configs/experiments/stage2_pilot.yaml）
+  run <config>     设置后执行 Phase 5 路由训练（如 configs/experiments/phase5_routing.yaml）
   verify           仅验证环境（import torch / torch_npu / verl）
   shell            激活 venv 并进入交互式 bash
   test             运行 pytest 测试套件
@@ -74,7 +74,7 @@ ${BOLD}环境变量:${NC}
   PIP_MIRROR       pip 镜像源，默认 ${PIP_MIRROR}
   OBS_TARBALL      OBS 代码包路径，默认 obs://lws2/evors-comm/evors-comm.tar.gz
   PFS_MOUNT        lws2 挂载点（留空自动探测）
-  NPU_DEVICES      可见 NPU，默认 0,1,2,3,4,5,6,7
+  NPU_DEVICES      可见 NPU，默认 0,1,2,3
   PYTHON_BIN       系统 Python 路径（留空自动探测 python3.11）
 
 ${BOLD}示例:${NC}
@@ -82,7 +82,7 @@ ${BOLD}示例:${NC}
   bash scripts/setup_gpu_venv.sh
 
   # 设置后立刻开始训练
-  bash scripts/setup_gpu_venv.sh run configs/experiments/stage2_pilot.yaml
+  bash scripts/setup_gpu_venv.sh run configs/experiments/phase5_routing.yaml
 
   # 只验证已有环境
   bash scripts/setup_gpu_venv.sh verify
@@ -379,10 +379,10 @@ cmd_setup() {
     echo "下一步："
     echo -e "  ${CYAN}source ${WORK_DIR}/.env.gpu${NC}              # 激活环境"
     echo -e "  ${CYAN}cd ${WORK_DIR}${NC}"
-    echo -e "  ${CYAN}python scripts/train_npu.py --config <cfg>${NC}  # 开始训练"
+    echo -e "  ${CYAN}python scripts/train_npu.py routing --config <cfg> --output <dir>${NC}"
     echo ""
     echo "或者一键运行："
-    echo -e "  ${CYAN}bash $0 run configs/experiments/stage2_pilot.yaml${NC}"
+    echo -e "  ${CYAN}bash $0 run configs/experiments/phase5_routing.yaml${NC}"
     echo ""
 }
 
@@ -391,7 +391,7 @@ cmd_run() {
     if [[ -z "${config}" ]]; then
         err "请指定训练配置文件"
         echo "用法: $0 run <config.yaml>"
-        echo "示例: $0 run configs/experiments/stage2_pilot.yaml"
+        echo "示例: $0 run configs/experiments/phase5_routing.yaml"
         exit 1
     fi
 
@@ -428,10 +428,9 @@ cmd_run() {
     echo "PWD:  $(pwd)"
     echo ""
 
-    python "${TRAIN_SCRIPT}" \
+    python "${TRAIN_SCRIPT}" routing \
         --config "${config}" \
-        --distributed \
-        --output "${WORK_DIR}/outputs/training"
+        --output "${WORK_DIR}/evidence/phase5-routing-npu"
 }
 
 cmd_verify_only() {

@@ -20,6 +20,7 @@ services:
       - ./configs:/app/configs:rw
       # Persistent outputs and data
       - ./outputs:/app/outputs:rw
+      - ./evidence:/app/evidence:rw
       - ./logs:/app/logs:rw
       - ./data:/app/data:rw
     # Ascend 910B NPU device passthrough
@@ -28,17 +29,13 @@ services:
       - /dev/davinci1:/dev/davinci1
       - /dev/davinci2:/dev/davinci2
       - /dev/davinci3:/dev/davinci3
-      - /dev/davinci4:/dev/davinci4
-      - /dev/davinci5:/dev/davinci5
-      - /dev/davinci6:/dev/davinci6
-      - /dev/davinci7:/dev/davinci7
       - /dev/davinci_manager:/dev/davinci_manager
       - /dev/devmm_svm:/dev/devmm_svm
       - /dev/hisi_hdc:/dev/hisi_hdc
     # Shared memory for multi-NPU training
     shm_size: "32g"
     environment:
-      - ASCEND_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+      - ASCEND_VISIBLE_DEVICES=0,1,2,3
       - HCCL_WHITELIST_DISABLE=1
       # OBS credentials (set on host)
       - OBS_ENDPOINT=${OBS_ENDPOINT:-}
@@ -51,8 +48,8 @@ services:
     network_mode: host
     command: ["tail", "-f", "/dev/null"]
 
-  # Single-NPU training job
-  train:
+  # Phase 5 routing controller trains on CPU and leaves all NPUs free for VLM work.
+  train-phase5:
     build:
       context: .
       dockerfile: docker/Dockerfile.ascend
@@ -62,19 +59,15 @@ services:
       - ./scripts:/app/scripts:rw
       - ./configs:/app/configs:rw
       - ./outputs:/app/outputs:rw
+      - ./evidence:/app/evidence:rw
       - ./logs:/app/logs:rw
       - ./data:/app/data:rw
-    devices:
-      - /dev/davinci0:/dev/davinci0
-      - /dev/davinci_manager:/dev/davinci_manager
-      - /dev/devmm_svm:/dev/devmm_svm
-      - /dev/hisi_hdc:/dev/hisi_hdc
     shm_size: "16g"
     environment:
-      - ASCEND_VISIBLE_DEVICES=0
+      - ASCEND_VISIBLE_DEVICES=0,1,2,3
       - OBS_ENDPOINT=${OBS_ENDPOINT:-}
       - OBS_BUCKET=${OBS_BUCKET:-evors-data}
       - OBS_ACCESS_KEY_ID=${OBS_ACCESS_KEY_ID:-}
       - OBS_SECRET_ACCESS_KEY=${OBS_SECRET_ACCESS_KEY:-}
     working_dir: /app
-    command: ["python3", "scripts/train_stage2.py", "--config", "configs/experiments/stage2_pilot.yaml"]
+    command: ["python3", "scripts/train_npu.py", "routing", "--config", "configs/experiments/phase5_routing.yaml", "--output", "/app/evidence/phase5-routing-npu"]

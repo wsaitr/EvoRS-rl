@@ -1,0 +1,480 @@
+{
+  "controller": "EvolutionController",
+  "correct": 1,
+  "errors": 0,
+  "latent_mode": "qwen_native",
+  "manifest": "configs\\experiments\\vrsbench20_manifest.jsonl",
+  "manifest_sha256": "1ba99639595b57e04e3cd3bda6714553c2ba946197640cfcacb0512ca705c046",
+  "model_config": "configs\\models\\qwen38_27b_q4_local.yaml",
+  "model_config_sha256": "ee30ae9b41d4f617c2554a967649554a1ebd17e35882ea3740806e7957a7fe3b",
+  "offset": 10,
+  "results": [
+    {
+      "agent_path": [
+        "visual",
+        "reasoning",
+        "verification"
+      ],
+      "answer": "Yes",
+      "answer_candidate_ref": "reasoning-answer-s1-verified-s2",
+      "artifact_store_size": 2,
+      "capability_requests": [],
+      "correct": true,
+      "error": null,
+      "messages": [
+        {
+          "created_step": 1,
+          "message_id": "message-33d8c84dc59b1dc07342",
+          "modalities": [
+            "text",
+            "structure",
+            "latent"
+          ],
+          "receiver": "reasoning",
+          "scope": "controller_dispatch",
+          "sender": "evors-controller",
+          "workspace_refs": [
+            "evidence-perception-phase4-vrsbench-val-010-visual-s0",
+            "evidence-view-phase4-vrsbench-val-010-visual-s0-1",
+            "latent-scene-phase4-vrsbench-val-010-visual-s0",
+            "scene-phase4-vrsbench-val-010-visual-s0"
+          ]
+        },
+        {
+          "created_step": 2,
+          "message_id": "message-4fffa23c72a6ba91e61f",
+          "modalities": [
+            "text",
+            "structure"
+          ],
+          "receiver": "verification",
+          "scope": "controller_dispatch",
+          "sender": "evors-controller",
+          "workspace_refs": [
+            "reasoning-answer-s1"
+          ]
+        }
+      ],
+      "policy": "LearnedRoutingPolicy",
+      "question": "Is there a road running underneath the overpass?",
+      "reference_answer": "yes",
+      "runtime": "langgraph",
+      "sample_id": "vrsbench-val-010",
+      "stop_reason": "completed",
+      "task": {
+        "answer_format": "yes_no",
+        "choices": [],
+        "image_ref": "data/vrsbench/val/images/06794_0000.png",
+        "metadata": {
+          "dataset_sample_id": "vrsbench-val-010"
+        },
+        "question": "Is there a road running underneath the overpass?",
+        "task_id": "phase4-vrsbench-val-010",
+        "task_type": "object_existence"
+      },
+      "total_cost": {
+        "agent_calls": 3,
+        "billed_compute_ms": 223311.30840000696,
+        "errors": 0,
+        "invalid_actions": 0,
+        "message_latent_bytes": 20480,
+        "message_structure_bytes": 625,
+        "message_text_tokens": 210,
+        "model_calls": 3,
+        "model_input_tokens": 1044,
+        "model_output_tokens": 29,
+        "retries": 0,
+        "tool_calls": 0
+      },
+      "transitions": [
+        {
+          "active_expert": "visual",
+          "controller_observation_sha256": "abfce8eeb0e699e17c11b4eeb7d115b2b72d74c2808f2a91d69e9c887aaf3b61",
+          "cost_delta": {
+            "agent_calls": 1,
+            "billed_compute_ms": 223311.30840000696,
+            "errors": 0,
+            "invalid_actions": 0,
+            "message_latent_bytes": 0,
+            "message_structure_bytes": 0,
+            "message_text_tokens": 0,
+            "model_calls": 1,
+            "model_input_tokens": 307,
+            "model_output_tokens": 2,
+            "retries": 0,
+            "tool_calls": 0
+          },
+          "decision": {
+            "context_spec": {
+              "focus_node_ids": [],
+              "max_items": 16,
+              "modalities": [
+                "text",
+                "structure"
+              ],
+              "payload_refs": [],
+              "spatial_level": null
+            },
+            "expert_id": "visual",
+            "local_budget": null,
+            "objective": "Gather question-relevant visual evidence with private active perception",
+            "policy_action_id": "dispatch_visual",
+            "type": "dispatch"
+          },
+          "expert_metrics": {
+            "candidate_count": 1,
+            "decision_rule": "whole_image_sufficient",
+            "generation_count": 0,
+            "latent_bytes_loaded": 20480,
+            "latent_enabled": true,
+            "mechanism": "active_perception_with_private_evolution_v1",
+            "model_calls": 1,
+            "perception_answer": "Yes",
+            "selected_private_answer": "Yes",
+            "tool_calls": 0,
+            "variation_count": 0,
+            "workspace_answer_candidate_committed": false
+          },
+          "message_ids": [],
+          "policy": "LearnedRoutingPolicy",
+          "step": 0,
+          "stop_reason": null,
+          "workspace_version_after": 1,
+          "workspace_version_before": 0
+        },
+        {
+          "active_expert": "reasoning",
+          "controller_observation_sha256": "0f3eea8355e3ab1d985b71fec4162a1a687a038f5ab7f29e64716e1ca42faf42",
+          "cost_delta": {
+            "agent_calls": 1,
+            "billed_compute_ms": 0.0,
+            "errors": 0,
+            "invalid_actions": 0,
+            "message_latent_bytes": 20480,
+            "message_structure_bytes": 404,
+            "message_text_tokens": 139,
+            "model_calls": 1,
+            "model_input_tokens": 361,
+            "model_output_tokens": 2,
+            "retries": 0,
+            "tool_calls": 0
+          },
+          "decision": {
+            "context_spec": {
+              "focus_node_ids": [
+                "scene-phase4-vrsbench-val-010-visual-s0"
+              ],
+              "max_items": 64,
+              "modalities": [
+                "text",
+                "structure",
+                "latent"
+              ],
+              "payload_refs": [
+                "evidence-view-phase4-vrsbench-val-010-visual-s0-1",
+                "evidence-perception-phase4-vrsbench-val-010-visual-s0",
+                "scene-phase4-vrsbench-val-010-visual-s0",
+                "latent-scene-phase4-vrsbench-val-010-visual-s0"
+              ],
+              "spatial_level": null
+            },
+            "expert_id": "reasoning",
+            "local_budget": null,
+            "objective": "Reason over the policy-selected scoped evidence",
+            "policy_action_id": "dispatch_reasoning_hybrid",
+            "type": "dispatch"
+          },
+          "expert_metrics": {
+            "contact_sheet_panels": 0,
+            "latent_diagnostic_count": 1
+          },
+          "message_ids": [
+            "message-33d8c84dc59b1dc07342"
+          ],
+          "policy": "LearnedRoutingPolicy",
+          "step": 1,
+          "stop_reason": null,
+          "workspace_version_after": 2,
+          "workspace_version_before": 1
+        },
+        {
+          "active_expert": "verification",
+          "controller_observation_sha256": "2fceeb6b80fe6d1629229e62ff0f420f88cfcd1046ef3d54fa0a19684138b3ba",
+          "cost_delta": {
+            "agent_calls": 1,
+            "billed_compute_ms": 0.0,
+            "errors": 0,
+            "invalid_actions": 0,
+            "message_latent_bytes": 0,
+            "message_structure_bytes": 221,
+            "message_text_tokens": 71,
+            "model_calls": 1,
+            "model_input_tokens": 376,
+            "model_output_tokens": 25,
+            "retries": 0,
+            "tool_calls": 0
+          },
+          "decision": {
+            "context_spec": {
+              "focus_node_ids": [],
+              "max_items": 16,
+              "modalities": [
+                "text",
+                "structure"
+              ],
+              "payload_refs": [
+                "reasoning-answer-s1"
+              ],
+              "spatial_level": null
+            },
+            "expert_id": "verification",
+            "local_budget": null,
+            "objective": "Verify the proposed answer against disclosed evidence",
+            "policy_action_id": "dispatch_verification",
+            "type": "dispatch"
+          },
+          "expert_metrics": {
+            "strong_multiview_support": true,
+            "structural_count_support": false,
+            "verdict": "accept",
+            "verifier_confidence": 0.95,
+            "visible_object_count": 0
+          },
+          "message_ids": [
+            "message-4fffa23c72a6ba91e61f"
+          ],
+          "policy": "LearnedRoutingPolicy",
+          "step": 2,
+          "stop_reason": null,
+          "workspace_version_after": 3,
+          "workspace_version_before": 2
+        },
+        {
+          "active_expert": null,
+          "controller_observation_sha256": "bce9c8e61540a565cc3254867bbc92b55f684ffba42725ee0aa36b09fc078006",
+          "cost_delta": {
+            "agent_calls": 0,
+            "billed_compute_ms": 0.0,
+            "errors": 0,
+            "invalid_actions": 0,
+            "message_latent_bytes": 0,
+            "message_structure_bytes": 0,
+            "message_text_tokens": 0,
+            "model_calls": 0,
+            "model_input_tokens": 0,
+            "model_output_tokens": 0,
+            "retries": 0,
+            "tool_calls": 0
+          },
+          "decision": {
+            "answer_candidate_ref": "reasoning-answer-s1-verified-s2",
+            "policy_action_id": "finish",
+            "type": "finish"
+          },
+          "expert_metrics": {},
+          "message_ids": [],
+          "policy": "LearnedRoutingPolicy",
+          "step": 3,
+          "stop_reason": "completed",
+          "workspace_version_after": 3,
+          "workspace_version_before": 3
+        }
+      ],
+      "workspace": {
+        "answer_candidates": [
+          {
+            "answer": "Yes",
+            "candidate_id": "reasoning-answer-s1",
+            "claim_ids": [
+              "reasoning-claim-s1"
+            ],
+            "confidence": null,
+            "created_by": "reasoning",
+            "created_step": 1,
+            "evidence_ids": [
+              "evidence-view-phase4-vrsbench-val-010-visual-s0-1",
+              "evidence-perception-phase4-vrsbench-val-010-visual-s0"
+            ],
+            "status": "proposed"
+          },
+          {
+            "answer": "Yes",
+            "candidate_id": "reasoning-answer-s1-verified-s2",
+            "claim_ids": [
+              "reasoning-claim-s1"
+            ],
+            "confidence": 0.95,
+            "created_by": "verification",
+            "created_step": 2,
+            "evidence_ids": [
+              "evidence-view-phase4-vrsbench-val-010-visual-s0-1",
+              "evidence-perception-phase4-vrsbench-val-010-visual-s0"
+            ],
+            "status": "verified"
+          }
+        ],
+        "artifacts": [
+          {
+            "artifact_id": "image-scene-phase4-vrsbench-val-010-visual-s0",
+            "byte_size": 527879,
+            "compatible_consumers": [],
+            "dtype": "uint8",
+            "encoder": null,
+            "kind": "image",
+            "layer": null,
+            "media_type": "image/png",
+            "projector": null,
+            "roi": null,
+            "sha256": "f214ed2d6c6d8bc225fbfc93df071fbc96bb70df22155745f56ad4336a743f24",
+            "shape": [
+              512,
+              512,
+              3
+            ],
+            "source_image_ref": "data/vrsbench/val/images/06794_0000.png"
+          },
+          {
+            "artifact_id": "latent-scene-phase4-vrsbench-val-010-visual-s0",
+            "byte_size": 20480,
+            "compatible_consumers": [
+              "reasoning"
+            ],
+            "dtype": "float32",
+            "encoder": "qwen_native_v1",
+            "kind": "latent",
+            "layer": "qwen35_vision_pooler",
+            "media_type": "application/x-evors-float32-le",
+            "projector": "mean_over_spatial_tokens",
+            "roi": null,
+            "sha256": "4aadb5efa420204f2f00173800ed4a7363432c13d5438ba4fa7055f29fa2c01f",
+            "shape": [
+              5120
+            ],
+            "source_image_ref": "data/vrsbench/val/images/06794_0000.png"
+          }
+        ],
+        "claims": [
+          {
+            "claim_id": "reasoning-claim-s1",
+            "confidence": null,
+            "created_by": "reasoning",
+            "created_step": 1,
+            "evidence_ids": [
+              "evidence-view-phase4-vrsbench-val-010-visual-s0-1",
+              "evidence-perception-phase4-vrsbench-val-010-visual-s0"
+            ],
+            "statement": "VLM answer derived from 2 evidence record(s)",
+            "status": "proposed"
+          }
+        ],
+        "episode_id": "phase4-vrsbench-val-010",
+        "evidence": [
+          {
+            "artifact_refs": [],
+            "confidence": null,
+            "created_by": "visual",
+            "created_step": 0,
+            "evidence_id": "evidence-view-phase4-vrsbench-val-010-visual-s0-1",
+            "kind": "vlm_visual_observation",
+            "payload": {
+              "answer": "Yes",
+              "inner_agent": "integrated-generalist",
+              "input_tokens": 307,
+              "latency_ms": 8528.7268999964,
+              "model_id": "evors/qwen3.8-27b-q4",
+              "output_tokens": 2,
+              "private_evolution_committed": false,
+              "view": "whole_image"
+            },
+            "spatial_node_ids": [],
+            "summary": "whole_image: Yes"
+          },
+          {
+            "artifact_refs": [
+              "image-scene-phase4-vrsbench-val-010-visual-s0",
+              "latent-scene-phase4-vrsbench-val-010-visual-s0"
+            ],
+            "confidence": null,
+            "created_by": "visual",
+            "created_step": 0,
+            "evidence_id": "evidence-perception-phase4-vrsbench-val-010-visual-s0",
+            "kind": "active_perception_result",
+            "payload": {
+              "answer": "Yes",
+              "candidate_boxes": [],
+              "decision_rule": "whole_image_sufficient",
+              "inner_agent": "integrated-generalist",
+              "model_calls": 1,
+              "private_evolution_committed": false,
+              "tool_calls": 0
+            },
+            "spatial_node_ids": [
+              "scene-phase4-vrsbench-val-010-visual-s0"
+            ],
+            "summary": "Active perception selected answer 'Yes' via whole_image_sufficient."
+          },
+          {
+            "artifact_refs": [],
+            "confidence": null,
+            "created_by": "reasoning",
+            "created_step": 1,
+            "evidence_id": "reasoning-cost-s1",
+            "kind": "model_cost",
+            "payload": {
+              "mechanism": "vlm_reasoning_expert_v1",
+              "model_input_tokens": 361,
+              "model_output_tokens": 2,
+              "scientific_claim": false
+            },
+            "spatial_node_ids": [],
+            "summary": "VLM answer call: 361 input + 2 output tokens"
+          }
+        ],
+        "spatial_nodes": [
+          {
+            "bbox": null,
+            "confidence": null,
+            "evidence_ids": [
+              "evidence-perception-phase4-vrsbench-val-010-visual-s0"
+            ],
+            "level": "scene",
+            "node_id": "scene-phase4-vrsbench-val-010-visual-s0",
+            "parent_id": null,
+            "provenance": {
+              "created_by": "visual",
+              "decision_rule": "whole_image_sufficient",
+              "inner_agent": "integrated-generalist",
+              "question_conditioned": true
+            },
+            "semantic": "remote_sensing_scene",
+            "uncertainty": null,
+            "visual_artifact_refs": [
+              "image-scene-phase4-vrsbench-val-010-visual-s0",
+              "latent-scene-phase4-vrsbench-val-010-visual-s0"
+            ]
+          }
+        ],
+        "task": {
+          "answer_format": "yes_no",
+          "choices": [],
+          "image_ref": "data/vrsbench/val/images/06794_0000.png",
+          "metadata": {
+            "dataset_sample_id": "vrsbench-val-010"
+          },
+          "question": "Is there a road running underneath the overpass?",
+          "task_id": "phase4-vrsbench-val-010",
+          "task_type": "object_existence"
+        },
+        "version": 3
+      }
+    }
+  ],
+  "routing_checkpoint": "evidence\\2026-09-03_phase5_routing\\checkpoint.json",
+  "routing_checkpoint_sha256": "781429dde40df9eb32892a005bfc76578053cd534dee3018093cf34049fc5c12",
+  "routing_policy": "LearnedRoutingPolicy",
+  "sample_count": 1,
+  "schema_version": "evors.real-multi-agent.v1",
+  "scientific_claim": false,
+  "seed": 20260903,
+  "status": "passed"
+}

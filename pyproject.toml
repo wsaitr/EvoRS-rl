@@ -7,12 +7,22 @@ name = "rs-hmcomm"
 version = "0.1.0"
 description = "Hierarchical multimodal communication starter for remote-sensing multi-agent RL"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "Pillow>=10",
+    "PyYAML>=6",
+    "langgraph>=1.2.11,<1.3",
+]
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
 data = ["datasets>=2.19", "Pillow>=10", "PyYAML>=6"]
-vlm = ["torch>=2.2", "transformers>=4.49", "accelerate>=1.0", "peft>=0.13", "Pillow>=10"]
+vlm = [
+    "torch>=2.2",
+    "transformers>=4.50,<6",
+    "accelerate>=1.0",
+    "peft>=0.13",
+    "qwen-vl-utils>=0.0.8,<1",
+]
 obs = ["esdk-obs-python>=3.0"]
 
 [tool.setuptools.packages.find]
@@ -20,3 +30,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "live_vlm: requires a locally available real vision-language model",
+    "live_encoder: requires a locally available real vision encoder",
+]

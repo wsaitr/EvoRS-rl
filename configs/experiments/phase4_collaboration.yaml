@@ -1,0 +1,36 @@
+phase: 4
+
+tasks:
+  - task_id: phase4-counting
+    image_ref: fixture://phase4/counting
+    question: 统计图中有多少架飞机？
+    task_type: scripted_counting
+    mock_answer: "6"
+  - task_id: phase4-airport-type
+    image_ref: fixture://phase4/airport-type
+    question: 判断这个机场类型
+    task_type: scripted_classification
+    mock_answer: civil_airport
+
+policies: [fixed, all_agent, rule]
+
+runtime:
+  max_steps: 8
+
+budget:
+  max_agent_calls: 8
+  max_tool_calls: 0
+  max_model_calls: 0
+  max_model_input_tokens: 0
+  max_model_output_tokens: 0
+  max_message_text_tokens: 100000
+  max_message_structure_bytes: 100000
+  max_message_latent_bytes: 100000
+  max_billed_compute_ms: 0
+  max_wall_time_ms: 600000
+  max_errors: 1
+  max_retries: 0
+  max_invalid_actions: 0
+
+logging:
+  output: outputs/phase4/collaboration-summary.json

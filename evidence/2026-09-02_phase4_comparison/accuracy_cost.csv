@@ -1,0 +1,4 @@
+﻿arm,completed,correct,accuracy,accuracy_ci95_lower,accuracy_ci95_upper,agent_calls,tool_calls,model_calls,model_input_tokens,model_output_tokens,wall_time_ms,message_text_tokens,message_structure_bytes,message_latent_bytes
+direct_vlm,20,10,0.5,0.2992949144298199,0.7007050855701801,0.0,0.0,1.0,305.85,2.05,8053.393955004867,0.0,0.0,0.0
+single_agent,20,12,0.6,0.3865779423152061,0.7811960325858074,1.0,0.75,2.35,1273.75,96.9,43625.213119992986,0.0,0.0,0.0
+multi_agent,20,14,0.7,0.4810232237710206,0.854524726031006,3.0,0.75,4.35,2000.15,122.95,65945.66681999713,260.8,771.35,0.0

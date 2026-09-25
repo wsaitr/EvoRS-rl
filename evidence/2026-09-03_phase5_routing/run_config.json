@@ -1,0 +1,71 @@
+{
+  "baseline_rate": 0.1,
+  "entropy_coefficient": 0.015,
+  "environment": {
+    "disclosure_mode": "scoped",
+    "experts_frozen": true,
+    "fixture": "deterministic_mechanism_gate",
+    "max_steps": 6,
+    "runtime": "langgraph",
+    "scientific_claim": false
+  },
+  "epochs": 40,
+  "eval_sample_ids": [
+    "eval-count-0",
+    "eval-count-1",
+    "eval-class-0",
+    "eval-class-1",
+    "eval-existence-0",
+    "eval-existence-1"
+  ],
+  "learning_rate": 0.1,
+  "max_gradient": 5.0,
+  "output_dir": "evidence/2026-09-03_phase5_routing",
+  "resolved_config_path": "F:\\project\\yaogan_lunwen\\configs\\experiments\\phase5_routing.yaml",
+  "resolved_output_dir": "F:\\project\\yaogan_lunwen\\evidence\\2026-09-03_phase5_routing",
+  "reward": {
+    "agent_call": 0.12,
+    "error": 0.25,
+    "evidence_gain": 0.04,
+    "invalid_action": 0.5,
+    "message_latent_byte": 1e-06,
+    "message_structure_byte": 2e-06,
+    "message_text_token": 5e-05,
+    "model_call": 0.01,
+    "non_completion": 0.75,
+    "repeated_agent": 0.08,
+    "structure_gain": 0.04,
+    "task": 1.0,
+    "tool_call": 0.005
+  },
+  "schema_version": "evors.phase5-config.v1",
+  "seed": 17,
+  "train_sample_ids": [
+    "train-count-0",
+    "train-count-1",
+    "train-count-2",
+    "train-count-3",
+    "train-count-4",
+    "train-count-5",
+    "train-class-0",
+    "train-class-1",
+    "train-class-2",
+    "train-class-3",
+    "train-class-4",
+    "train-class-5",
+    "train-existence-0",
+    "train-existence-1",
+    "train-existence-2",
+    "train-existence-3",
+    "train-existence-4",
+    "train-existence-5"
+  ],
+  "trainer": {
+    "baseline_rate": 0.1,
+    "entropy_coefficient": 0.015,
+    "epochs": 40,
+    "learning_rate": 0.1,
+    "max_gradient": 5.0,
+    "seed": 17
+  }
+}

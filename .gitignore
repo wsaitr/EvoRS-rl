@@ -12,6 +12,11 @@ build/
 venv/
 env/
 
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+
 # IDE
 .idea/
 .vscode/
@@ -30,6 +35,7 @@ logs/
 
 # Data (root-level only, not src/rs_hmcomm/data/ or configs/data/)
 /data/
+/.models/
 *.npz
 *.pt
 *.pth
@@ -46,9 +52,11 @@ docker/volumes/
 # Temp
 _tmp_*/
 *.tmp
+/.codex_work/
 
 # pytest
 .pytest_cache/
+.modelarts/
 .coverage
 htmlcov/
 src.zip

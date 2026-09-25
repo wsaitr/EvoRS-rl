@@ -1,0 +1,27 @@
+phase: 0
+seed: 20260820
+
+dataset:
+  name: phase0-contract-fixture
+  revision: v1
+  split: test
+  limit: 1
+  manifest: tests/fixtures/phase0/manifest.jsonl
+
+budget:
+  max_agent_calls: 2
+  max_tool_calls: 2
+  max_model_calls: 4
+  max_model_input_tokens: 4096
+  max_model_output_tokens: 1024
+  max_message_text_tokens: 1024
+  max_message_structure_bytes: 16384
+  max_message_latent_bytes: 0
+  max_billed_compute_ms: 30000
+  max_wall_time_ms: 30000
+  max_errors: 0
+  max_retries: 1
+  max_invalid_actions: 1
+
+logging:
+  output: outputs/phase0/events.jsonl

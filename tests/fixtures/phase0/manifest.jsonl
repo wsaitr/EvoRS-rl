@@ -1,0 +1,1 @@
+{"sample_id":"synthetic-airport-001","image":"images/synthetic_airport.ppm","question":"How many bright aircraft-like markers are visible on the runway?","answer":"6","task_type":"synthetic_counting","metadata":{"fixture_scope":"contracts_only","image_sha256":"859734fd6ca64547baace858f043422c94c03924d080edea80cb237db3dfb99c"}}

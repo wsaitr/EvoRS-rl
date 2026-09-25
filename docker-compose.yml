@@ -2,9 +2,9 @@
 # EvoRS-Comm Docker Compose
 # ==================================================================
 # Usage:
-#   Ascend NPU:  docker compose up ascend
-#   NVIDIA GPU:  docker compose up cuda
-#   CPU (test):  docker compose up cpu
+#   Ascend NPU:  docker compose --env-file configs/docker/compose.defaults.env up ascend
+#   NVIDIA GPU:  docker compose --env-file configs/docker/compose.defaults.env up cuda
+#   CPU (test):  docker compose --env-file configs/docker/compose.defaults.env up cpu
 #
 # Code is hot-mounted via volume so local edits are reflected
 # inside the container without rebuilding.
@@ -26,8 +26,10 @@ services:
       - ./tests:/app/tests:rw
       - ./scripts:/app/scripts:rw
       - ./configs:/app/configs:rw
+      - ./pyproject.toml:/app/pyproject.toml:ro
       # Persistent outputs
       - ./outputs:/app/outputs:rw
+      - ./evidence:/app/evidence:rw
       - ./logs:/app/logs:rw
     # Ascend NPU device passthrough
     devices:
@@ -59,7 +61,9 @@ services:
       - ./tests:/app/tests:rw
       - ./scripts:/app/scripts:rw
       - ./configs:/app/configs:rw
+      - ./pyproject.toml:/app/pyproject.toml:ro
       - ./outputs:/app/outputs:rw
+      - ./evidence:/app/evidence:rw
       - ./logs:/app/logs:rw
     deploy:
       resources:
@@ -89,6 +93,8 @@ services:
       - ./tests:/app/tests:rw
       - ./scripts:/app/scripts:rw
       - ./configs:/app/configs:rw
+      - ./pyproject.toml:/app/pyproject.toml:ro
       - ./outputs:/app/outputs:rw
+      - ./evidence:/app/evidence:rw
     working_dir: /app
     command: ["python3", "-m", "pytest", "-q", "--tb=short"]

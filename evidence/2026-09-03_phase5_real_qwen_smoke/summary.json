@@ -1,0 +1,724 @@
+{
+  "controller": "EvolutionController",
+  "correct": 1,
+  "errors": 0,
+  "latent_mode": "qwen_native",
+  "manifest": "configs\\experiments\\vrsbench20_manifest.jsonl",
+  "manifest_sha256": "1ba99639595b57e04e3cd3bda6714553c2ba946197640cfcacb0512ca705c046",
+  "model_config": "configs\\models\\qwen38_27b_q4_local.yaml",
+  "model_config_sha256": "ee30ae9b41d4f617c2554a967649554a1ebd17e35882ea3740806e7957a7fe3b",
+  "offset": 0,
+  "results": [
+    {
+      "agent_path": [
+        "visual",
+        "reasoning",
+        "verification"
+      ],
+      "answer": "2",
+      "answer_candidate_ref": "reasoning-answer-s1-verified-s2",
+      "artifact_store_size": 6,
+      "capability_requests": [],
+      "correct": true,
+      "error": null,
+      "messages": [
+        {
+          "created_step": 1,
+          "message_id": "message-5468c4c9a171a1b60cb1",
+          "modalities": [
+            "text",
+            "structure"
+          ],
+          "receiver": "reasoning",
+          "scope": "controller_dispatch",
+          "sender": "evors-controller",
+          "workspace_refs": [
+            "evidence-perception-phase4-vrsbench-val-000-visual-s0",
+            "evidence-view-phase4-vrsbench-val-000-visual-s0-1",
+            "evidence-view-phase4-vrsbench-val-000-visual-s0-2",
+            "evidence-view-phase4-vrsbench-val-000-visual-s0-3",
+            "group-phase4-vrsbench-val-000-visual-s0",
+            "object-phase4-vrsbench-val-000-visual-s0-1",
+            "object-phase4-vrsbench-val-000-visual-s0-2",
+            "scene-phase4-vrsbench-val-000-visual-s0"
+          ]
+        },
+        {
+          "created_step": 2,
+          "message_id": "message-71c6a897328068241221",
+          "modalities": [
+            "text",
+            "structure"
+          ],
+          "receiver": "verification",
+          "scope": "controller_dispatch",
+          "sender": "evors-controller",
+          "workspace_refs": [
+            "reasoning-answer-s1"
+          ]
+        }
+      ],
+      "policy": "LearnedRoutingPolicy",
+      "question": "How many roundabouts are visible in the image?",
+      "reference_answer": "2",
+      "runtime": "langgraph",
+      "sample_id": "vrsbench-val-000",
+      "stop_reason": "completed",
+      "task": {
+        "answer_format": "integer",
+        "choices": [],
+        "image_ref": "data/vrsbench/val/images/P1752_0051.png",
+        "metadata": {
+          "dataset_sample_id": "vrsbench-val-000"
+        },
+        "question": "How many roundabouts are visible in the image?",
+        "task_id": "phase4-vrsbench-val-000",
+        "task_type": "object_quantity"
+      },
+      "total_cost": {
+        "agent_calls": 3,
+        "billed_compute_ms": 362079.3324999977,
+        "errors": 0,
+        "invalid_actions": 0,
+        "message_latent_bytes": 0,
+        "message_structure_bytes": 803,
+        "message_text_tokens": 280,
+        "model_calls": 5,
+        "model_input_tokens": 2455,
+        "model_output_tokens": 109,
+        "retries": 0,
+        "tool_calls": 1
+      },
+      "transitions": [
+        {
+          "active_expert": "visual",
+          "controller_observation_sha256": "a3f6a064f6f6624ed934a1cae9e249c97af03f699c27d021037210dd0f97a6e3",
+          "cost_delta": {
+            "agent_calls": 1,
+            "billed_compute_ms": 362079.3324999977,
+            "errors": 0,
+            "invalid_actions": 0,
+            "message_latent_bytes": 0,
+            "message_structure_bytes": 0,
+            "message_text_tokens": 0,
+            "model_calls": 3,
+            "model_input_tokens": 1727,
+            "model_output_tokens": 82,
+            "retries": 0,
+            "tool_calls": 1
+          },
+          "decision": {
+            "context_spec": {
+              "focus_node_ids": [],
+              "max_items": 16,
+              "modalities": [
+                "text",
+                "structure"
+              ],
+              "payload_refs": [],
+              "spatial_level": null
+            },
+            "expert_id": "visual",
+            "local_budget": null,
+            "objective": "Gather question-relevant visual evidence with private active perception",
+            "policy_action_id": "dispatch_visual",
+            "type": "dispatch"
+          },
+          "expert_metrics": {
+            "candidate_count": 1,
+            "decision_rule": "global_scale_consensus",
+            "generation_count": 0,
+            "latent_bytes_loaded": 61440,
+            "latent_enabled": true,
+            "mechanism": "active_perception_with_private_evolution_v1",
+            "model_calls": 3,
+            "perception_answer": "2",
+            "selected_private_answer": "2",
+            "tool_calls": 1,
+            "variation_count": 0,
+            "workspace_answer_candidate_committed": false
+          },
+          "message_ids": [],
+          "policy": "LearnedRoutingPolicy",
+          "step": 0,
+          "stop_reason": null,
+          "workspace_version_after": 1,
+          "workspace_version_before": 0
+        },
+        {
+          "active_expert": "reasoning",
+          "controller_observation_sha256": "c949c246967f728e5891c608c41ccb359289a9011cd058588e099bd00fd4959b",
+          "cost_delta": {
+            "agent_calls": 1,
+            "billed_compute_ms": 0.0,
+            "errors": 0,
+            "invalid_actions": 0,
+            "message_latent_bytes": 0,
+            "message_structure_bytes": 582,
+            "message_text_tokens": 209,
+            "model_calls": 1,
+            "model_input_tokens": 351,
+            "model_output_tokens": 2,
+            "retries": 0,
+            "tool_calls": 0
+          },
+          "decision": {
+            "context_spec": {
+              "focus_node_ids": [
+                "scene-phase4-vrsbench-val-000-visual-s0",
+                "group-phase4-vrsbench-val-000-visual-s0",
+                "object-phase4-vrsbench-val-000-visual-s0-1",
+                "object-phase4-vrsbench-val-000-visual-s0-2"
+              ],
+              "max_items": 64,
+              "modalities": [
+                "text",
+                "structure"
+              ],
+              "payload_refs": [
+                "evidence-view-phase4-vrsbench-val-000-visual-s0-1",
+                "evidence-view-phase4-vrsbench-val-000-visual-s0-2",
+                "evidence-view-phase4-vrsbench-val-000-visual-s0-3",
+                "evidence-perception-phase4-vrsbench-val-000-visual-s0",
+                "scene-phase4-vrsbench-val-000-visual-s0",
+                "group-phase4-vrsbench-val-000-visual-s0",
+                "object-phase4-vrsbench-val-000-visual-s0-1",
+                "object-phase4-vrsbench-val-000-visual-s0-2"
+              ],
+              "spatial_level": null
+            },
+            "expert_id": "reasoning",
+            "local_budget": null,
+            "objective": "Reason over the policy-selected scoped evidence",
+            "policy_action_id": "dispatch_reasoning_text_structure",
+            "type": "dispatch"
+          },
+          "expert_metrics": {
+            "contact_sheet_panels": 0,
+            "latent_diagnostic_count": 0
+          },
+          "message_ids": [
+            "message-5468c4c9a171a1b60cb1"
+          ],
+          "policy": "LearnedRoutingPolicy",
+          "step": 1,
+          "stop_reason": null,
+          "workspace_version_after": 2,
+          "workspace_version_before": 1
+        },
+        {
+          "active_expert": "verification",
+          "controller_observation_sha256": "01ced7369abaa40ad6094fc0b93200f70ee34f292db296674530b2bc35c11e65",
+          "cost_delta": {
+            "agent_calls": 1,
+            "billed_compute_ms": 0.0,
+            "errors": 0,
+            "invalid_actions": 0,
+            "message_latent_bytes": 0,
+            "message_structure_bytes": 221,
+            "message_text_tokens": 71,
+            "model_calls": 1,
+            "model_input_tokens": 377,
+            "model_output_tokens": 25,
+            "retries": 0,
+            "tool_calls": 0
+          },
+          "decision": {
+            "context_spec": {
+              "focus_node_ids": [],
+              "max_items": 16,
+              "modalities": [
+                "text",
+                "structure"
+              ],
+              "payload_refs": [
+                "reasoning-answer-s1"
+              ],
+              "spatial_level": null
+            },
+            "expert_id": "verification",
+            "local_budget": null,
+            "objective": "Verify the proposed answer against disclosed evidence",
+            "policy_action_id": "dispatch_verification",
+            "type": "dispatch"
+          },
+          "expert_metrics": {
+            "strong_multiview_support": true,
+            "structural_count_support": true,
+            "verdict": "accept",
+            "verifier_confidence": 0.85,
+            "visible_object_count": 2
+          },
+          "message_ids": [
+            "message-71c6a897328068241221"
+          ],
+          "policy": "LearnedRoutingPolicy",
+          "step": 2,
+          "stop_reason": null,
+          "workspace_version_after": 3,
+          "workspace_version_before": 2
+        },
+        {
+          "active_expert": null,
+          "controller_observation_sha256": "bf674c78a2aaeca541a80226ca6f69d96161daa023d12e4b76bb4dd3c33be1c2",
+          "cost_delta": {
+            "agent_calls": 0,
+            "billed_compute_ms": 0.0,
+            "errors": 0,
+            "invalid_actions": 0,
+            "message_latent_bytes": 0,
+            "message_structure_bytes": 0,
+            "message_text_tokens": 0,
+            "model_calls": 0,
+            "model_input_tokens": 0,
+            "model_output_tokens": 0,
+            "retries": 0,
+            "tool_calls": 0
+          },
+          "decision": {
+            "answer_candidate_ref": "reasoning-answer-s1-verified-s2",
+            "policy_action_id": "finish",
+            "type": "finish"
+          },
+          "expert_metrics": {},
+          "message_ids": [],
+          "policy": "LearnedRoutingPolicy",
+          "step": 3,
+          "stop_reason": "completed",
+          "workspace_version_after": 3,
+          "workspace_version_before": 3
+        }
+      ],
+      "workspace": {
+        "answer_candidates": [
+          {
+            "answer": "2",
+            "candidate_id": "reasoning-answer-s1",
+            "claim_ids": [
+              "reasoning-claim-s1"
+            ],
+            "confidence": null,
+            "created_by": "reasoning",
+            "created_step": 1,
+            "evidence_ids": [
+              "evidence-view-phase4-vrsbench-val-000-visual-s0-1",
+              "evidence-view-phase4-vrsbench-val-000-visual-s0-2",
+              "evidence-view-phase4-vrsbench-val-000-visual-s0-3",
+              "evidence-perception-phase4-vrsbench-val-000-visual-s0"
+            ],
+            "status": "proposed"
+          },
+          {
+            "answer": "2",
+            "candidate_id": "reasoning-answer-s1-verified-s2",
+            "claim_ids": [
+              "reasoning-claim-s1"
+            ],
+            "confidence": 0.85,
+            "created_by": "verification",
+            "created_step": 2,
+            "evidence_ids": [
+              "evidence-view-phase4-vrsbench-val-000-visual-s0-1",
+              "evidence-view-phase4-vrsbench-val-000-visual-s0-2",
+              "evidence-view-phase4-vrsbench-val-000-visual-s0-3",
+              "evidence-perception-phase4-vrsbench-val-000-visual-s0"
+            ],
+            "status": "verified"
+          }
+        ],
+        "artifacts": [
+          {
+            "artifact_id": "image-scene-phase4-vrsbench-val-000-visual-s0",
+            "byte_size": 104669,
+            "compatible_consumers": [],
+            "dtype": "uint8",
+            "encoder": null,
+            "kind": "image",
+            "layer": null,
+            "media_type": "image/png",
+            "projector": null,
+            "roi": null,
+            "sha256": "e6258953e644d36e0842dbba09a1e8fafba05e5331e116b92749052be3b77e5e",
+            "shape": [
+              512,
+              512,
+              3
+            ],
+            "source_image_ref": "data/vrsbench/val/images/P1752_0051.png"
+          },
+          {
+            "artifact_id": "latent-scene-phase4-vrsbench-val-000-visual-s0",
+            "byte_size": 20480,
+            "compatible_consumers": [
+              "reasoning"
+            ],
+            "dtype": "float32",
+            "encoder": "qwen_native_v1",
+            "kind": "latent",
+            "layer": "qwen35_vision_pooler",
+            "media_type": "application/x-evors-float32-le",
+            "projector": "mean_over_spatial_tokens",
+            "roi": null,
+            "sha256": "9687e9c87bafb0b17736194bc6f341d82aeb64cb2ce6c49a8537848495d63e4e",
+            "shape": [
+              5120
+            ],
+            "source_image_ref": "data/vrsbench/val/images/P1752_0051.png"
+          },
+          {
+            "artifact_id": "crop-object-phase4-vrsbench-val-000-visual-s0-1",
+            "byte_size": 1505,
+            "compatible_consumers": [],
+            "dtype": "uint8",
+            "encoder": null,
+            "kind": "crop",
+            "layer": null,
+            "media_type": "image/png",
+            "projector": null,
+            "roi": [
+              0.6162109375,
+              0.072265625,
+              0.71875,
+              0.1806640625
+            ],
+            "sha256": "00aa64f8e40e755bfff8322fdfc060c94b76947647aaaee0802ce2bd52dbe829",
+            "shape": [
+              56,
+              53,
+              3
+            ],
+            "source_image_ref": "image-scene-phase4-vrsbench-val-000-visual-s0"
+          },
+          {
+            "artifact_id": "latent-object-phase4-vrsbench-val-000-visual-s0-1",
+            "byte_size": 20480,
+            "compatible_consumers": [
+              "reasoning"
+            ],
+            "dtype": "float32",
+            "encoder": "qwen_native_v1",
+            "kind": "latent",
+            "layer": "qwen35_vision_pooler",
+            "media_type": "application/x-evors-float32-le",
+            "projector": "mean_over_spatial_tokens",
+            "roi": [
+              0.6162109375,
+              0.072265625,
+              0.71875,
+              0.1806640625
+            ],
+            "sha256": "35c982c335876a84fc660be3be130b5e87adbf278aba1152d122109d91544919",
+            "shape": [
+              5120
+            ],
+            "source_image_ref": "data/vrsbench/val/images/P1752_0051.png"
+          },
+          {
+            "artifact_id": "crop-object-phase4-vrsbench-val-000-visual-s0-2",
+            "byte_size": 1409,
+            "compatible_consumers": [],
+            "dtype": "uint8",
+            "encoder": null,
+            "kind": "crop",
+            "layer": null,
+            "media_type": "image/png",
+            "projector": null,
+            "roi": [
+              0.1875,
+              0.67578125,
+              0.27734375,
+              0.765625
+            ],
+            "sha256": "b89ae7153c603e6cdce0fccd3039a217b3ea1b6a5166340f5913b23249f157a8",
+            "shape": [
+              46,
+              46,
+              3
+            ],
+            "source_image_ref": "image-scene-phase4-vrsbench-val-000-visual-s0"
+          },
+          {
+            "artifact_id": "latent-object-phase4-vrsbench-val-000-visual-s0-2",
+            "byte_size": 20480,
+            "compatible_consumers": [
+              "reasoning"
+            ],
+            "dtype": "float32",
+            "encoder": "qwen_native_v1",
+            "kind": "latent",
+            "layer": "qwen35_vision_pooler",
+            "media_type": "application/x-evors-float32-le",
+            "projector": "mean_over_spatial_tokens",
+            "roi": [
+              0.1875,
+              0.67578125,
+              0.27734375,
+              0.765625
+            ],
+            "sha256": "3d1b2ae401e1e53be9e941c8a243802f8e8216355eedb81fd2b30268ce069beb",
+            "shape": [
+              5120
+            ],
+            "source_image_ref": "data/vrsbench/val/images/P1752_0051.png"
+          }
+        ],
+        "claims": [
+          {
+            "claim_id": "reasoning-claim-s1",
+            "confidence": null,
+            "created_by": "reasoning",
+            "created_step": 1,
+            "evidence_ids": [
+              "evidence-view-phase4-vrsbench-val-000-visual-s0-1",
+              "evidence-view-phase4-vrsbench-val-000-visual-s0-2",
+              "evidence-view-phase4-vrsbench-val-000-visual-s0-3",
+              "evidence-perception-phase4-vrsbench-val-000-visual-s0"
+            ],
+            "statement": "VLM answer derived from 4 evidence record(s)",
+            "status": "proposed"
+          }
+        ],
+        "episode_id": "phase4-vrsbench-val-000",
+        "evidence": [
+          {
+            "artifact_refs": [],
+            "confidence": null,
+            "created_by": "visual",
+            "created_step": 0,
+            "evidence_id": "evidence-view-phase4-vrsbench-val-000-visual-s0-1",
+            "kind": "vlm_visual_observation",
+            "payload": {
+              "answer": "2",
+              "inner_agent": "integrated-generalist",
+              "input_tokens": 306,
+              "latency_ms": 8409.894300042652,
+              "model_id": "evors/qwen3.8-27b-q4",
+              "output_tokens": 2,
+              "private_evolution_committed": false,
+              "view": "whole_image"
+            },
+            "spatial_node_ids": [],
+            "summary": "whole_image: 2"
+          },
+          {
+            "artifact_refs": [],
+            "confidence": null,
+            "created_by": "visual",
+            "created_step": 0,
+            "evidence_id": "evidence-view-phase4-vrsbench-val-000-visual-s0-2",
+            "kind": "vlm_visual_observation",
+            "payload": {
+              "answer": "```json\n[\n\t{\"bbox_2d\": [631, 74, 736, 185], \"label\": \"roundabout\"},\n\t{\"bbox_2d\": [192, 692, 284, 784], \"label\": \"roundabout\"}\n]\n```",
+              "inner_agent": "integrated-generalist",
+              "input_tokens": 347,
+              "latency_ms": 29349.32869998738,
+              "model_id": "evors/qwen3.8-27b-q4",
+              "output_tokens": 78,
+              "private_evolution_committed": false,
+              "view": "object_localization"
+            },
+            "spatial_node_ids": [],
+            "summary": "object_localization: ```json\n[\n\t{\"bbox_2d\": [631, 74, 736, 185], \"label\": \"roundabout\"},\n\t{\"bbox_2d\": [192, 692, 284, 784], \"label\": \"roundabout\"}\n]\n```"
+          },
+          {
+            "artifact_refs": [],
+            "confidence": null,
+            "created_by": "visual",
+            "created_step": 0,
+            "evidence_id": "evidence-view-phase4-vrsbench-val-000-visual-s0-3",
+            "kind": "vlm_visual_observation",
+            "payload": {
+              "answer": "2",
+              "inner_agent": "integrated-generalist",
+              "input_tokens": 1074,
+              "latency_ms": 951.6636000480503,
+              "model_id": "evors/qwen3.8-27b-q4",
+              "output_tokens": 2,
+              "private_evolution_committed": false,
+              "view": "enhanced_global_2x"
+            },
+            "spatial_node_ids": [],
+            "summary": "enhanced_global_2x: 2"
+          },
+          {
+            "artifact_refs": [
+              "image-scene-phase4-vrsbench-val-000-visual-s0",
+              "latent-scene-phase4-vrsbench-val-000-visual-s0",
+              "crop-object-phase4-vrsbench-val-000-visual-s0-1",
+              "latent-object-phase4-vrsbench-val-000-visual-s0-1",
+              "crop-object-phase4-vrsbench-val-000-visual-s0-2",
+              "latent-object-phase4-vrsbench-val-000-visual-s0-2"
+            ],
+            "confidence": null,
+            "created_by": "visual",
+            "created_step": 0,
+            "evidence_id": "evidence-perception-phase4-vrsbench-val-000-visual-s0",
+            "kind": "active_perception_result",
+            "payload": {
+              "answer": "2",
+              "candidate_boxes": [
+                [
+                  0.6162109375,
+                  0.072265625,
+                  0.71875,
+                  0.1806640625
+                ],
+                [
+                  0.1875,
+                  0.67578125,
+                  0.27734375,
+                  0.765625
+                ]
+              ],
+              "decision_rule": "global_scale_consensus",
+              "inner_agent": "integrated-generalist",
+              "model_calls": 3,
+              "private_evolution_committed": false,
+              "tool_calls": 1
+            },
+            "spatial_node_ids": [
+              "scene-phase4-vrsbench-val-000-visual-s0",
+              "group-phase4-vrsbench-val-000-visual-s0",
+              "object-phase4-vrsbench-val-000-visual-s0-1",
+              "object-phase4-vrsbench-val-000-visual-s0-2"
+            ],
+            "summary": "Active perception selected answer '2' via global_scale_consensus."
+          },
+          {
+            "artifact_refs": [],
+            "confidence": null,
+            "created_by": "reasoning",
+            "created_step": 1,
+            "evidence_id": "reasoning-cost-s1",
+            "kind": "model_cost",
+            "payload": {
+              "mechanism": "vlm_reasoning_expert_v1",
+              "model_input_tokens": 351,
+              "model_output_tokens": 2,
+              "scientific_claim": false
+            },
+            "spatial_node_ids": [],
+            "summary": "VLM answer call: 351 input + 2 output tokens"
+          }
+        ],
+        "spatial_nodes": [
+          {
+            "bbox": null,
+            "confidence": null,
+            "evidence_ids": [
+              "evidence-perception-phase4-vrsbench-val-000-visual-s0"
+            ],
+            "level": "scene",
+            "node_id": "scene-phase4-vrsbench-val-000-visual-s0",
+            "parent_id": null,
+            "provenance": {
+              "created_by": "visual",
+              "decision_rule": "global_scale_consensus",
+              "inner_agent": "integrated-generalist",
+              "question_conditioned": true
+            },
+            "semantic": "remote_sensing_scene",
+            "uncertainty": null,
+            "visual_artifact_refs": [
+              "image-scene-phase4-vrsbench-val-000-visual-s0",
+              "latent-scene-phase4-vrsbench-val-000-visual-s0"
+            ]
+          },
+          {
+            "bbox": null,
+            "confidence": null,
+            "evidence_ids": [
+              "evidence-perception-phase4-vrsbench-val-000-visual-s0"
+            ],
+            "level": "group",
+            "node_id": "group-phase4-vrsbench-val-000-visual-s0",
+            "parent_id": "scene-phase4-vrsbench-val-000-visual-s0",
+            "provenance": {
+              "compression_role": true,
+              "created_by": "visual",
+              "inner_agent": "integrated-generalist",
+              "member_count": 2
+            },
+            "semantic": "roundabouts_collection",
+            "uncertainty": null,
+            "visual_artifact_refs": []
+          },
+          {
+            "bbox": [
+              0.6162109375,
+              0.072265625,
+              0.71875,
+              0.1806640625
+            ],
+            "confidence": null,
+            "evidence_ids": [
+              "evidence-perception-phase4-vrsbench-val-000-visual-s0"
+            ],
+            "level": "object",
+            "node_id": "object-phase4-vrsbench-val-000-visual-s0-1",
+            "parent_id": "group-phase4-vrsbench-val-000-visual-s0",
+            "provenance": {
+              "candidate_index": 1,
+              "created_by": "visual",
+              "inner_agent": "integrated-generalist",
+              "source": "active_perception_localization"
+            },
+            "semantic": "roundabouts",
+            "uncertainty": null,
+            "visual_artifact_refs": [
+              "crop-object-phase4-vrsbench-val-000-visual-s0-1",
+              "latent-object-phase4-vrsbench-val-000-visual-s0-1"
+            ]
+          },
+          {
+            "bbox": [
+              0.1875,
+              0.67578125,
+              0.27734375,
+              0.765625
+            ],
+            "confidence": null,
+            "evidence_ids": [
+              "evidence-perception-phase4-vrsbench-val-000-visual-s0"
+            ],
+            "level": "object",
+            "node_id": "object-phase4-vrsbench-val-000-visual-s0-2",
+            "parent_id": "group-phase4-vrsbench-val-000-visual-s0",
+            "provenance": {
+              "candidate_index": 2,
+              "created_by": "visual",
+              "inner_agent": "integrated-generalist",
+              "source": "active_perception_localization"
+            },
+            "semantic": "roundabouts",
+            "uncertainty": null,
+            "visual_artifact_refs": [
+              "crop-object-phase4-vrsbench-val-000-visual-s0-2",
+              "latent-object-phase4-vrsbench-val-000-visual-s0-2"
+            ]
+          }
+        ],
+        "task": {
+          "answer_format": "integer",
+          "choices": [],
+          "image_ref": "data/vrsbench/val/images/P1752_0051.png",
+          "metadata": {
+            "dataset_sample_id": "vrsbench-val-000"
+          },
+          "question": "How many roundabouts are visible in the image?",
+          "task_id": "phase4-vrsbench-val-000",
+          "task_type": "object_quantity"
+        },
+        "version": 3
+      }
+    }
+  ],
+  "routing_checkpoint": "evidence\\2026-09-03_phase5_routing\\checkpoint.json",
+  "routing_checkpoint_sha256": "781429dde40df9eb32892a005bfc76578053cd534dee3018093cf34049fc5c12",
+  "routing_policy": "LearnedRoutingPolicy",
+  "sample_count": 1,
+  "schema_version": "evors.real-multi-agent.v1",
+  "scientific_claim": false,
+  "seed": 20260903,
+  "status": "passed"
+}

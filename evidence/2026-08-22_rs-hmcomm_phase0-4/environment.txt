@@ -1,0 +1,18 @@
+=== 验证环境 ===
+Python 3.11.15
+
+=== 关键依赖版本 ===
+datasets             5.0.1
+langchain-core       1.6.0
+langchain-protocol   0.0.18
+langgraph            1.2.11
+langgraph-checkpoint 4.2.0
+langgraph-prebuilt   1.1.0
+langgraph-sdk        0.4.3
+numpy                2.4.6
+pillow               12.3.0
+pydantic             2.13.4
+pydantic_core        2.46.4
+pytest               9.1.1
+PyYAML               6.0.3
+rs-hmcomm            0.1.0       F:\project\yaogan_lunwen

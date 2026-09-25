@@ -39,7 +39,7 @@
 \cfoot{\thepage}
 \renewcommand{\headrulewidth}{0.25pt}
 
-\title{\textbf{EvoRS-Comm：面向遥感视觉理解的自然演化多智能体框架\\——层次化多模态通信与结构化多智能体强化学习}}
+\title{\textbf{EvoRS-Comm：面向遥感视觉理解的自然演化多智能体框架\\——层次化多模态通信与强化学习动态协作}}
 \author{Anonymous Authors}
 \date{}
 
@@ -54,7 +54,7 @@
 \vspace{-1.4em}
 
 \begin{abstract}
-现有遥感视觉语言多智能体系统大多沿用通用 Agent 的文本通信范式：每个 Agent 将局部视觉理解压缩为自然语言，再由其他 Agent 基于文本继续推理。该过程虽然易于实现，但会丢失空间层次、精确位置与细粒度视觉证据；与此同时，现有多智能体强化学习通常将 Agent 输出视为同质文本 action，难以对遥感任务中的结构化空间消息与连续视觉表征进行联合优化。本文提出 \ours，一个面向遥感视觉理解的自然演化多智能体框架。其宏观目标是让 Agent 的职责、通信对象与通信载荷在任务训练中自适应形成，而不是完全依赖人工固定工作流。具体而言，我们提出层次化多模态通信协议，将遥感场景显式组织为 Scene--Region--Group--Object 四级共享树，并允许 Agent 同时交换文本消息、结构化节点/子树和图像 latent representation。进一步地，我们在 cooperative MARL 基础上提出结构化通信优化目标，将 ``给谁发、发哪个空间层级、使用何种模态、携带哪些节点/latent'' 纳入联合策略，并显式建模通信成本、结构一致性与消息冗余。本文给出完整的问题形式化、算法框架和实验协议；由于实验尚未执行，所有数值结果均以 \todo 标记，本文不预设任何性能提升。
+现有遥感视觉语言多智能体系统大多沿用通用 Agent 的文本通信范式：每个 Agent 将局部视觉理解压缩为自然语言，再由其他 Agent 基于文本继续推理。该过程容易丢失空间层次、精确位置与细粒度视觉证据，并且固定工作流会让不必要的专家调用和通信持续累积。本文提出 \ours，一个面向遥感视觉理解的双层协作框架。其内层是单 Agent 的受预算演化搜索，通过 candidate、variation、fitness 与 selection 改进局部感知结果；外层由独立于专家池的 Evolution Controller 根据共享状态动态激活 Visual、Knowledge、Reasoning 与 Verification Expert。系统以任务相关的 Scene--Region--Group--Object 稀疏层次描述组织空间证据，将图像与 latent 二进制保存在 ArtifactStore，只在 Workspace 中保存可追溯句柄；Agent 间不直接调用，而由 Router 按策略选定的范围传递 Text、Structure 或 Hybrid 上下文。进一步地，我们使用带有效动作掩码的集中式强化学习策略优化专家激活、Reasoning 通信模态与终止决策，同时显式计入证据质量、结构质量、Agent/模型/工具调用和通信成本。本文给出与实现一致的问题形式化和实验协议；Phase 0--5 的机制闭环已经实现，但论文级多数据集、多随机种子实验仍属于 Phase 6，故主结果数值仍以 \todo 标记。
 \end{abstract}
 
 \section{引言}
@@ -62,26 +62,25 @@
 
 这种通信方式存在两个问题。第一，文本会将原本二维、层次化的视觉证据序列化。例如 ``图中存在五架飞机'' 并不能直接告诉接收方五个目标分别位于何处、属于哪个机坪区域、来自哪个 crop、哪些目标仍未验证。第二，图像 latent 与结构关系被压缩为离散 token 后难以无损恢复。最新的 latent agent communication 工作已经指出，纯文本通信会造成信息损失与额外推理开销，并开始直接交换 hidden state 或压缩 latent~\cite{interlat,macf}。但这些方法并未针对遥感场景的显式空间层次设计通信协议。
 
-另一方面，遥感 Scene Graph 已从静态对象关系扩展到层次化和多尺度表示~\cite{knyaz2025,knyaz2026}；SG2 进一步表明多 Agent 可以对 scene graph 进行按需查询~\cite{sg2}。但这些工作主要将图视为视觉表示或检索对象，而不是一种贯穿多 Agent 强化学习过程的\textbf{共享通信状态}。本文关注的问题因此不是 ``能否生成遥感 scene graph''，而是：
+另一方面，遥感 Scene Graph 已从静态对象关系扩展到层次化和多尺度表示~\cite{knyaz2025,knyaz2026}；SG2 进一步表明多 Agent 可以对 scene graph 进行按需查询~\cite{sg2}。但这些工作主要将图视为视觉表示或检索对象，而不是一种可增量写入、可按范围披露且与视觉制品分离的\textbf{共享协作状态}。本文关注的问题因此不是 ``能否为每张图生成完整 scene graph''，而是：
 
 \begin{quote}\small
-\textbf{能否把遥感空间层次直接变成 Agent 的通信协议，并让 cooperative RL 学习何时传文本、何时传结构、何时直接传视觉 latent？}
+\textbf{能否把任务相关的遥感空间层次变成可追溯通信协议，并让一个集中式策略学习何时激活哪个专家、披露何种上下文以及何时停止？}
 \end{quote}
 
-我们提出 \ours。其核心不是单独增加一个树结构，而是将 Agent communication action 从单一文本消息扩展为多维决策：
+我们提出 \ours。其核心不是单独增加一个树结构，也不是让 Agent 发明新语言，而是把协作控制变成结构化决策：
 \begin{equation}
- a^{\mathrm{comm}}_t=
- (r_t,\ell_t,m_t,p_t),
+ a_t^{\mathrm{ctrl}}=(u_t,c_t),
  \label{eq:commaction}
 \end{equation}
-其中 $r_t$ 为接收 Agent，$\ell_t$ 为 Scene/Region/Group/Object 空间层级，$m_t$ 为 Text/Structure/Latent 通信模态，$p_t$ 为具体 payload。共享状态则由问题、层次树、Agent 历史与通信预算共同组成。随着训练进行，不同 Agent 可以在不同任务中形成不同的责任分工与通信模式，我们将这一现象称为\textbf{自然演化协作（natural-evolving collaboration）}；它指 policy-driven specialization，而非遗传算法意义上的 mutation/crossover。
+其中 $u_t$ 为 Dispatch/Finish/Abort 控制动作，Dispatch 指定目标 Expert；$c_t$ 为 ContextSpec，约束可见的节点、证据句柄、空间层级与 Text/Structure/Latent 模态。当前实现由策略直接选择七种安全动作，Router 再依据 $c_t$ 物化最小披露消息。``演化''在本文中专指单 Agent 内部真实存在的候选变异与选择；多 Agent 间的机制称为\textbf{动态协作（dynamic collaboration）}，避免将普通路由误称为演化算法。
 
 \paragraph{本文贡献。}
 \begin{enumerate}
-    \item \textbf{自然演化遥感多 Agent 框架。} 提出以共享遥感空间状态为交互媒介的宏观框架，使 Agent 的合作对象、职责与消息形态能够随任务通过强化学习自适应演化，而非依赖单一 Router 或固定工作流。
-    \item \textbf{多 Agent 分层多模态通信。} 将遥感图像显式组织为 Scene--Region--Group--Object 四级树，并设计 Text--Structure--Visual Latent 三通道消息，使语义、空间地址与原始视觉证据可以在 Agent 间联合传递。
-    \item \textbf{结构化通信 MARL 算法。} 在 cooperative MARL/MAGRPO 思路上扩展 communication action space 与优化目标，同时学习 recipient、hierarchy level、message modality 和 payload，并加入结构一致性、通信成本与冗余抑制奖励。
-    \item \textbf{系统性实验验证。} 设计覆盖 VRSBench、CHOICE、XLRS-Bench 与 GEOBench-VLM 的评测，包括准确率、跨任务泛化、通信 token、latent bandwidth 与通信效率。由于实验尚未执行，本文所有结果均为 \todo，不声明未验证的性能优势。
+    \item \textbf{双层自然演化协作框架。} 在专家内部实现候选生成、变异、适应度评价和选择，在专家之间使用独立 Evolution Controller 动态决定激活路径；两层通过版本化 Workspace 相连但不混淆职责。
+    \item \textbf{遥感层次化多模态通信。} 用任务相关的 Scene--Region--Group--Object 描述保存空间地址，将 Text、Structure 与节点绑定的 Visual Latent 作为互补载荷；大体积二进制保存在 ArtifactStore，Workspace 只记录校验和、兼容消费者和来源句柄。
+    \item \textbf{基于强化学习的集中式动态协作。} 构造带状态相关动作掩码的 LearnedRoutingPolicy，在冻结 Cognitive Expert 的条件下学习 Agent 激活、Reasoning 上下文模态和终止行为，并联合优化任务、证据、结构与真实执行成本。
+    \item \textbf{可审计的系统实现与实验协议。} 给出动作先于环境转移、标签隔离、专家冻结、轨迹回放与 checkpoint 校验机制，并规划覆盖 VRSBench、CHOICE、XLRS-Bench 与 GEOBench-VLM 的 Phase 6 评测；在该评测完成前不声明论文级性能优势。
 \end{enumerate}
 
 \section{相关工作}
@@ -92,27 +91,23 @@ Knyaz 等研究了航拍图的层次 scene graph 与向量化，将对象关系�
 SG2 将 Reasoner 与 Retriever 分离，使多个 LLM Agent 通过 schema-guided query 从 scene graph 中迭代取数，避免一次注入完整图~\cite{sg2}。SaGe 则将 scene graph thinking 用于多模态结构化推理，并进一步采用 graph-aware post-training~\cite{sage}。与之不同，我们关注的是通信本身：结构树不仅是被查询的数据源，而是 Agent 消息的显式载体；同时，视觉 latent 与自然语言和结构节点一起进入 communication action space。
 
 \subsection{多 Agent 强化学习与 latent communication}
-MAGRPO 将 LLM collaboration 建模为 cooperative MARL，并通过 multi-agent group-relative policy optimization 联合优化多 Agent 策略~\cite{magrpo}。本文以此类方法为训练基础，但将通信动作从文本 response 扩展为层次化多模态消息。与此同时，Interlat 已验证 Agent 可以直接交换连续 hidden states，并报告了显著的推理加速潜力~\cite{interlat}；MACF 在长视频理解中使用 compact latent tokens 支持多 Agent 协作~\cite{macf}。这些结果说明视觉/语言 latent communication 在技术上可行。我们的重点是将 latent 明确绑定到遥感树节点及其 bbox/region，使连续表示具有可定位、可追溯的空间语义。
+MAGRPO 将 LLM collaboration 建模为 cooperative MARL，并通过 multi-agent group-relative policy optimization 联合优化多 Agent 策略~\cite{magrpo}。该路线适合未来的 token-level 多策略联合训练，但本文当前可复验实现选择更清晰的边界：冻结各 Expert，只训练一个位于控制层的小型结构化路由策略，因此不将其包装为 MAGRPO 的变体。与此同时，Interlat 已验证 Agent 可以直接交换连续 hidden states，并报告了显著的推理加速潜力~\cite{interlat}；MACF 在长视频理解中使用 compact latent tokens 支持多 Agent 协作~\cite{macf}。我们的重点是将 latent 明确绑定到任务相关的空间节点及其 bbox/region，并通过句柄和 compatible-consumer 约束使连续表示可定位、可追溯且不会被所有 Agent 默认读取。
 
 \section{问题定义}
-给定遥感图像 $I$ 与问题 $q$，系统包含固定基础能力 Agent 集合
+给定遥感图像 $I$ 与问题 $q$，系统包含按认知能力划分的 Expert 集合
 \begin{equation}
-\agentset_F=\{A_G,A_L,A_H,A_V\},
+\agentset=\{A_{vis},A_{know},A_{reason},A_{verify}\},
 \end{equation}
-分别表示 Global、Local、Hierarchy 与 Verifier Agent；另设一个没有预定义细粒度职责的残差 Agent $A_E$。完整 Agent 池为
-\begin{equation}
-\agentset=\agentset_F\cup\{A_E\}.
-\end{equation}
-所有 Agent 共享同一遥感空间树 $\tree_t$，但可拥有独立 LoRA/adapter 与局部 observation。
+分别表示 Visual、Knowledge、Reasoning 与 Verification Expert。Evolution Controller $C_\theta$ 属于控制层而不属于 $\agentset$；Expert 不能直接调用另一个 Expert，也不能自行决定下一跳。
 
-系统在每轮 $t$ 维护共享状态
+系统将持久协作内容维护为版本化 Workspace $W_t$，其中包含 TaskContext、Evidence、Claim/AnswerCandidate、任务相关的 SpatialNode 和 Artifact 句柄。消息、执行轨迹与成本分别由 Inbox、transition log 和 CostVector 管理，而不是把所有文本和二进制堆入 Workspace。控制器实际观察为
 \begin{equation}
-S_t=(q,\tree_t,H_t,B_t),
+S_t=(\mathrm{summary}(W_t),H_t,C_t,B_t),
 \end{equation}
-其中 $H_t$ 为团队交互历史，$B_t$ 为剩余 token、image query、latent bandwidth 等预算。策略输出两类 action：任务动作 $a^{task}$ 与通信动作 $a^{comm}$。目标是在任务正确率与通信/视觉成本之间取得最优权衡。
+其中 $H_t$ 是已执行 Expert 路径，$C_t$ 是累计 Agent、Tool、Model 与通信成本，$B_t$ 是剩余预算。Controller 不直接看图或读取 latent 值，只消费紧凑、可序列化且不含 reference answer 的摘要。目标是在任务正确率、证据质量与真实协作成本之间取得权衡。
 
 \section{方法}
-\subsection{总体框架：自然演化协作}
+\subsection{总体框架：内部演化与动态协作}
 \begin{figure*}[t]
 \centering
 \resizebox{0.97\textwidth}{!}{%
@@ -123,52 +118,38 @@ state/.style={box,fill=clight,minimum width=33mm},
 msg/.style={box,minimum width=26mm},
 arr/.style={->,thick}]
 \node[state,fill=cblue!7] (input) {Remote-Sensing\\Image $I$ + Question $q$};
-\node[state,right=12mm of input,fill=cpurple!7] (tree) {Shared Hierarchical State $\tree_t$\\Scene $\rightarrow$ Region $\rightarrow$ Group $\rightarrow$ Object};
-\node[agent,above right=7mm and 13mm of tree,fill=cblue!7] (g) {Global Agent};
-\node[agent,right=8mm of g,fill=cgreen!8] (l) {Local Agent};
-\node[agent,below=7mm of l,fill=corange!10] (h) {Hierarchy Agent};
-\node[agent,left=8mm of h,fill=cpurple!10] (v) {Verifier Agent};
-\node[agent,below=7mm of v,fill=gray!12] (e) {Residual Agent};
-\node[msg,right=13mm of h,fill=cblue!6] (text) {Text\\reasoning};
-\node[msg,below=5mm of text,fill=cgreen!7] (struct) {Structure\\node/subtree+bbox};
-\node[msg,below=5mm of struct,fill=corange!9] (latent) {Visual Latent\\$z^{ROI}$};
-\node[state,right=13mm of struct,fill=clight] (policy) {Structured-Communication\\MARL Policy};
-\node[state,right=12mm of policy,fill=cgreen!8] (ans) {Answer / Continue};
-\draw[arr] (input)--(tree);
-\draw[arr] (tree)--(g.west);
-\draw[arr] (tree)--(v.west);
-\draw[arr] (g)--(l);
-\draw[arr,<->] (l)--(h);
-\draw[arr,<->] (h)--(v);
-\draw[arr,<->] (v)--(e);
-\draw[arr,dashed] (l.east)--(text.west);
-\draw[arr,dashed] (h.east)--(struct.west);
-\draw[arr,dashed] (v.east)--(latent.west);
-\draw[arr] (text.east)--(policy.west);
-\draw[arr] (struct.east)--(policy.west);
-\draw[arr] (latent.east)--(policy.west);
-\draw[arr] (policy)--(ans);
-\draw[arr,bend left=22] (policy.north west) to node[above,font=\scriptsize]{select recipient/level/modality/payload} (g.north east);
-\draw[arr,bend right=20] (policy.south west) to node[below,font=\scriptsize]{update state \& communication} (tree.south east);
+\node[state,right=13mm of input,fill=cpurple!7] (workspace) {EvoRS Workspace $W_t$\\Evidence + Claims + Sparse Hierarchy\\Artifact handles + provenance};
+\node[state,right=18mm of workspace,fill=clight] (policy) {Evolution Controller\\LearnedRoutingPolicy};
+\node[state,right=21mm of policy,fill=cgreen!8] (ans) {Answer / Continue};
+\node[msg,below=12mm of workspace,fill=corange!9] (artifacts) {ArtifactStore\\Image/Crop/Visual Latent};
+\node[msg,below=12mm of policy,fill=cblue!6] (router) {Context Router\\scoped disclosure};
+\node[agent,below=12mm of ans,fill=cgreen!8] (pool) {Cognitive Expert Pool\\Visual $\mid$ Knowledge\\Reasoning $\mid$ Verification};
+\draw[arr] (input)--(workspace);
+\draw[arr] (workspace)--node[above,font=\scriptsize]{compact observation}(policy);
+\draw[arr] (policy)--node[above,font=\scriptsize]{Finish/Abort}(ans);
+\draw[arr] (policy)--node[right,font=\scriptsize]{Dispatch + ContextSpec}(router);
+\draw[arr] (router)--node[above,font=\scriptsize]{scoped T/S/L}(pool);
+\draw[arr] (pool.south)--++(0,-7mm)-|node[below,pos=0.45,font=\scriptsize]{validated WorkspaceDelta}(workspace.south west);
+\draw[arr,<->] (workspace)--node[right,font=\scriptsize]{immutable handle}(artifacts);
 \end{tikzpicture}%
 }
-\caption{\ours 总体框架。共享遥感层次状态作为所有 Agent 的显式空间通信骨架。通信不仅包含文本，还可以传递结构化节点/子树以及与节点绑定的视觉 latent。强化学习策略联合决定接收方、空间层级、消息模态和 payload，使协作模式在任务训练中自适应形成。}
+\caption{\ours 总体框架。Controller 只读取 Workspace 摘要并通过 Router 激活一个 Expert；Expert 只接收按 ContextSpec 披露的 Text/Structure/Latent 句柄，返回的 WorkspaceDelta 经验证后原子提交。图像与 latent 二进制保存在 ArtifactStore。}
 \label{fig:overview}
 \end{figure*}
 
-我们将 ``自然演化'' 定义为从固定初始 Agent 能力出发，在训练中由 policy 逐渐形成任务依赖的通信拓扑与责任分配。系统不要求所有 Agent 每题都参与，也不预先固定 ``计数专家''、``机场专家'' 等细粒度角色。基础专家只提供少量遥感先验能力，而 $A_E$ 用于吸收固定角色未覆盖的残差行为。
+``自然演化''发生在单个 Agent 的私有循环中。以 Visual Expert 为例，它从初始感知方案产生候选，对尺度、ROI 或答案进行 variation，依据视觉证据、空间一致性、latent 一致性与成本计算 fitness，再选择下一代；未被选中的候选不写入 Workspace。外层只做动态协作：Controller 可以针对计数任务选择 Visual--Reasoning--Verification，而对需要领域语义的分类任务加入 Knowledge，系统不要求每题启动所有 Expert。
 
-\subsection{四级遥感共享状态}
-我们使用四级树表示空间层次：
+\subsection{任务相关的层次化空间描述}
+我们使用以下四级语义词汇描述空间层次：
 \begin{equation}
 \tree_t: \mathrm{Scene}\rightarrow\mathrm{Region}\rightarrow\mathrm{Group}\rightarrow\mathrm{Object}.
 \end{equation}
-每个节点 $v_i$ 定义为
+该表达是允许稀疏实例化的层次契约，而不是要求单张图片先构建完整世界模型：与问题无关或无法可靠确定的中间层可以缺省。每个已实例化节点 $v_i$ 定义为
 \begin{equation}
  v_i=(id_i,\ell_i,s_i,b_i,c_i,u_i,z_i,p_i),
  \label{eq:node}
 \end{equation}
-其中 $\ell_i$ 为层级，$s_i$ 为语义标签，$b_i$ 为 bbox/polygon，$c_i$ 为 confidence，$u_i$ 为 uncertainty，$z_i$ 为可选 visual latent，$p_i$ 为 evidence provenance。一个机场场景可表示为
+其中 $\ell_i$ 为层级，$s_i$ 为语义标签，$b_i$ 为 bbox/polygon，$c_i$ 为 confidence，$u_i$ 为 uncertainty，$h_i$ 为可选 visual artifact handle，$p_i$ 为 evidence provenance。真实 latent $z_i$ 不直接进入可 JSON 序列化的 Workspace，而存入 ArtifactStore，并由 $h_i$ 记录 SHA-256、shape、dtype、encoder、ROI 与 compatible consumers。一个机场场景可表示为
 \[
 \mathrm{Airport}\rightarrow\mathrm{Apron}\rightarrow\mathrm{AircraftGroup}\rightarrow\mathrm{Aircraft}_k.
 \]
@@ -176,7 +157,25 @@ arr/.style={->,thick}]
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.98\textwidth]{figures/refinement.png}
+\resizebox{0.94\textwidth}{!}{%
+\begin{tikzpicture}[>=Latex,font=\small,
+  hnode/.style={rounded corners,draw,minimum width=30mm,minimum height=9mm,align=center},
+  note/.style={rounded corners,draw,dashed,fill=gray!7,align=center},
+  arr/.style={->,thick}]
+\node[note] (q) {Question-conditioned request\\``How many aircraft?''};
+\node[hnode,right=13mm of q,fill=cblue!8] (scene) {Scene\\airport context};
+\node[hnode,right=10mm of scene,fill=cgreen!9] (region) {Region (optional)\\apron ROI};
+\node[hnode,right=10mm of region,fill=corange!11] (group) {Group\\aircraft collection};
+\node[hnode,right=10mm of group,fill=cpurple!10] (object) {Object nodes\\bbox + evidence + handle};
+\node[note,below=8mm of region] (store) {ArtifactStore: crop / latent bytes\\Workspace: immutable refs + provenance};
+\draw[arr] (q)--(scene);
+\draw[arr] (scene)--(region);
+\draw[arr] (region)--(group);
+\draw[arr] (group)--(object);
+\draw[arr,dashed] (region)--(store);
+\draw[arr,dashed] (object)--(store);
+\end{tikzpicture}
+}
 \caption{概念性示例：问题驱动的层次细化过程。共享树可以从 Scene 逐步定位到 Region、Group 与 Object，最终把回答所需的对象位置和数量显式交给下游 Agent。图中影像与示意布局用于方法说明，不代表实验结果。}
 \label{fig:refine}
 \end{figure*}
@@ -197,91 +196,67 @@ M_{i\rightarrow j}=\big(M^{text},M^{struct},M^{latent}\big),
 \]
 结构消息承担\textbf{空间地址与语义骨架}功能，下游 Agent 不必从文本重新恢复 bbox 与层次关系。
 
-\paragraph{Visual latent channel.} 对某个节点对应区域 $I[b_i]$，视觉编码器产生
+\paragraph{Visual latent channel.} 对某个节点对应区域 $I[b_i]$，当前实现从与本地 Qwen VLM 对应的视觉塔提取并池化表示
 \begin{equation}
- z_i=C_\omega\left(E_{vis}(I[b_i])\right)\in\mathbb{R}^{K\times d},
+ z_i=\mathrm{Norm}\!\left(\mathrm{MeanPool}(E_{vis}(I[b_i]))\right)\in\mathbb{R}^{d},
  \label{eq:latent}
 \end{equation}
-其中 $C_\omega$ 是可学习压缩器。如果所有 Agent 共享 backbone，则 $z_i$ 可直接复用；若 Agent 异构，则采用投影器 $P_{i\to j}$ 对齐 latent space。接收 Agent 通过 cross-attention 融合：
-\begin{equation}
-\tilde h_j=h_j+\mathrm{Attn}(h_j,P_{i\to j}z_i,P_{i\to j}z_i).
-\end{equation}
-因此 Tree 负责 ``这是什么、在哪里''，latent 负责 ``它具体长什么样''，text 负责 ``为什么发送它、下一步推理目的是什么''。
+其中 $d=5120$，向量以 float32 little-endian 制品存储，并用 SHA-256 验证内容。当前同构实现通过受权限约束的 consumer 读取向量，在单 Agent fitness 与多 Agent latent-consumption 诊断中使用其范数和 ROI--Scene cosine；直接 cross-attention 注入和异构投影器属于后续扩展，本文不把它们写成已实现机制。因此层次结构负责 ``这是什么、在哪里''，latent 句柄负责保留可复用视觉内容，text 负责 ``为什么发送它、下一步推理目的是什么''。
 
 \subsection{通信决策空间}
-在每个 step，通信策略不只选择 next agent，而是选择
-\begin{equation}
-a_t^{comm}=(r_t,\ell_t,m_t,p_t),
-\end{equation}
-其中
+在每个 step，策略从固定、可审计的七动作集合中选择
 \begin{align*}
- r_t &\in \agentset,\\
- \ell_t &\in \{scene,region,group,object\},\\
- m_t &\in \{text,struct,latent,hybrid\},\\
- p_t &\subseteq \tree_t.
+\mathcal U=\{&\mathrm{DispatchVisual},\mathrm{DispatchKnowledge},\\
+&\mathrm{DispatchReasoning}_{T+S},\mathrm{DispatchReasoning}_{Hybrid},\\
+&\mathrm{DispatchVerification},\mathrm{Finish},\mathrm{Abort}\}.
 \end{align*}
-``hybrid'' 可以是 Text+Struct、Struct+Latent 或三者联合。该设计使通信选择本身成为可优化 action：简单高层任务可只传短文本或场景节点；小目标复核可传 Object node + latent；复杂空间关系则传子树。
+其中两个 Reasoning 动作分别披露 Text+Structure 与 Text+Structure+Latent。每个 Dispatch 经 ContextSpec 解码出 payload refs、focus node、spatial level、modalities 和 max items，Router 只物化被授权的记录。该首版动作空间有意保持较小：它真实学习 Expert 激活和关键模态选择，但节点级 payload 仍由确定性上下文构造器选择，不能表述为已经学习任意 payload。状态相关 mask 禁止无视觉证据时推理、无 proposed candidate 时验证、无 verified candidate 时结束，以及无兼容 latent 时选择 Hybrid。
 
-\subsection{结构化通信多智能体强化学习}
-MAGRPO 已证明可以用 group-relative objective 优化 LLM multi-agent collaboration~\cite{magrpo}。我们在此基础上将每个 Agent 的 policy 拆为 task policy 与 communication policy：
+\subsection{集中式动态路由的强化学习优化}
+本文当前阶段只训练控制层策略，四个 Cognitive Expert 作为冻结的环境动力学。ControllerObservation 被编码为版本化的 21 维特征 $x_t$，包括任务类型、当前 step、视觉/知识证据、候选状态、兼容 latent、已用 Expert 和累计成本。reference answer 只在 episode 结束后进入环境奖励，不出现在 $x_t$、Workspace 或 Expert observation。策略为带有效动作 mask $M(S_t)$ 的线性 softmax：
 \begin{equation}
-\pi_i(a_t|o_i,S_t)=\pi_i^{task}(a_t^{task}|\cdot)\,\pi_i^{comm}(a_t^{comm}|\cdot).
+\pi_\theta(a_t|S_t)=\mathrm{MaskedSoftmax}(Wx_t+b;M(S_t)).
 \end{equation}
-团队奖励设计为
+episode 奖励设计为
 \begin{equation}
-R=R_{task}+\lambda_s R_{struct}+\lambda_e R_{evid}-\lambda_c C_{comm}-\lambda_r C_{red}.
+\begin{aligned}
+R={}&R_{task}+\lambda_eR_{evid}+\lambda_sR_{struct}-C_{message}\\
+&-C_{agent}-C_{tool}-C_{model}-C_{redundancy}\\
+&-C_{invalid}-C_{error}-C_{noncomplete}.
+\end{aligned}
 \label{eq:reward}
 \end{equation}
-其中 $R_{task}$ 为最终答案奖励；$R_{struct}$ 衡量树结构一致性；$R_{evid}$ 鼓励消息可追溯到视觉证据；$C_{comm}$ 为通信成本；$C_{red}$ 惩罚重复消息。
+其中 $R_{task}$ 为最终答案精确匹配奖励；$R_{evid}$ 衡量证据链接与置信度；$R_{struct}$ 衡量稀疏层次的根、父子引用与证据绑定。所有质量项按最终 episode 增量只计算一次，成本来自真实 CostVector 和消息字节，而不是根据计划路径估算。
 
 通信成本按不同模态分别计量：
 \begin{equation}
-C_{comm}=\alpha N_{text}+\beta N_{node}+\gamma N_{latent},
+C_{message}=\alpha N_{text}+\beta B_{struct}+\gamma B_{latent},
 \end{equation}
-使策略在 ``信息充分'' 与 ``带宽开销'' 之间学习折中。
-
-为避免所有 Agent 重复传递相同结论，我们定义消息新颖性辅助奖励：
+其中 $N_{text}$ 是披露的文本 token 数，$B_{struct}$ 和 $B_{latent}$ 是结构化载荷与 latent 的真实字节数。重复调用同一 Expert 另计 $C_{redundancy}$。策略使用按任务类型维护的移动基线 $b_k$，以 $\hat A=R-b_k$ 做 on-policy REINFORCE，并加入熵正则：
 \begin{equation}
-r^{novel}(m_t)=1-\max_{m\in H_t}\mathrm{sim}(m_t,m),
+J(\theta)=\mathbb E_{\tau\sim\pi_\theta}\left[
+\hat A\sum_t\log\pi_\theta(a_t|S_t)+\xi\sum_t\mathcal H(\pi_\theta(\cdot|S_t))
+\right].
+\label{eq:routingpg}
 \end{equation}
-并将其与 evidence gain 结合得到局部 communication reward
-\begin{equation}
-r_t^{comm}=\eta_1\Delta E_t+\eta_2r^{novel}(m_t)-\eta_3 cost(m_t).
-\end{equation}
-
-在 group-relative advantage $\hat A^{team}$ 的基础上，通信分支使用
-\begin{equation}
-\hat A_t^{comm}=\hat A^{team}+\rho\,\mathrm{norm}(r_t^{comm}),
-\end{equation}
-从而让 ``答对但通信极其冗余'' 与 ``答对且通信有效'' 的轨迹获得不同 credit。
-
-最终优化目标采用两套 clipping：
-\begin{equation}
-\resizebox{0.98\columnwidth}{!}{$\displaystyle
-\mathcal{L}_{HM\text{-}MAGRPO}=\mathbb{E}\!\left[
-\min(r_t^{task}\hat A^{team},\mathrm{clip}(r_t^{task},1\!\pm\!\epsilon_t)\hat A^{team})
-+\kappa\min(r_t^{comm}\hat A_t^{comm},\mathrm{clip}(r_t^{comm},1\!\pm\!\epsilon_c)\hat A_t^{comm})
-\right]$}
-\label{eq:hmgrpo}
-\end{equation}
-其中 $r_t^{task}$ 和 $r_t^{comm}$ 分别为新旧策略概率比。式~\eqref{eq:hmgrpo} 是本文相对 generic MAGRPO 的核心算法改动：通信不再被隐含在文本 generation 中，而是作为独立、结构化、可计成本的策略分支进行优化。
+实现对 logit gradient 做有限幅裁剪，每个 episode 更新后要求参数摘要发生非零变化。该算法是集中式 Controller policy gradient，不是多策略联合更新；若未来把结构化动作序列化为 token 并联合训练 Expert/VLM，可再通过 verl 接入 PPO/GRPO/MAGRPO。
 
 \begin{algorithm}[t]
-\caption{HM-MAGRPO 训练流程（简化）}
+\caption{LearnedRoutingPolicy 训练流程（简化）}
 \label{alg:train}
 \begin{algorithmic}[1]
-\Require dataset $\mathcal D$, agent pool $\agentset$, initial policies $\pi$
+\Require dataset $\mathcal D$, frozen expert pool $\agentset$, routing policy $\pi_\theta$
 \For{each training batch $(I,q,y)$}
-  \State 初始化共享树 $\tree_0$ 与预算 $B_0$
+  \State 初始化 Workspace $W_0$、Inbox、CostVector 与预算 $B_0$
   \For{$t=0,\ldots,T-1$}
-    \State 各 active Agent 读取 $S_t=(q,\tree_t,H_t,B_t)$
-    \State 采样 task action 与 $a_t^{comm}=(r,\ell,m,p)$
-    \State 发送 Text/Structure/Latent 消息并更新 $\tree_{t+1}$
-    \If{stop or answer} \State \textbf{break} \EndIf
+    \State 从不含标签的 ControllerObservation 编码 $x_t$ 和 mask $M_t$
+    \State 在环境转移前采样 $a_t\sim\pi_\theta(\cdot|x_t,M_t)$
+    \State Router 披露 ContextSpec，执行一个 Expert，并验证/提交 WorkspaceDelta
+    \State 记录 action id、pre-version、transition、消息和真实成本
+    \If{$a_t$ is Finish or Abort} \State \textbf{break} \EndIf
   \EndFor
-  \State 计算 $R_{task},R_{struct},R_{evid},C_{comm},C_{red}$
-  \State 对同一问题的 group trajectories 计算 $\hat A^{team}$
-  \State 计算 $\hat A^{comm}$ 并更新 task/communication policies
+  \State 在环境侧使用 $y$ 计算式~\eqref{eq:reward}
+  \State 用式~\eqref{eq:routingpg}只更新 $\theta$，核验 Expert 指纹不变
 \EndFor
 \end{algorithmic}
 \end{algorithm}
@@ -291,7 +266,19 @@ r_t^{comm}=\eta_1\Delta E_t+\eta_2r^{novel}(m_t)-\eta_3 cost(m_t).
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{figures/crossscale.png}
+\begin{tikzpicture}[>=Latex,font=\scriptsize,
+  box/.style={rounded corners,draw,minimum width=25mm,minimum height=8mm,align=center},
+  arr/.style={->,thick}]
+\node[box,fill=cblue!8] (scene) {Scene claim\\airport};
+\node[box,below left=8mm and 3mm of scene,fill=cgreen!8] (group) {Group claim\\aircraft cluster};
+\node[box,below right=8mm and 3mm of scene,fill=cred!8] (conflict) {Object evidence\\no matching instances};
+\node[box,below=25mm of scene,fill=corange!10] (verify) {Verification Expert\\trace provenance / revise};
+\draw[arr] (scene)--(group);
+\draw[arr] (scene)--(conflict);
+\draw[arr,dashed,draw=cred] (group)--node[above]{conflict}(conflict);
+\draw[arr] (group)--(verify);
+\draw[arr] (conflict)--(verify);
+\end{tikzpicture}
 \caption{跨层结构一致性示意。高层 Scene/Region 语义与中层 Group、细粒度 Object 证据发生冲突时，系统触发 revise/refine，而不是仅在文本层做多数投票。}
 \label{fig:consistency}
 \end{figure}
@@ -301,10 +288,10 @@ r_t^{comm}=\eta_1\Delta E_t+\eta_2r^{novel}(m_t)-\eta_3 cost(m_t).
 我们计划使用四类互补 benchmark：VRSBench 提供 caption、grounding 与 VQA~\cite{vrsbench}；CHOICE 系统评估遥感 perception/reasoning 能力~\cite{choice}；XLRS-Bench 强调平均约 $8500\times8500$ 的超高分辨率遥感理解~\cite{xlrs}；GEOBench-VLM 覆盖 scene understanding、counting、localization、fine-grained categorization、segmentation 与 temporal analysis~\cite{geobench}。这些 benchmark 的共同点是图像与问题/指令本身即可使用，因此本文方法不假设 CRS、GSD 或传感器元数据必然存在。
 
 \subsection{实现设置}
-第一版建议所有 Agent 共享同一个 7B 级 VLM backbone，不同 Agent 使用独立 prompt 与 LoRA。共享 backbone 使 visual latent 处于同一空间，避免额外 alignment 成本；随后再测试异构 Agent + projection。所有 benchmark 使用官方 metric；最终核心实验至少报告三次随机种子均值与标准差。
+开发阶段使用同一个本地 Qwen 27B 级 Q4 量化 VLM 服务，不同 Expert 使用独立 prompt；视觉 latent 来自对应的 Qwen 视觉塔。Phase 5 只训练 $7\times21$ 的 Controller 参数，VLM 与 Expert 冻结。Phase 6 将固定模型版本、解码参数、预算与数据划分，使用官方 metric，并至少报告三次随机种子的均值、标准差和配对统计检验。
 
 \subsection{对比方法}
-建议包含：Single VLM、Single+CoT、Text-only Multi-Agent、Static Structured State、SG2-style graph querying~\cite{sg2}、Generic MAGRPO~\cite{magrpo}、Text+Structure、Text+Latent、Full \ours。若 SaGe 可获得可比实现，则加入 graph-aware reasoning baseline~\cite{sage}。
+核心对比包含：Direct Single VLM、单 Generalist Agent、Fixed-All-Experts、RuleRoutingPolicy 与 LearnedRoutingPolicy。表示消融比较 Text-only、Text+Structure、Text+Latent 与 Hybrid；内部演化消融移除 variation/selection。若能在相同模型、数据和预算下复现，则再加入 SG2-style graph querying~\cite{sg2}、SaGe~\cite{sage} 和 token-level MAGRPO~\cite{magrpo}，但这些外部路线不作为当前实现完成度的替代证据。
 
 \subsection{主结果}
 \begin{table*}[t]
@@ -315,12 +302,12 @@ r_t^{comm}=\eta_1\Delta E_t+\eta_2r^{novel}(m_t)-\eta_3 cost(m_t).
 \toprule
 Method & VRSBench & CHOICE & XLRS-Bench & GEOBench-VLM & Avg. Score & Comm. Cost \\
 \midrule
-Single VLM & \todo & \todo & \todo & \todo & \todo & \todo \\
-Text-only MAS & \todo & \todo & \todo & \todo & \todo & \todo \\
-Static Tree + MAS & \todo & \todo & \todo & \todo & \todo & \todo \\
-Generic MAGRPO & \todo & \todo & \todo & \todo & \todo & \todo \\
-Text + Structure & \todo & \todo & \todo & \todo & \todo & \todo \\
-Text + Latent & \todo & \todo & \todo & \todo & \todo & \todo \\
+Direct Single VLM & \todo & \todo & \todo & \todo & \todo & \todo \\
+Single Generalist Agent & \todo & \todo & \todo & \todo & \todo & \todo \\
+Fixed-All-Experts & \todo & \todo & \todo & \todo & \todo & \todo \\
+Rule Routing & \todo & \todo & \todo & \todo & \todo & \todo \\
+Learned Routing (no latent) & \todo & \todo & \todo & \todo & \todo & \todo \\
+Learned Routing (Hybrid) & \todo & \todo & \todo & \todo & \todo & \todo \\
 \textbf{\ours} & \todo & \todo & \todo & \todo & \todo & \todo \\
 \bottomrule
 \end{tabular}
@@ -332,8 +319,9 @@ Text + Latent & \todo & \todo & \todo & \todo & \todo & \todo \\
 \begin{itemize}
     \item \textbf{分层结构是否有效？} 比较 text-only、flat object list、四级树。
     \item \textbf{latent 是否真的有用？} 在相同通信预算下比较 Text、Struct、Latent 与 Hybrid。
-    \item \textbf{RL 算法改动是否必要？} 比较 SFT router、generic MAGRPO 与 HM-MAGRPO。
-    \item \textbf{自然演化是否真实发生？} 统计不同 task family 下各 Agent 的调用比例、通信对象、消息模态与空间层级分布。
+    \item \textbf{学习式路由是否必要？} 在相同 Expert、预算和解码设置下比较 Fixed-All、Rule Routing 与 Learned Routing。
+    \item \textbf{单 Agent 内部演化是否真实有效？} 对齐模型调用预算，比较无演化、只有 revision、完整 candidate--variation--fitness--selection，并报告候选谱系和选择变化。
+    \item \textbf{动态协作是否形成任务差异？} 统计不同 task family 下各 Expert 的调用比例、路径、消息模态与空间层级分布。
     \item \textbf{是否只是带宽变大？} 做 matched-bandwidth / matched-token 比较。
 \end{itemize}
 
@@ -355,24 +343,24 @@ Full Hybrid & \todo & \todo & \todo \\
 \end{tabular}
 \end{table}
 
-\subsection{自然演化分析}
-自然演化不能仅通过最终 accuracy 声明。我们建议报告 communication matrix $C_{ij}$、消息模态分布 $P(m|task)$、层级分布 $P(\ell|task)$ 以及 residual agent 的 task-wise activation。若训练后出现例如 counting 任务更多采用 Region$\rightarrow$Group$\rightarrow$Object 的 Struct+Latent 通信，而 scene classification 更多采用 Scene/Region 的 Text+Struct 通信，则说明策略确实形成了与任务相匹配的协作分工。
+\subsection{内部演化与协作路径分析}
+自然演化不能仅通过最终 accuracy 声明。单 Agent 层需要报告每代 population、variation operator、fitness components、parent/selected candidate 与停止原因；多 Agent 层则报告 Expert 激活矩阵、路径分布、消息模态与层级分布，但将其称为动态协作而非演化。若训练后 counting 任务更多选择 Visual--Reasoning--Verification，而需要领域概念的分类任务更常加入 Knowledge，且在匹配预算下提升任务奖励，才能说明策略形成了任务相关的协作分工。
 
 \section{讨论}
 \paragraph{为什么需要结构 + latent，而不是只用 latent？}
 latent 能保留丰富视觉信息，但缺乏天然的 ``地址'' 与可解释空间语义；结构树提供 node id、bbox、parent 与层级，使 latent 被明确绑定到某个遥感区域。两者组合可以分别承担索引与内容角色。
 
 \paragraph{为什么需要文本？}
-结构适合空间关系，latent 适合视觉证据，但复杂推理意图、验证请求与任务解释仍适合语言，因此本文不是 ``去文本化''，而是让 RL 自适应选择三种通信通道。
+结构适合空间关系，latent 适合保留视觉表征，但复杂推理意图、验证请求与任务解释仍适合语言，因此本文不是 ``去文本化''。当前策略在 Reasoning 的 Text+Structure 与 Hybrid 间选择；更细粒度的三通道组合属于后续动作空间扩展。
 
 \paragraph{异构 Agent 的可行性。}
-第一阶段使用共享 backbone 是最稳定方案；若采用不同 VLM，需要解决 latent space alignment。可以训练轻量 projection 或共享 bottleneck tokenizer，但这应作为后续扩展而非第一版必须条件。
+当前使用共享视觉塔并通过 compatible-consumer 约束读取。若采用不同 VLM，需要解决 latent space alignment；可训练轻量 projection 或共享 bottleneck tokenizer，但这属于后续扩展而非 Phase 0--5 的完成条件。
 
 \paragraph{潜在风险。}
 若树结构由错误 detector/VLM 构造，其错误可能在团队中传播，因此 Verifier、uncertainty 与 provenance 机制非常关键。另一个风险是 latent channel 带宽过高，导致 ``准确率提升只是因为传更多信息''；因此 matched-bandwidth 实验是论文必须项。
 
 \section{结论}
-本文提出 \ours 的完整研究设计：以 Scene--Region--Group--Object 四级遥感共享状态为通信骨架，使多个 Agent 不再局限于自然语言消息，而能够按需交换文本、结构化空间节点和 visual latent；进一步将 recipient、spatial level、message modality 与 payload 显式纳入 cooperative MARL action space，并设计结构一致性、证据质量、通信成本与冗余奖励。该框架的宏观目标是让 Agent 协作关系和专业责任在任务训练中自然形成。本文当前为方法与实验方案草稿，所有性能数字均待真实实验验证。
+本文提出 \ours：单 Agent 在私有循环中执行受预算的 candidate--variation--fitness--selection，多个 Cognitive Expert 则由独立 Evolution Controller 通过版本化 Workspace 和 Router 动态协作。系统用可稀疏实例化的 Scene--Region--Group--Object 描述组织空间证据，以 ArtifactStore 保存图像与 visual latent 二进制，并按 ContextSpec 披露 Text、Structure 或 Hybrid。当前 Phase 5 使用集中式 masked policy gradient 学习 Expert 激活、Reasoning 模态与终止行为，所有动作均可追溯到其发生前的 Workspace version。Phase 0--5 已形成可运行、可回放和可校验的机制闭环；完整 benchmark、多随机种子、消融与成本曲线仍需由 Phase 6 实验填写，因此本文不预设最终性能结论。
 
 \balance
 \begin{thebibliography}{99}

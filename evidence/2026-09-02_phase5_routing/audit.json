@@ -1,0 +1,16 @@
+{
+  "checks": {
+    "all_eval_actions_causal": true,
+    "all_train_actions_causal": true,
+    "classification_uses_knowledge": true,
+    "count_skips_knowledge": true,
+    "eval_did_not_update": true,
+    "experts_frozen": true,
+    "held_out_accuracy_one": true,
+    "learned_reward_improves_initial": true,
+    "parameter_changed": true,
+    "reference_absent_from_task": true,
+    "task_conditioned_paths": true
+  },
+  "passed": true
+}

@@ -1,0 +1,85 @@
+{
+  "checkpoint": "checkpoint.json",
+  "claim_scope": "deterministic mechanism gate; not a paper accuracy result",
+  "experts_frozen": true,
+  "held_out_actions_by_task": {
+    "airport_classification": [
+      "dispatch_visual",
+      "dispatch_knowledge",
+      "dispatch_reasoning_text_structure",
+      "dispatch_verification",
+      "finish"
+    ],
+    "object_existence": [
+      "dispatch_visual",
+      "dispatch_reasoning_hybrid",
+      "dispatch_verification",
+      "finish"
+    ],
+    "object_quantity": [
+      "dispatch_visual",
+      "dispatch_reasoning_text_structure",
+      "dispatch_verification",
+      "finish"
+    ]
+  },
+  "held_out_eval": {
+    "accuracy": 1.0,
+    "episodes": 6,
+    "mean_agent_calls": 3.3333333333333335,
+    "mean_reward": 0.5690486666666669,
+    "paths": {
+      "visual->knowledge->reasoning->verification": 2,
+      "visual->reasoning->verification": 4
+    }
+  },
+  "held_out_paths_by_task": {
+    "airport_classification": [
+      "visual",
+      "knowledge",
+      "reasoning",
+      "verification"
+    ],
+    "object_existence": [
+      "visual",
+      "reasoning",
+      "verification"
+    ],
+    "object_quantity": [
+      "visual",
+      "reasoning",
+      "verification"
+    ]
+  },
+  "initial_eval": {
+    "accuracy": 0.6666666666666666,
+    "episodes": 6,
+    "mean_agent_calls": 4.0,
+    "mean_reward": 0.2357300000000001,
+    "paths": {
+      "visual->knowledge->reasoning->verification": 6
+    }
+  },
+  "parameter_sha256_after": "1ae69257a20d3b9ae64be04224fb96150f6c599641e85ad0d70f2c80482c64f3",
+  "parameter_sha256_before": "b2fd8b9e2c745fda6a3ee57cb3577a1b8fe72c2a5a78f7d2b2c49d4ac26819bf",
+  "schema_version": "evors.phase5-summary.v1",
+  "train": {
+    "accuracy": 0.9236111111111112,
+    "episodes": 720,
+    "mean_agent_calls": 3.504166666666667,
+    "mean_reward": 0.37448026944444457,
+    "paths": {
+      "visual": 6,
+      "visual->knowledge": 2,
+      "visual->knowledge->reasoning->verification": 380,
+      "visual->reasoning": 3,
+      "visual->reasoning->verification": 329
+    }
+  },
+  "trained_steps": 720,
+  "verl_environment": {
+    "error_type": "ModuleNotFoundError",
+    "installed": false,
+    "version": null
+  }
+}

@@ -1,0 +1,80 @@
+schema_version: evors.local-model.v1
+
+identity:
+  name: Qwen3.8-27B
+  quantization: Q4_K_M
+  api_alias: evors/qwen3.8-27b-q4
+  api_base_url: http://127.0.0.1:18080
+
+model_source:
+  repository: ggml-org/Qwen3.8-27B-GGUF
+  repository_url: https://huggingface.co/ggml-org/Qwen3.8-27B-GGUF
+  revision: 0669b98607d47046c7c2b3f801011d54a08cfccf
+  source_revision_file: https://huggingface.co/ggml-org/Qwen3.8-27B-GGUF/blob/0669b98607d47046c7c2b3f801011d54a08cfccf/.src_sha
+  base_repository: Qwen/Qwen3.8-27B
+  base_revision: 1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0
+  artifacts:
+    - role: language_model
+      filename: Qwen3.8-27B-Q4_K_M.gguf
+      local_path: .models/qwen3.8-27b-q4/Qwen3.8-27B-Q4_K_M.gguf
+      bytes: 18973870432
+      sha256: 31629f53165ab6a7dad8c9847dcfd1fdf55829dac1e6e748f4a68581b0033d34
+    - role: multimodal_projector
+      filename: mmproj-Qwen3.8-27B-Q8_0.gguf
+      local_path: .models/qwen3.8-27b-q4/mmproj-Qwen3.8-27B-Q8_0.gguf
+      bytes: 629247008
+      sha256: 2e968a6af97ce35d8971890b257b9b7edabf20ad91450501fa53162a19ee33eb
+
+runtime_source:
+  project: ggml-org/llama.cpp
+  release: b10520
+  commit: cd644c39545aac3dca63261f99a9bfc35956cb25
+  release_url: https://github.com/ggml-org/llama.cpp/releases/tag/b10520
+  extracted_directory: .models/llama.cpp/b10520/bin
+  archives:
+    - filename: llama-b10520-bin-win-cuda-12.4-x64.zip
+      url: https://github.com/ggml-org/llama.cpp/releases/download/b10520/llama-b10520-bin-win-cuda-12.4-x64.zip
+      local_path: .models/llama.cpp/b10520/downloads/llama-b10520-bin-win-cuda-12.4-x64.zip
+      bytes: 250890269
+      sha256: ea9c64786333f8052056fb3735d3edb95d4b9a5e4c816390d81c45ec8e59780f
+    - filename: cudart-llama-bin-win-cuda-12.4-x64.zip
+      url: https://github.com/ggml-org/llama.cpp/releases/download/b10520/cudart-llama-bin-win-cuda-12.4-x64.zip
+      local_path: .models/llama.cpp/b10520/downloads/cudart-llama-bin-win-cuda-12.4-x64.zip
+      bytes: 391443627
+      sha256: 8c79a9b226de4b3cacfd1f83d24f962d0773be79f1e7b75c6af4ded7e32ae1d6
+
+server:
+  executable: .models/llama.cpp/b10520/bin/llama-server.exe
+  host: 127.0.0.1
+  port: 18080
+  cors_origins: localhost
+  cors_credentials: false
+  context_size: 4096
+  # llama.cpp batch sizes count prompt tokens, not concurrent requests.
+  batch_size: 512
+  ubatch_size: 128
+  parallel: 1
+  gpu_layers: auto
+  fit: true
+  fit_target_mib: 1536
+  mmproj_offload: true
+  webui: false
+  reasoning: "off"
+  # Extract any residual thought tags away from message.content defensively.
+  reasoning_format: deepseek
+  preserve_thinking: false
+
+verification:
+  verified_at: 2026-08-21
+  method: full-file SHA-256 and exact byte-size comparison, including every extracted runtime archive entry
+  runtime_version: "0.1.2-dev (build 10520, commit cd644c395)"
+  reference_gpu: NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB
+  reference_driver: "555.97"
+  phase1_gate:
+    status: passed
+    validation_scope: real_vlm_strict_gate
+    samples: ["3", "6"]
+    explicit_model_identity: true
+    measured_token_usage: true
+    structural_agent_tool_evidence_trace: true
+    evidence_semantics: structural_provenance_only

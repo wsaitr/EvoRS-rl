@@ -1,0 +1,59 @@
+{
+  "checkpoint": "checkpoint.json",
+  "claim_scope": "deterministic mechanism gate; not a paper accuracy result",
+  "experts_frozen": true,
+  "held_out_eval": {
+    "accuracy": 1.0,
+    "episodes": 4,
+    "mean_agent_calls": 3.5,
+    "mean_reward": 0.6317163333333335,
+    "paths": {
+      "visual->knowledge->reasoning->verification": 2,
+      "visual->reasoning->verification": 2
+    }
+  },
+  "held_out_paths_by_task": {
+    "airport_classification": [
+      "visual",
+      "knowledge",
+      "reasoning",
+      "verification"
+    ],
+    "object_quantity": [
+      "visual",
+      "reasoning",
+      "verification"
+    ]
+  },
+  "initial_eval": {
+    "accuracy": 1.0,
+    "episodes": 4,
+    "mean_agent_calls": 4.0,
+    "mean_reward": 0.5690633333333335,
+    "paths": {
+      "visual->knowledge->reasoning->verification": 4
+    }
+  },
+  "parameter_sha256_after": "a25222fc8040419f479bacf0c4a9be5a7564a53f7c75fba9c847b44304d661ad",
+  "parameter_sha256_before": "b2fd8b9e2c745fda6a3ee57cb3577a1b8fe72c2a5a78f7d2b2c49d4ac26819bf",
+  "schema_version": "evors.phase5-summary.v1",
+  "train": {
+    "accuracy": 0.9375,
+    "episodes": 480,
+    "mean_agent_calls": 3.5416666666666665,
+    "mean_reward": 0.5467765166666648,
+    "paths": {
+      "visual": 4,
+      "visual->knowledge": 4,
+      "visual->knowledge->reasoning->verification": 275,
+      "visual->reasoning": 3,
+      "visual->reasoning->verification": 194
+    }
+  },
+  "trained_steps": 480,
+  "verl_environment": {
+    "error_type": "ModuleNotFoundError",
+    "installed": false,
+    "version": null
+  }
+}

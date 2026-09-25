@@ -1,5 +1,10 @@
 # 给 Coding Agent / Claude Code / Codex 的实现提示词
 
+> **已停止作为当前实现指令。** 本文件对应 v1 原型，继续照此实现会错误扩展固定空间 Agent、
+> 自写 orchestrator 和 CoMLRL/MAGRPO 路线。新任务必须先读取
+> [EvoRS-Comm 核心架构决策 v2](./EVORS_COMM_ARCHITECTURE_V2.md)，并以其中的已冻结边界为准。
+> 本文件仅保留作历史实现记录。
+
 你要实现一个研究代码库：
 
 **Remote-Sensing Hierarchical Multimodal Communication for Multi-Agent Reinforcement Learning**

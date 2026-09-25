@@ -1,0 +1,19 @@
+{
+  "checks": {
+    "all_arms_error_free": true,
+    "all_arms_present": true,
+    "answer_ownership_valid": true,
+    "multi_cost_matches_runtime": true,
+    "multi_four_transitions": true,
+    "multi_label_isolation": true,
+    "multi_path_exact": true,
+    "multi_two_routed_messages": true,
+    "multi_workspace_complete": true,
+    "sample_count": true,
+    "single_workspace_complete": true,
+    "unique_sample_ids": true,
+    "workspace_contains_no_binary_values": true
+  },
+  "schema_version": "evors.phase4-comparison-audit.v1",
+  "status": "passed"
+}

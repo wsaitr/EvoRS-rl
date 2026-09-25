@@ -1,0 +1,19 @@
+{
+  "checks": {
+    "architecture_arm64": true,
+    "default_command_verify": true,
+    "default_uid_1000": true,
+    "entrypoint_correct": true,
+    "no_cloud_secrets_in_layer_inputs": true,
+    "pythonpath_correct": true,
+    "torch_not_vendored": true,
+    "working_dir_correct": true
+  },
+  "compressed_layer_bytes": 6595388841,
+  "config_digest": "sha256:3c42405921c9a1d7357251e3bc55b3350d49ff6611455a9df880a29227851f48",
+  "image": "swr.cn-southwest-2.myhuaweicloud.com/evors-comm/training:phase5-20260919-d52590e8c17b",
+  "layer_count": 58,
+  "manifest_digest": "sha256:b1d866ae780b2685e15baf641a5f7bb25cfaf32dc674aebcb2581b17726d9779",
+  "passed": true,
+  "schema_version": "evors.modelarts-remote-verification.v1"
+}

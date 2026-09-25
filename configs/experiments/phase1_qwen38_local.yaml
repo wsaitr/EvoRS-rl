@@ -1,0 +1,44 @@
+phase: 1
+
+# Strict local integration gate for the downloaded Qwen3.8-27B Q4 GGUF and
+# multimodal projector. These synthetic counterfactuals are not a scientific
+# accuracy benchmark.
+dataset:
+  manifest: tests/fixtures/phase1/manifest.jsonl
+  limit: 2
+
+backend:
+  type: openai_compatible
+  model: evors/qwen3.8-27b-q4
+  base_url: http://127.0.0.1:18080
+  api_key_env: null
+  timeout_seconds: 1800
+  max_tokens: 192
+  enable_thinking: false
+  preserve_thinking: false
+  extra_body:
+    temperature: 0
+    response_format:
+      type: json_object
+
+runtime:
+  max_steps: 4
+  require_tool: true
+
+budget:
+  max_agent_calls: 1
+  max_tool_calls: 2
+  max_model_calls: 4
+  max_model_input_tokens: 65536
+  max_model_output_tokens: 1024
+  max_message_text_tokens: 0
+  max_message_structure_bytes: 0
+  max_message_latent_bytes: 0
+  max_billed_compute_ms: 3600000
+  max_wall_time_ms: 3600000
+  max_errors: 2
+  max_retries: 1
+  max_invalid_actions: 2
+
+logging:
+  output: outputs/phase1/qwen38-local-live-gate-events.jsonl

@@ -1,0 +1,28 @@
+{
+  "application_layer": {
+    "diff_id": "sha256:4adb3647d1d2963fab1de099c3d7aa9cfff344cbce4bdf96182d8eaf94fdf8e5",
+    "digest": "sha256:6f79efb0dc9f08e101f199ec7003ec5c976528ff963e08ee0096587450332284",
+    "file_count": 13121,
+    "size": 150536874,
+    "uncompressed_size": 539955200
+  },
+  "architecture": "arm64",
+  "base_digest": "sha256:f4d529a6b1f26da9dc142fa356fc4a7de382d810931f9223ffc338aa0d9a2f39",
+  "base_image": "swr.cn-southwest-2.myhuaweicloud.com/roadtoken3d/training:ascend-native-910b-1p4p-20260907",
+  "base_layers_mounted": 0,
+  "base_layers_reused": 57,
+  "compressed_layer_bytes": 6595388841,
+  "content_sha256": "d52590e8c17bc53f82173a2a72713eff888ea1b64f7b327c688a75113eab9abf",
+  "default_command": [
+    "verify"
+  ],
+  "default_user": "1000:1000",
+  "digest": "sha256:b1d866ae780b2685e15baf641a5f7bb25cfaf32dc674aebcb2581b17726d9779",
+  "entrypoint": [
+    "/usr/local/bin/evors-modelarts"
+  ],
+  "image": "swr.cn-southwest-2.myhuaweicloud.com/evors-comm/training:phase5-20260919-d52590e8c17b",
+  "layer_count": 58,
+  "published_at": "2026-09-19T08:34:17.999378Z",
+  "schema_version": "evors.modelarts-image-publish.v1"
+}

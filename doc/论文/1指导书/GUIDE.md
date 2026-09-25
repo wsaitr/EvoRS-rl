@@ -1,5 +1,9 @@
 # RS-HMComm 三阶段实施计划与指导书
 
+> **旧版说明：** 本文件记录 v1 原型的三阶段计划。数据集、硬件、实验候选和工程经验仍可参考，
+> 但固定空间 Agent、自写 orchestrator、CoMLRL/MAGRPO 优先路线和严格四层树已不再代表目标架构。
+> 当前规范见 [EvoRS-Comm 核心架构决策 v2](./EVORS_COMM_ARCHITECTURE_V2.md)。
+
 ## 0. 研究目标
 
 论文四个贡献对应四个工程目标：

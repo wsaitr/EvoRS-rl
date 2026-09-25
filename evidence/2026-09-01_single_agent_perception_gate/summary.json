@@ -1,0 +1,1412 @@
+{
+  "agent_accuracy": 0.6,
+  "agent_correct": 12,
+  "agent_errors": 0,
+  "agent_model_calls": 47,
+  "agent_object_existence_correct": 6,
+  "agent_object_existence_count": 10,
+  "agent_object_quantity_correct": 6,
+  "agent_object_quantity_count": 10,
+  "agent_tool_calls": 15,
+  "direct_accuracy": 0.5,
+  "direct_correct": 10,
+  "direct_errors": 0,
+  "direct_model_calls": 20,
+  "direct_object_existence_correct": 6,
+  "direct_object_existence_count": 10,
+  "direct_object_quantity_correct": 4,
+  "direct_object_quantity_count": 10,
+  "direct_tool_calls": 0,
+  "expected_model_id": "evors/qwen3.8-27b-q4",
+  "gate_passed": true,
+  "grid_sizes": [],
+  "manifest": "configs\\experiments\\vrsbench20_manifest.jsonl",
+  "manifest_sha256": "1ba99639595b57e04e3cd3bda6714553c2ba946197640cfcacb0512ca705c046",
+  "model_config": "configs\\models\\qwen38_27b_q4_local.yaml",
+  "model_config_sha256": "ee30ae9b41d4f617c2554a967649554a1ebd17e35882ea3740806e7957a7fe3b",
+  "offset": 0,
+  "results": [
+    {
+      "answer": "2",
+      "arm": "direct",
+      "correct": true,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 306,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "2",
+          "input_tokens": 306,
+          "latency_ms": 7427.19690001104,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "How many roundabouts are visible in the image?",
+      "reference_answer": "2",
+      "sample_id": "vrsbench-val-000",
+      "task_type": "object_quantity",
+      "tool_calls": 0,
+      "wall_time_ms": 7454.462499939837
+    },
+    {
+      "answer": "2",
+      "arm": "agent",
+      "correct": true,
+      "decision_rule": "global_scale_consensus",
+      "error": null,
+      "input_tokens": 1727,
+      "model_calls": 3,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "2",
+          "input_tokens": 306,
+          "latency_ms": 834.0941000496969,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        },
+        {
+          "answer": "```json\n[\n\t{\"bbox_2d\": [631, 74, 736, 185], \"label\": \"roundabout\"},\n\t{\"bbox_2d\": [192, 692, 284, 784], \"label\": \"roundabout\"}\n]\n```",
+          "input_tokens": 347,
+          "latency_ms": 28599.333100020885,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 78,
+          "view": "object_localization"
+        },
+        {
+          "answer": "2",
+          "input_tokens": 1074,
+          "latency_ms": 916.7102000210434,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "enhanced_global_2x"
+        }
+      ],
+      "output_tokens": 82,
+      "question": "How many roundabouts are visible in the image?",
+      "reference_answer": "2",
+      "sample_id": "vrsbench-val-000",
+      "task_type": "object_quantity",
+      "tool_calls": 1,
+      "wall_time_ms": 30602.357499999925
+    },
+    {
+      "answer": "2",
+      "arm": "direct",
+      "correct": false,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 307,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "2",
+          "input_tokens": 307,
+          "latency_ms": 7744.42070000805,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "How many windmills are visible in the image?",
+      "reference_answer": "6",
+      "sample_id": "vrsbench-val-001",
+      "task_type": "object_quantity",
+      "tool_calls": 0,
+      "wall_time_ms": 7785.219899960794
+    },
+    {
+      "answer": "6",
+      "arm": "agent",
+      "correct": true,
+      "decision_rule": "enhanced_count_localization_consensus",
+      "error": null,
+      "input_tokens": 2846,
+      "model_calls": 4,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "2",
+          "input_tokens": 307,
+          "latency_ms": 771.8914999859408,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        },
+        {
+          "answer": "```json\n{\"objects\":[{\"bbox\":[62,319,104,378]}]}\n```",
+          "input_tokens": 348,
+          "latency_ms": 14535.706999944523,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 27,
+          "view": "object_localization"
+        },
+        {
+          "answer": "7",
+          "input_tokens": 1075,
+          "latency_ms": 21662.55559993442,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "enhanced_global_2x"
+        },
+        {
+          "answer": "```json\n{\"objects\":[{\"bbox\":[62, 312, 86, 360],\"label\":\"windmill\"},{\"bbox\":[264, 360, 278, 408],\"label\":\"windmill\"},{\"bbox\":[209, 312, 224, 377],\"label\":\"windmill\"},{\"bbox\":[62, 52, 74, 96],\"label\":\"windmill\"},{\"bbox\":[706, 744, 718, 792],\"label\":\"windmill\"},{\"bbox\":[624, 888, 634, 938],\"label\":\"windmill\"}]}\n```",
+          "input_tokens": 1116,
+          "latency_ms": 65157.93489990756,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 160,
+          "view": "enhanced_object_localization"
+        }
+      ],
+      "output_tokens": 191,
+      "question": "How many windmills are visible in the image?",
+      "reference_answer": "6",
+      "sample_id": "vrsbench-val-001",
+      "task_type": "object_quantity",
+      "tool_calls": 1,
+      "wall_time_ms": 102598.95100002177
+    },
+    {
+      "answer": "2",
+      "arm": "direct",
+      "correct": false,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 305,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "2",
+          "input_tokens": 305,
+          "latency_ms": 7397.202500025742,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "How many vehicles are visible at the intersection?",
+      "reference_answer": "1",
+      "sample_id": "vrsbench-val-002",
+      "task_type": "object_quantity",
+      "tool_calls": 0,
+      "wall_time_ms": 7439.242099993862
+    },
+    {
+      "answer": "2",
+      "arm": "agent",
+      "correct": false,
+      "decision_rule": "global_scale_consensus",
+      "error": null,
+      "input_tokens": 1724,
+      "model_calls": 3,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "2",
+          "input_tokens": 305,
+          "latency_ms": 870.0593000976369,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        },
+        {
+          "answer": "```json\n{\"objects\":[{\"bbox\":[119,245,194,362]},{\"bbox\":[638,912,704,1000]}]}\n```",
+          "input_tokens": 346,
+          "latency_ms": 20309.587999945506,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 48,
+          "view": "object_localization"
+        },
+        {
+          "answer": "2",
+          "input_tokens": 1073,
+          "latency_ms": 992.9069000063464,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "enhanced_global_2x"
+        }
+      ],
+      "output_tokens": 52,
+      "question": "How many vehicles are visible at the intersection?",
+      "reference_answer": "1",
+      "sample_id": "vrsbench-val-002",
+      "task_type": "object_quantity",
+      "tool_calls": 1,
+      "wall_time_ms": 22478.94840000663
+    },
+    {
+      "answer": "2",
+      "arm": "direct",
+      "correct": false,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 303,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "2",
+          "input_tokens": 303,
+          "latency_ms": 7688.822400057688,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "How many small vehicles are visible?",
+      "reference_answer": "1",
+      "sample_id": "vrsbench-val-003",
+      "task_type": "object_quantity",
+      "tool_calls": 0,
+      "wall_time_ms": 7730.065200012177
+    },
+    {
+      "answer": "2",
+      "arm": "agent",
+      "correct": false,
+      "decision_rule": "global_scale_consensus",
+      "error": null,
+      "input_tokens": 1718,
+      "model_calls": 3,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "2",
+          "input_tokens": 303,
+          "latency_ms": 772.433300036937,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        },
+        {
+          "answer": "```json\n{\"objects\":[{\"bbox\":[36, 935, 56, 953]},{\"bbox\":[10, 905, 31, 923]},{\"bbox\":[10, 885, 31, 903]},{\"bbox\":[0, 870, 18, 888]}]}\n```",
+          "input_tokens": 344,
+          "latency_ms": 31274.580499972217,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 88,
+          "view": "object_localization"
+        },
+        {
+          "answer": "2",
+          "input_tokens": 1071,
+          "latency_ms": 1027.3454999551177,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "enhanced_global_2x"
+        }
+      ],
+      "output_tokens": 92,
+      "question": "How many small vehicles are visible?",
+      "reference_answer": "1",
+      "sample_id": "vrsbench-val-003",
+      "task_type": "object_quantity",
+      "tool_calls": 1,
+      "wall_time_ms": 33382.42530007847
+    },
+    {
+      "answer": "3",
+      "arm": "direct",
+      "correct": false,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 307,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "3",
+          "input_tokens": 307,
+          "latency_ms": 8912.135899998248,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "How many small vehicles can be observed in the image?",
+      "reference_answer": "2",
+      "sample_id": "vrsbench-val-004",
+      "task_type": "object_quantity",
+      "tool_calls": 0,
+      "wall_time_ms": 8943.702000076883
+    },
+    {
+      "answer": "3",
+      "arm": "agent",
+      "correct": false,
+      "decision_rule": "global_scale_consensus",
+      "error": null,
+      "input_tokens": 1730,
+      "model_calls": 3,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "3",
+          "input_tokens": 307,
+          "latency_ms": 813.8559999642894,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        },
+        {
+          "answer": "```json\n[\n    {\"bbox_2d\": [245, 720, 355, 784], \"label\": \"small vehicles\"},\n    {\"bbox_2d\": [565, 764, 665, 828], \"label\": \"small vehicles\"},\n    {\"bbox_2d\": [735, 662, 840, 718], \"label\": \"small vehicles\"},\n    {\"bbox_2d\": [860, 630, 968, 690], \"label\": \"small vehicles\"}\n]\n```",
+          "input_tokens": 348,
+          "latency_ms": 49280.77069995925,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 149,
+          "view": "object_localization"
+        },
+        {
+          "answer": "3",
+          "input_tokens": 1075,
+          "latency_ms": 23044.73149997648,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "enhanced_global_2x"
+        }
+      ],
+      "output_tokens": 153,
+      "question": "How many small vehicles can be observed in the image?",
+      "reference_answer": "2",
+      "sample_id": "vrsbench-val-004",
+      "task_type": "object_quantity",
+      "tool_calls": 1,
+      "wall_time_ms": 73423.14579989761
+    },
+    {
+      "answer": "2",
+      "arm": "direct",
+      "correct": true,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 303,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "2",
+          "input_tokens": 303,
+          "latency_ms": 7627.168099978007,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "How many storage tanks are visible?",
+      "reference_answer": "2",
+      "sample_id": "vrsbench-val-005",
+      "task_type": "object_quantity",
+      "tool_calls": 0,
+      "wall_time_ms": 7661.793699953705
+    },
+    {
+      "answer": "2",
+      "arm": "agent",
+      "correct": true,
+      "decision_rule": "global_scale_consensus",
+      "error": null,
+      "input_tokens": 1718,
+      "model_calls": 3,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "2",
+          "input_tokens": 303,
+          "latency_ms": 764.0223000198603,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        },
+        {
+          "answer": "```json\n{\"objects\":[{\"bbox\":[194,302,475,628],\"label\":\"storage tanks\"},{\"bbox\":[755,152,1000,482],\"label\":\"storage tanks\"}]}\n```",
+          "input_tokens": 344,
+          "latency_ms": 22848.919000010937,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 57,
+          "view": "object_localization"
+        },
+        {
+          "answer": "2",
+          "input_tokens": 1071,
+          "latency_ms": 21631.346799898893,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "enhanced_global_2x"
+        }
+      ],
+      "output_tokens": 61,
+      "question": "How many storage tanks are visible?",
+      "reference_answer": "2",
+      "sample_id": "vrsbench-val-005",
+      "task_type": "object_quantity",
+      "tool_calls": 1,
+      "wall_time_ms": 45555.16969994642
+    },
+    {
+      "answer": "2",
+      "arm": "direct",
+      "correct": true,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 307,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "2",
+          "input_tokens": 307,
+          "latency_ms": 8003.715099999681,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "How many windmills are present in the image?",
+      "reference_answer": "2",
+      "sample_id": "vrsbench-val-006",
+      "task_type": "object_quantity",
+      "tool_calls": 0,
+      "wall_time_ms": 8054.921899922192
+    },
+    {
+      "answer": "2",
+      "arm": "agent",
+      "correct": true,
+      "decision_rule": "global_scale_consensus",
+      "error": null,
+      "input_tokens": 1730,
+      "model_calls": 3,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "2",
+          "input_tokens": 307,
+          "latency_ms": 812.6170999603346,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        },
+        {
+          "answer": "```json\n{\"objects\":[{\"bbox\":[482,78,554,160]},{\"bbox\":[702,583,759,682]},{\"bbox\":[314,978,344,1000]}]}\n```",
+          "input_tokens": 348,
+          "latency_ms": 25454.423499992117,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 66,
+          "view": "object_localization"
+        },
+        {
+          "answer": "2",
+          "input_tokens": 1075,
+          "latency_ms": 21117.27049993351,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "enhanced_global_2x"
+        }
+      ],
+      "output_tokens": 70,
+      "question": "How many windmills are present in the image?",
+      "reference_answer": "2",
+      "sample_id": "vrsbench-val-006",
+      "task_type": "object_quantity",
+      "tool_calls": 1,
+      "wall_time_ms": 47691.85129995458
+    },
+    {
+      "answer": "3",
+      "arm": "direct",
+      "correct": true,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 305,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "3",
+          "input_tokens": 305,
+          "latency_ms": 7817.2294000396505,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "How many vehicles are visible in the image?",
+      "reference_answer": "3",
+      "sample_id": "vrsbench-val-007",
+      "task_type": "object_quantity",
+      "tool_calls": 0,
+      "wall_time_ms": 7870.101000065915
+    },
+    {
+      "answer": "3",
+      "arm": "agent",
+      "correct": true,
+      "decision_rule": "global_scale_consensus",
+      "error": null,
+      "input_tokens": 1724,
+      "model_calls": 3,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "3",
+          "input_tokens": 305,
+          "latency_ms": 779.0936999954283,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        },
+        {
+          "answer": "```json\n{\"objects\":[{\"bbox\":[364,559,515,627],\"label\":\"vehicle\"},{\"bbox\":[389,637,508,708],\"label\":\"vehicle\"},{\"bbox\":[627,331,686,476],\"label\":\"vehicle\"}]}\n```",
+          "input_tokens": 346,
+          "latency_ms": 28024.607499944977,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 76,
+          "view": "object_localization"
+        },
+        {
+          "answer": "3",
+          "input_tokens": 1073,
+          "latency_ms": 20631.17309997324,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "enhanced_global_2x"
+        }
+      ],
+      "output_tokens": 80,
+      "question": "How many vehicles are visible in the image?",
+      "reference_answer": "3",
+      "sample_id": "vrsbench-val-007",
+      "task_type": "object_quantity",
+      "tool_calls": 1,
+      "wall_time_ms": 49750.38499990478
+    },
+    {
+      "answer": "12",
+      "arm": "direct",
+      "correct": false,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 306,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "12",
+          "input_tokens": 306,
+          "latency_ms": 7763.859300059266,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 3,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 3,
+      "question": "How many vehicles can be identified in the image?",
+      "reference_answer": "1",
+      "sample_id": "vrsbench-val-008",
+      "task_type": "object_quantity",
+      "tool_calls": 0,
+      "wall_time_ms": 7801.4449999900535
+    },
+    {
+      "answer": "1",
+      "arm": "agent",
+      "correct": true,
+      "decision_rule": "candidate_contact_sheet_audit",
+      "error": null,
+      "input_tokens": 5771,
+      "model_calls": 9,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "12",
+          "input_tokens": 306,
+          "latency_ms": 1078.9748000679538,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 3,
+          "view": "whole_image"
+        },
+        {
+          "answer": "```json\n{\n \"objects\": [\n  {\"bbox\": [246, 442, 258, 458], \"label\": \"vehicle\"},\n  {\"bbox\": [258, 438, 270, 454], \"label\": \"vehicle\"},\n  {\"bbox\": [270, 434, 282, 450], \"label\": \"vehicle\"},\n  {\"bbox\": [282, 430, 294, 446], \"label\": \"vehicle\"},\n  {\"bbox\": [294, 426, 306, 442], \"label\": \"vehicle\"},\n  {\"bbox\": [294, 410, 306, 426], \"label\": \"vehicle\"},\n  {\"bbox\": [306, 406, 318, 422], \"label\": \"vehicle\"},\n  {\"bbox\": [318, 402, 330, 418], \"label\": \"vehicle",
+          "input_tokens": 347,
+          "latency_ms": 77577.29950000066,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 256,
+          "view": "object_localization"
+        },
+        {
+          "answer": "23",
+          "input_tokens": 1074,
+          "latency_ms": 22825.140499975532,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 3,
+          "view": "enhanced_global_2x"
+        },
+        {
+          "answer": "```json\n[\n\t{\"bbox_2d\": [244, 444, 256, 462], \"label\": \"vehicles\"},\n\t{\"bbox_2d\": [254, 421, 266, 440], \"label\": \"vehicles\"},\n\t{\"bbox_2d\": [261, 440, 274, 457], \"label\": \"vehicles\"},\n\t{\"bbox_2d\": [270, 435, 283, 453], \"label\": \"vehicles\"},\n\t{\"bbox_2d\": [279, 430, 292, 448], \"label\": \"vehicles\"},\n\t{\"bbox_2d\": [287, 425, 300, 443], \"label\": \"vehicles\"},\n\t{\"bbox_2d\": [295, 420, 308, 438], \"label\": \"vehicles\"},\n\t{\"bbox_2d\": [286,",
+          "input_tokens": 1115,
+          "latency_ms": 91900.40530008264,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 256,
+          "view": "enhanced_object_localization"
+        },
+        {
+          "answer": "```json\n[\n    {\"bbox_2d\": [492, 959, 512, 997], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [492, 887, 512, 924], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [522, 879, 542, 911], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [542, 867, 562, 901], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [562, 854, 582, 889], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [582, 844, 602, 877], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [508, 839, 528, 874], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [568,",
+          "input_tokens": 667,
+          "latency_ms": 84256.81739998981,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 256,
+          "view": "tile_localization_tile_r0c0"
+        },
+        {
+          "answer": "```json\n[\n    {\"bbox_2d\": [503, 0, 524, 32], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [719, 184, 749, 224], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [859, 312, 892, 345], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [974, 409, 1000, 441], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [866, 500, 901, 532], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [814, 481, 846, 512], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [779, 468, 809, 495], \"label\": \"vehicles\"},\n    {\"bbox_2d\": [749, 45",
+          "input_tokens": 667,
+          "latency_ms": 86572.0774999354,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 256,
+          "view": "tile_localization_tile_r0c1"
+        },
+        {
+          "answer": "```json\n[\n    {\"bbox_2d\": [737, 649, 764, 714], \"label\": \"vehicles\"}\n]\n```",
+          "input_tokens": 667,
+          "latency_ms": 26103.908900055103,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 43,
+          "view": "tile_localization_tile_r1c0"
+        },
+        {
+          "answer": "```json\n{\"objects\": []}\n```",
+          "input_tokens": 667,
+          "latency_ms": 17051.886399975047,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 11,
+          "view": "tile_localization_tile_r1c1"
+        },
+        {
+          "answer": "1",
+          "input_tokens": 261,
+          "latency_ms": 6440.071500022896,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "candidate_contact_sheet"
+        }
+      ],
+      "output_tokens": 1086,
+      "question": "How many vehicles can be identified in the image?",
+      "reference_answer": "1",
+      "sample_id": "vrsbench-val-008",
+      "task_type": "object_quantity",
+      "tool_calls": 6,
+      "wall_time_ms": 414822.91929994244
+    },
+    {
+      "answer": "0",
+      "arm": "direct",
+      "correct": false,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 305,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "0",
+          "input_tokens": 305,
+          "latency_ms": 7456.698999973014,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "How many ships are visible in the image?",
+      "reference_answer": "2",
+      "sample_id": "vrsbench-val-009",
+      "task_type": "object_quantity",
+      "tool_calls": 0,
+      "wall_time_ms": 7494.543400011025
+    },
+    {
+      "answer": "0",
+      "arm": "agent",
+      "correct": false,
+      "decision_rule": "global_scale_consensus",
+      "error": null,
+      "input_tokens": 1724,
+      "model_calls": 3,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "0",
+          "input_tokens": 305,
+          "latency_ms": 805.2677999949083,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        },
+        {
+          "answer": "```json\n{\"objects\":[{\"bbox\":[311,981,375,1000]},{\"bbox\":[0,981,100,1000]}]}\n```",
+          "input_tokens": 346,
+          "latency_ms": 20295.89870001655,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 47,
+          "view": "object_localization"
+        },
+        {
+          "answer": "0",
+          "input_tokens": 1073,
+          "latency_ms": 21488.63270005677,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "enhanced_global_2x"
+        }
+      ],
+      "output_tokens": 51,
+      "question": "How many ships are visible in the image?",
+      "reference_answer": "2",
+      "sample_id": "vrsbench-val-009",
+      "task_type": "object_quantity",
+      "tool_calls": 1,
+      "wall_time_ms": 42920.94730003737
+    },
+    {
+      "answer": "Yes",
+      "arm": "direct",
+      "correct": true,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 307,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 307,
+          "latency_ms": 7362.405100022443,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there a road running underneath the overpass?",
+      "reference_answer": "yes",
+      "sample_id": "vrsbench-val-010",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 7402.9712999472395
+    },
+    {
+      "answer": "Yes",
+      "arm": "agent",
+      "correct": true,
+      "decision_rule": "whole_image_sufficient",
+      "error": null,
+      "input_tokens": 307,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 307,
+          "latency_ms": 875.0237999483943,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there a road running underneath the overpass?",
+      "reference_answer": "yes",
+      "sample_id": "vrsbench-val-010",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 921.6442999895662
+    },
+    {
+      "answer": "Yes",
+      "arm": "direct",
+      "correct": false,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 311,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 311,
+          "latency_ms": 7712.049099965952,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there a large building adjacent to the west side of the stadium?",
+      "reference_answer": "no",
+      "sample_id": "vrsbench-val-011",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 7757.585300016217
+    },
+    {
+      "answer": "Yes",
+      "arm": "agent",
+      "correct": false,
+      "decision_rule": "whole_image_sufficient",
+      "error": null,
+      "input_tokens": 311,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 311,
+          "latency_ms": 812.0345000643283,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there a large building adjacent to the west side of the stadium?",
+      "reference_answer": "no",
+      "sample_id": "vrsbench-val-011",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 850.1292000291869
+    },
+    {
+      "answer": "No",
+      "arm": "direct",
+      "correct": true,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 306,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "No",
+          "input_tokens": 306,
+          "latency_ms": 8704.13109997753,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there any vegetation present in the image?",
+      "reference_answer": "no",
+      "sample_id": "vrsbench-val-012",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 8747.61960003525
+    },
+    {
+      "answer": "No",
+      "arm": "agent",
+      "correct": true,
+      "decision_rule": "whole_image_sufficient",
+      "error": null,
+      "input_tokens": 306,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "No",
+          "input_tokens": 306,
+          "latency_ms": 806.3913000514731,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there any vegetation present in the image?",
+      "reference_answer": "no",
+      "sample_id": "vrsbench-val-012",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 843.9396999310702
+    },
+    {
+      "answer": "Yes",
+      "arm": "direct",
+      "correct": true,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 306,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 306,
+          "latency_ms": 9669.778200099245,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there a swimming pool in the image?",
+      "reference_answer": "yes",
+      "sample_id": "vrsbench-val-013",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 9713.890700018965
+    },
+    {
+      "answer": "Yes",
+      "arm": "agent",
+      "correct": true,
+      "decision_rule": "whole_image_sufficient",
+      "error": null,
+      "input_tokens": 306,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 306,
+          "latency_ms": 783.1166000105441,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there a swimming pool in the image?",
+      "reference_answer": "yes",
+      "sample_id": "vrsbench-val-013",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 820.4050000058487
+    },
+    {
+      "answer": "Yes",
+      "arm": "direct",
+      "correct": true,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 304,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 304,
+          "latency_ms": 7670.578100020066,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Are roads present in the image?",
+      "reference_answer": "yes",
+      "sample_id": "vrsbench-val-014",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 7708.925700047985
+    },
+    {
+      "answer": "Yes",
+      "arm": "agent",
+      "correct": true,
+      "decision_rule": "whole_image_sufficient",
+      "error": null,
+      "input_tokens": 304,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 304,
+          "latency_ms": 933.4440000820905,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Are roads present in the image?",
+      "reference_answer": "yes",
+      "sample_id": "vrsbench-val-014",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 974.9352999497205
+    },
+    {
+      "answer": "Yes",
+      "arm": "direct",
+      "correct": false,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 305,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 305,
+          "latency_ms": 8142.134599969722,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Are there any boats in the harbor?",
+      "reference_answer": "no",
+      "sample_id": "vrsbench-val-015",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 8179.3034001020715
+    },
+    {
+      "answer": "Yes",
+      "arm": "agent",
+      "correct": false,
+      "decision_rule": "whole_image_sufficient",
+      "error": null,
+      "input_tokens": 305,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 305,
+          "latency_ms": 784.9911999655887,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Are there any boats in the harbor?",
+      "reference_answer": "no",
+      "sample_id": "vrsbench-val-015",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 823.832800029777
+    },
+    {
+      "answer": "Yes",
+      "arm": "direct",
+      "correct": false,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 308,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 308,
+          "latency_ms": 8028.9973999606445,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there more than one ship visible in the image?",
+      "reference_answer": "no",
+      "sample_id": "vrsbench-val-016",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 8068.591500050388
+    },
+    {
+      "answer": "Yes",
+      "arm": "agent",
+      "correct": false,
+      "decision_rule": "whole_image_sufficient",
+      "error": null,
+      "input_tokens": 308,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 308,
+          "latency_ms": 861.2834999803454,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there more than one ship visible in the image?",
+      "reference_answer": "no",
+      "sample_id": "vrsbench-val-016",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 896.1544999619946
+    },
+    {
+      "answer": "Yes",
+      "arm": "direct",
+      "correct": true,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 305,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 305,
+          "latency_ms": 8500.92969997786,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there vegetation visible in the image?",
+      "reference_answer": "yes",
+      "sample_id": "vrsbench-val-017",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 8537.52509993501
+    },
+    {
+      "answer": "Yes",
+      "arm": "agent",
+      "correct": true,
+      "decision_rule": "whole_image_sufficient",
+      "error": null,
+      "input_tokens": 305,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "Yes",
+          "input_tokens": 305,
+          "latency_ms": 794.1123000346124,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there vegetation visible in the image?",
+      "reference_answer": "yes",
+      "sample_id": "vrsbench-val-017",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 838.0514000309631
+    },
+    {
+      "answer": "No",
+      "arm": "direct",
+      "correct": false,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 306,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "No",
+          "input_tokens": 306,
+          "latency_ms": 8474.822300020605,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there a visible fence in the image?",
+      "reference_answer": "yes",
+      "sample_id": "vrsbench-val-018",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 8512.932499987073
+    },
+    {
+      "answer": "No",
+      "arm": "agent",
+      "correct": false,
+      "decision_rule": "whole_image_sufficient",
+      "error": null,
+      "input_tokens": 306,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "No",
+          "input_tokens": 306,
+          "latency_ms": 767.279600026086,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Is there a visible fence in the image?",
+      "reference_answer": "yes",
+      "sample_id": "vrsbench-val-018",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 804.7796000028029
+    },
+    {
+      "answer": "No",
+      "arm": "direct",
+      "correct": true,
+      "decision_rule": "single_whole_image_call",
+      "error": null,
+      "input_tokens": 305,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "No",
+          "input_tokens": 305,
+          "latency_ms": 8160.689000040293,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Are there any vehicles on the bridge?",
+      "reference_answer": "no",
+      "sample_id": "vrsbench-val-019",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 8203.0373000307
+    },
+    {
+      "answer": "No",
+      "arm": "agent",
+      "correct": true,
+      "decision_rule": "whole_image_sufficient",
+      "error": null,
+      "input_tokens": 305,
+      "model_calls": 1,
+      "model_ids": [
+        "evors/qwen3.8-27b-q4"
+      ],
+      "observations": [
+        {
+          "answer": "No",
+          "input_tokens": 305,
+          "latency_ms": 797.6071001030505,
+          "model_id": "evors/qwen3.8-27b-q4",
+          "output_tokens": 2,
+          "view": "whole_image"
+        }
+      ],
+      "output_tokens": 2,
+      "question": "Are there any vehicles on the bridge?",
+      "reference_answer": "no",
+      "sample_id": "vrsbench-val-019",
+      "task_type": "object_existence",
+      "tool_calls": 0,
+      "wall_time_ms": 831.0235000681132
+    }
+  ],
+  "sample_count": 20,
+  "schema_version": "evors.single-agent-perception-gate.v1",
+  "scientific_claim": false,
+  "seed": 20260831,
+  "status": "completed",
+  "tile_scan_size": 2
+}

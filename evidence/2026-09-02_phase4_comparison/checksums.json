@@ -1,0 +1,38 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "REPORT.md": {
+      "bytes": 1753,
+      "sha256": "4faa38b8a964cfd92d548f933f6ca92dd8424bbfbd24ea5c1bf542e5681cf17f"
+    },
+    "accuracy_cost.csv": {
+      "bytes": 585,
+      "sha256": "1b855ba50f4f34f4702f828c582f3ddb88520e873b3fc342fa6fbe243de49682"
+    },
+    "audit.json": {
+      "bytes": 580,
+      "sha256": "0805fe4b2a412c455a93095144e9a9bdcba0f6b4a25eb213d37648e9b0366918"
+    },
+    "checkpoint.json": {
+      "bytes": 632,
+      "sha256": "d5ebf22273582f47f9540204d930e074e366b9b9354a97c9f7e807ac32eb5fbc"
+    },
+    "events.jsonl": {
+      "bytes": 664432,
+      "sha256": "81044a72c2ef0414c28cc749a3ec3807a1ef12683a7db5030acd3441f0ecb04f"
+    },
+    "results.csv": {
+      "bytes": 8725,
+      "sha256": "6d7864deadd3058a552dea6d64dffd98d9483cb24b02ec7a3e28d9957177cc63"
+    },
+    "run_config.json": {
+      "bytes": 802,
+      "sha256": "f3612b80ce4cedb4cb56e603b4b32ecaaf546cdaf23148962d8934a6f3b5f646"
+    },
+    "summary.json": {
+      "bytes": 13085,
+      "sha256": "1abd2112a22cc6082b08b6e1c99473dcebbe069116397d9412d12fffc4cff2bf"
+    }
+  },
+  "schema_version": "evors.evidence-checksums.v1"
+}

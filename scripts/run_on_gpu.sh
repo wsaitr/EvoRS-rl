@@ -29,7 +29,7 @@ IMAGE_NAME="${IMAGE_NAME:-evors-rl-gpu}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
 
 # NPU 设备
-NPU_DEVICES="${NPU_DEVICES:-0,1,2,3,4,5,6,7}"
+NPU_DEVICES="${NPU_DEVICES:-0,1,2,3}"
 
 # obsutil 路径（GPU 服务器上可能不同）
 OBSUTIL="${OBSUTIL:-obsutil}"
@@ -140,7 +140,7 @@ cmd_setup() {
     log "镜像已加载: ${IMAGE_NAME}:${IMAGE_TAG}"
 
     # 4. 创建必要目录
-    mkdir -p "${WORK_DIR}/data" "${WORK_DIR}/outputs" "${WORK_DIR}/logs"
+    mkdir -p "${WORK_DIR}/data" "${WORK_DIR}/outputs" "${WORK_DIR}/evidence" "${WORK_DIR}/logs"
 
     echo ""
     log "设置完成！"
@@ -197,6 +197,7 @@ docker_run_args() {
         -v ${code_dir}/tests:/app/tests:ro
         -v ${code_dir}/data:/app/data:rw
         -v ${code_dir}/outputs:/app/outputs:rw
+        -v ${code_dir}/evidence:/app/evidence:rw
         -v ${code_dir}/logs:/app/logs:rw
         --shm-size=32g
         --network=host
@@ -239,7 +240,7 @@ cmd_dry_run() {
 cmd_train() {
     load_image
     check_code "${WORK_DIR}"
-    local config="${1:-configs/experiments/stage2_pilot.yaml}"
+    local config="${1:-configs/experiments/phase5_routing.yaml}"
 
     echo -e "${BOLD}${GREEN}===== 开始训练 =====${NC}"
     echo "配置: ${config}"
@@ -248,10 +249,9 @@ cmd_train() {
 
     docker run $(docker_run_args) $(device_args) \
         "${IMAGE_NAME}:${IMAGE_TAG}" \
-        python3 scripts/train_npu.py \
+        python3 scripts/train_npu.py routing \
         --config "${config}" \
-        --distributed \
-        --output /app/outputs/training
+        --output /app/evidence/phase5-routing-npu
 }
 
 cmd_test() {

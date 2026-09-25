@@ -1,0 +1,44 @@
+[
+  {
+    "command": [
+      "docker",
+      "compose",
+      "--env-file",
+      "configs/docker/compose.defaults.env",
+      "-f",
+      "docker-compose.yml",
+      "config",
+      "--quiet"
+    ],
+    "output": "",
+    "returncode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "compose",
+      "--env-file",
+      "configs/docker/compose.defaults.env",
+      "-f",
+      "docker-compose.pfs.yml",
+      "config",
+      "--quiet"
+    ],
+    "output": "",
+    "returncode": 0
+  },
+  {
+    "command": [
+      "docker",
+      "compose",
+      "--env-file",
+      "configs/docker/compose.defaults.env",
+      "-f",
+      "docker-compose.npu.yml",
+      "config",
+      "--quiet"
+    ],
+    "output": "",
+    "returncode": 0
+  }
+]

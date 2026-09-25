@@ -1,0 +1,40 @@
+{"question": "How many bridges are visible in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P1358_0053"}
+{"question": "How many vehicles are clearly positioned at the top part of the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P5034_0008"}
+{"question": "Is there any vegetation visible in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "01780_0000"}
+{"question": "How many ships are visible in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P2769_0027"}
+{"question": "How many baseball diamonds are visible in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P1649_0025"}
+{"question": "How many unique objects are identified in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P0960_0005"}
+{"question": "Are there any visible paths or roads?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "P0505_0000"}
+{"question": "How many buildings are visible?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P1439_0044"}
+{"question": "How many baseball diamonds are visible?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P5203_1465"}
+{"question": "How many vehicles can be seen in the bottom-right area?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P4746_0057"}
+{"question": "How many small vehicles are visible?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P2585_0004"}
+{"question": "Are there any large buildings adjacent to the highway?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "P6637_2811"}
+{"question": "How many small vehicles are visible?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P4464_0012"}
+{"question": "How many small vehicles are clearly distinguishable?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P0868_0015"}
+{"question": "How many vehicles are visible in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "02300_0000"}
+{"question": "How many tennis courts are visible in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "04302_0000"}
+{"question": "How many harbors are there?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P0951_0013"}
+{"question": "How many large vehicles are present?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P2002_0002"}
+{"question": "How many vehicles are seen on the overpass?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "02522_0000"}
+{"question": "How many vehicles are visible in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "05194_0000"}
+{"question": "Are there any jetways visible in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "02117_0000"}
+{"question": "How many small vehicles are clearly visible?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P8204_0109"}
+{"question": "Are there any vehicles visible on the bridge?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "P1745_0062"}
+{"question": "Are there any visible letters on the track surface?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "05854_0000"}
+{"question": "Is there a vehicle in the top left area that is smaller than the others?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "P5034_0029"}
+{"question": "How many ships are visible in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P1308_0086"}
+{"question": "Is there a vehicle in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "P1393_0051"}
+{"question": "Does the ground track field have lanes?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "04828_0000"}
+{"question": "How many ships are present in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "04947_0000"}
+{"question": "How many bridges can be seen in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P1361_0010"}
+{"question": "How many planes are visible on the pavement?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P0172_0009"}
+{"question": "Are there any features on the rooftop?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "P4746_0118"}
+{"question": "How many small vehicles are visible?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P6787_0001"}
+{"question": "Is there smoke visible in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "03273_0000"}
+{"question": "Are there any vehicles on the road?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "P6637_2233"}
+{"question": "Is there anything other than water and the harbor visible in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "P0568_0001"}
+{"question": "Is there a vehicle in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "P0324_0000"}
+{"question": "How many small vehicles can be seen?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P7584_0043"}
+{"question": "Is there a ship present in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_existence", "image_id": "P4724_0042"}
+{"question": "How many small vehicles are clearly visible in the image?", "sequence": ["visual", "reasoning", "verification"], "correct": true, "task_type": "object_quantity", "image_id": "P10963_0121"}

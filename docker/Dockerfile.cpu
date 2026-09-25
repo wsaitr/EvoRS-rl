@@ -32,7 +32,8 @@ RUN pip3 install --no-cache-dir --upgrade pip \
         PyYAML>=6 \
         numpy>=1.26 \
         Pillow>=10 \
-        datasets>=2.19
+        datasets>=2.19 \
+        'langgraph>=1.2.11,<1.3'
 
 # Code is hot-mounted via volume, not baked into the image
 # PYTHONPATH lets Python find src/rs_hmcomm without pip install

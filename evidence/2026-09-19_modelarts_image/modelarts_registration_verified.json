@@ -1,0 +1,29 @@
+{
+  "arch": "aarch64",
+  "create_at": 1789806887092,
+  "description": "EvoRS-Comm Phase 0-5 ARM64 Ascend SNT9B experiment runtime; default verify gate, offline dependencies, lws2 data/output.",
+  "dev_services": [
+    "SSH",
+    "NOTEBOOK",
+    "CODE_SERVER"
+  ],
+  "flavor_type": "ASCEND_SNT9B",
+  "id": "312ebef9-5fc6-4225-a0aa-a48ead950d39",
+  "name": "training",
+  "namespace": "evors-comm",
+  "origin": "CUSTOMIZE",
+  "resource_categories": [
+    "ASCEND"
+  ],
+  "service_type": "TRAIN",
+  "size": 6595450594,
+  "status": "ACTIVE",
+  "status_code": 200,
+  "swr_path": "swr.cn-southwest-2.myhuaweicloud.com/evors-comm/training:phase5-20260919-d52590e8c17b",
+  "tag": "phase5-20260919-d52590e8c17b",
+  "tags": [],
+  "type": "DEDICATED",
+  "update_at": 1789806887160,
+  "visibility": "PRIVATE",
+  "workspace_id": "0"
+}

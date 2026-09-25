@@ -1,0 +1,49 @@
+{
+  "files": {
+    ".modelarts/vendor/VENDOR-MANIFEST.json": {
+      "bytes": 16327,
+      "sha256": "41b9ee41821d501f2d2560472a15df03dbf2e479571a8c9cf09c48e88fdebb4d"
+    },
+    "docker/Dockerfile.modelarts-ascend": {
+      "bytes": 2011,
+      "sha256": "d58e2993d2c28039ea30b99e6c39743190fcf37474185ea3ea12cc7a39349b9c"
+    },
+    "docker/modelarts-entrypoint.sh": {
+      "bytes": 979,
+      "sha256": "13e81cda5ab44c793fd87a4756d7853fba95bd0aa5aa673debff52c4ad46adb5"
+    },
+    "docker/requirements-modelarts.txt": {
+      "bytes": 353,
+      "sha256": "ce96951dc2d2fa9e9ae2c839378efc4b4b0bcfed180e931857671ef8a9f830b4"
+    },
+    "evidence/2026-09-19_modelarts_image/REPORT.md": {
+      "bytes": 2499,
+      "sha256": "3f8267eca86109accf64cd5cff95c063ebb5e9fbd6613e102b68ed266eb7abb4"
+    },
+    "evidence/2026-09-19_modelarts_image/modelarts_registration_initial.json": {
+      "bytes": 850,
+      "sha256": "88a9bfc17c607f403e8fe7a76d423a86c258da395032b95d187787a140561f82"
+    },
+    "evidence/2026-09-19_modelarts_image/modelarts_registration_verified.json": {
+      "bytes": 850,
+      "sha256": "88a9bfc17c607f403e8fe7a76d423a86c258da395032b95d187787a140561f82"
+    },
+    "evidence/2026-09-19_modelarts_image/oci_remote_verification.json": {
+      "bytes": 744,
+      "sha256": "e180b220f2f4b0c89549b5cbcdb41e5ade2055c46453953dbf58ad1653ec3451"
+    },
+    "evidence/2026-09-19_modelarts_image/swr_publish.json": {
+      "bytes": 1181,
+      "sha256": "95b9e89ee185078d500089b6e07675c2c809236f5ecf6516068e14b60f3b7bb3"
+    },
+    "scripts/prepare_modelarts_vendor.py": {
+      "bytes": 5524,
+      "sha256": "b4720f7297476bb4e9d5dae0c945c0ff32803f90882f15a1b68dbbc8f39e8bea"
+    },
+    "scripts/publish_modelarts_oci.py": {
+      "bytes": 19195,
+      "sha256": "1f11e7f65ab25bb3c5a9f962b867bd8b6a1b1741c5d7b5b69b114ef57349ddc5"
+    }
+  },
+  "schema_version": "evors.modelarts-evidence-checksums.v1"
+}

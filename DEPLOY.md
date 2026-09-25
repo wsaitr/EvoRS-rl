@@ -7,18 +7,18 @@
 │  本地开发     │ ────────> │  GitHub   │ ────────> │  前置服务器       │
 │  Windows 11  │           │  EvoRS-rl │           │  1.95.150.79    │
 │              │           └──────────┘           │  Ubuntu 24.04   │
-└──────────────┘                                  │  x86_64, no NPU │
+└──────────────┘                                  │  ARM64, no NPU  │
                                                    └────────┬────────┘
                                                             │
                                                    数据上传到 OBS
                                                             │
                                                             v
                                                    ┌─────────────────┐
-                                                   │  GPU 训练服务器   │
-                                                   │  ModelArts       │
-                                                   │  N×Ascend 910B   │
-                                                   │  ARM, 192GB RAM  │
-                                                   │  data from OBS   │
+                                                   │ NPU 训练服务器   │
+                                                   │ ModelArts       │
+                                                   │ 4×Ascend 910B级 │
+                                                   │ ARM, 768GiB RAM │
+                                                   │ data from OBS   │
                                                    └─────────────────┘
 ```
 
@@ -28,7 +28,7 @@
 |------|------|------|
 | 本地 (Windows) | 开发, Git push | Python 3.11 conda |
 | 前置服务器 | 代码验证, 数据准备 | Ubuntu 24.04, Docker, venv |
-| GPU 服务器 | 正式训练 | Ascend 910B × N, CANN 8.0, ARM |
+| NPU 服务器 | 后续 token-policy / VLM 训练 | 4×Ascend、96 vCPU、768 GiB、ARM |
 
 ## 快速开始
 
@@ -57,7 +57,7 @@ cd /root/EvoRS-rl && git pull
 .venv/bin/python -m pytest -q
 
 # 运行测试 (Docker)
-docker compose run --rm cpu
+docker compose --env-file configs/docker/compose.defaults.env run --rm cpu
 
 # 准备数据上传到 OBS
 .venv/bin/python scripts/download_data.py --all
@@ -76,8 +76,8 @@ bash scripts/setup_gpu_venv.sh
 # ===== 验证环境 =====
 bash scripts/setup_gpu_venv.sh verify
 
-# ===== 开始训练 =====
-bash scripts/setup_gpu_venv.sh run configs/experiments/stage2_pilot.yaml
+# ===== 执行 Phase 5 Controller 训练（CPU，保留 NPU 给 VLM） =====
+bash scripts/setup_gpu_venv.sh run configs/experiments/phase5_routing.yaml
 
 # ===== 其他命令 =====
 bash scripts/setup_gpu_venv.sh shell    # 进入激活的 venv shell
@@ -102,7 +102,7 @@ evors-comm/                    setup_gpu_venv.sh
 | `WORK_DIR` | `/home/ma-user/evors-comm` | 工作目录 |
 | `PIP_MIRROR` | 阿里云 | pip 镜像源 |
 | `PFS_MOUNT` | 自动探测 | lws2 挂载点 |
-| `NPU_DEVICES` | `0,1,2,3,4,5,6,7` | 可见 NPU |
+| `NPU_DEVICES` | `0,1,2,3` | 可见 NPU |
 
 ## 并行文件系统 (lws2) 部署流程
 
@@ -138,8 +138,8 @@ obsutil upload               ├── src/        ← 代码        ├── �
 # 一键设置（自动从 PFS 解压代码 + 创建 venv）
 bash scripts/setup_gpu_venv.sh
 
-# 开始训练
-bash scripts/setup_gpu_venv.sh run configs/experiments/stage2_pilot.yaml
+# 开始 Phase 5 路由训练
+bash scripts/setup_gpu_venv.sh run configs/experiments/phase5_routing.yaml
 ```
 
 ### 日常更新流程
@@ -160,7 +160,7 @@ bash scripts/setup_gpu_venv.sh    # 重新解压 + 验证
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
 | `PFS_ROOT` | `/lws2/evors-comm` | PFS 挂载点 |
-| `NPU_DEVICES` | `0,1,2,3,4,5,6,7` | 暴露的 NPU 设备 |
+| `NPU_DEVICES` | `0,1,2,3` | 暴露的 NPU 设备 |
 | `IMAGE_NAME` | `evors-rl-npu` | Docker 镜像名 |
 | `IMAGE_TAG` | `latest` | 镜像 tag |
 
@@ -193,18 +193,18 @@ python scripts/download_data.py --list
 
 ```bash
 # CPU 模式 (验证代码)
-docker compose build cpu
-docker compose run --rm cpu          # 运行测试
-docker compose run --rm cpu bash     # 交互模式
+docker compose --env-file configs/docker/compose.defaults.env build cpu
+docker compose --env-file configs/docker/compose.defaults.env run --rm cpu          # 运行测试
+docker compose --env-file configs/docker/compose.defaults.env run --rm cpu bash     # 交互模式
 ```
 
 ### GPU 服务器
 
 ```bash
 # NPU 模式 (训练)
-docker compose -f docker-compose.npu.yml up -d npu     # 启动常驻容器
-docker compose -f docker-compose.npu.yml exec npu bash  # 进入容器
-docker compose -f docker-compose.npu.yml run --rm train # 一次性训练任务
+docker compose --env-file configs/docker/compose.defaults.env -f docker-compose.npu.yml up -d npu     # 启动常驻容器
+docker compose --env-file configs/docker/compose.defaults.env -f docker-compose.npu.yml exec npu bash  # 进入容器
+docker compose --env-file configs/docker/compose.defaults.env -f docker-compose.npu.yml run --rm train-phase5 # Phase 5 Controller 训练
 ```
 
 ## 部署命令速查
@@ -216,26 +216,25 @@ docker compose -f docker-compose.npu.yml run --rm train # 一次性训练任务
 | `deploy.sh smoke` | 冒烟测试 |
 | `deploy.sh deploy-npu` | 打包 NPU 部署包 |
 | `deploy.sh sync-npu` | rsync 同步到 GPU 服务器 |
-| `deploy.sh train` | 运行 Stage 2 训练 |
+| `python scripts/train_phase5_routing.py` | 本地执行 Phase 5 Controller 训练 |
+| `python scripts/validate_phase5.py` | 独立审计 Phase 5 证据 |
 | `deploy.sh pull` | Git pull + rebuild |
 
-## Ascend 910B 注意事项
+## Ascend 服务器注意事项
 
-1. **CANN 版本**: 使用 CANN 8.0, 对应 torch_npu 2.1.0
-2. **精度**: 使用 float16 (910B 原生支持)
-3. **分布式**: HCCL 后端, 支持 8 卡并行
-4. **ARM 架构**: Docker 镜像使用 arm64 版本
-5. **内存**: 每卡 32GB HBM, 训练时预留 4GB
-6. **AMP**: 使用 O2 级别自动混合精度
-7. **数据格式**: float16 优于 bfloat16 (910B 优化)
+1. 当前 Phase 5 是 7×21 的离散 Controller，训练入口明确使用 CPU，不占 NPU。
+2. `python scripts/train_npu.py verify --require-npu --require-verl ...` 在目标机记录实际 torch_npu、设备数和 verl 版本；不要用配置文件代替实机证据。
+3. Docker 镜像和代码都放在 lws2；源码/config 热挂载，`evidence/` 持久化。
+4. 只有未来切换到 token-policy 或进入 Phase 6 VLM 实验时才使用 4 卡 HCCL。
+5. checkpoint `evidence/2026-09-03_phase5_routing/checkpoint.json` 可直接用于真实多 Agent 推理。
 
 ## GPU 时间优化建议
 
 GPU 服务器时间宝贵，以下措施节省 GPU 时间:
 
 1. **前置验证**: 所有代码改动先在前置服务器用 MockBackend 验证
-2. **单元测试**: 40 个测试全部通过后再上 GPU
+2. **单元测试**: 全量测试与 `validate_phase5.py` 通过后再上 NPU
 3. **数据预下载**: 数据提前下载到 OBS, GPU 服务器直接读取
 4. **小规模 Pilot**: 先用 500 samples + 1 epoch 验证流程
-5. **断点续训**: checkpoint 支持中断恢复
-6. **多卡并行**: 使用 8 卡分布式训练加速
+5. **Controller 训练**: 在 CPU 完成，避免无意义占用 NPU
+6. **多卡并行**: 留给 Phase 6 的 VLM/token-policy 训练

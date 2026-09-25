@@ -56,6 +56,7 @@ upload_code() {
         --exclude='data/cache' \
         --exclude='*.egg-info' \
         src/ scripts/ configs/ tests/ \
+        evidence/2026-09-03_phase5_routing/ \
         pyproject.toml requirements-*.txt \
         docker-compose*.yml docker/ \
         deploy.sh DEPLOY.md CLAUDE.md
@@ -112,7 +113,7 @@ build_and_upload_docker() {
 create_obs_dirs() {
     echo "=== Creating OBS directories ==="
     # OBS doesn't need explicit dir creation, but we upload placeholder files
-    for dir in data/cache data/vrsbench data/choice outputs logs; do
+    for dir in data/cache data/vrsbench data/choice outputs evidence logs; do
         echo "placeholder" | "${OBSUTIL}" cp - "${OBS_PREFIX}/${dir}/.keep" -f 2>/dev/null || true
     done
     echo "Directories created under ${OBS_PREFIX}"

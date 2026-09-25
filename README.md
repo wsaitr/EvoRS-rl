@@ -1,59 +1,85 @@
-# RS-HMComm Starter
+# EvoRS-Comm
 
-**Remote-Sensing Hierarchical Multimodal Communication for Multi-Agent RL**
+面向遥感视觉理解的自然演化多智能体协作研究原型。当前主架构是：
 
-三阶段研究代码骨架：
-
-1. **Stage 1：多 Agent 推理 + 动态通信**
-   - 共享显式状态：`Scene -> Region -> Group -> Object`
-   - Text + Structured Message
-   - 可选 Visual Latent handle
-   - 动态 Agent 激活与通信
-2. **Stage 2：Structured-Communication MARL**
-   - 优先接 CoMLRL / MAGRPO
-   - 通信 action 包括 recipient / level / modality / payload
-   - reward 包括 task、communication cost、redundancy、structure/evidence
-3. **Stage 3：完整实验**
-   - 主训练 VRSBench
-   - 外部评测 CHOICE、XLRS-Bench、GEO-Bench-VLM
-   - matched-budget 对照和消融
-
-## 为什么不直接 fork CoMLRL / MARTI
-
-共享状态、通信协议、Agent、数据集和硬件后端先做成独立层：
-
-- Stage 1 不依赖 RL；
-- CUDA 与 Ascend 共享同一业务逻辑；
-- Stage 2 通过 adapter 接 CoMLRL；
-- MARTI 作为第二实现和大规模异构训练候选。
-
-## 快速 dry run
-
-```bash
-cd rs_hmcomm_starter
-python -m pip install -e .
-python scripts/dry_run_stage1.py
-pytest -q
+```text
+单 Generalist Agent + Agent 内部演化
+  -> EvoRS Workspace + 按需层次描述 + ArtifactStore/latent
+  -> Cognitive Expert Pool + Evolution Controller + Router
+  -> 强化学习集中式动态路由
 ```
 
-dry run 只使用 MockBackend，不需要 GPU。
+Agent 内部使用 candidate、variation、fitness、selection 进行演化；多 Agent
+之间不称为“演化”，而由控制层进行动态路由和策略学习。Agent 不能直接调用另一个
+Agent，信息通过受控 Workspace 引用和显式 MessageEnvelope 披露。
 
-## 推荐第一版真实 VLM
+## 当前完成状态
 
-先用 **Qwen2.5-VL-7B-Instruct**。
+| 阶段 | 状态 | 主要证据 |
+|---|---|---|
+| Phase 0 契约与复现基础 | 完成 | 配置、manifest、预算、成本、事件与回放测试 |
+| Phase 1 单 Agent 闭环 | 完成 | 真实 Qwen VLM 感知门禁 |
+| Phase 2 单 Agent 内部演化 | 完成 | candidate/variation/fitness/selection 私有轨迹 |
+| Phase 3 EvoRS 表示层 | 完成 | Workspace、稀疏层次节点、ArtifactStore、latent 消费测试 |
+| Phase 4 无 RL 多 Agent | 完成 | 20 样本 paired gate：Direct 50%、Single 60%、Multi 70% |
+| Phase 5 RL 动态路由 | 完成机制门禁 | 720 个训练轨迹、6 个留出样本、冻结专家、动作-轨迹因果审计与 checkpoint |
+| Phase 6 论文级实验 | 未开始 | 需要完整 baseline、消融、多 seed 和成本曲线 |
 
-- NVIDIA：Transformers 直连做功能验证；后续可用 vLLM 做高吞吐 rollout。
-- Ascend：CANN + torch_npu；高吞吐推理可用 vllm-ascend；需要中间 hidden state 时优先 Transformers + torch_npu。
+Phase 4 的 20 样本结果和 Phase 5 的确定性 fixture 都是开发门禁，不是论文级统计结论。
 
-## 重要限制
+## 快速验证
 
-第一版先实现：
-- text channel：✅
-- structured tree channel：✅
-- bbox/image crop reference：✅
-- 直接 visual hidden-state 注入：实验性
+```bash
+python -m pip install -e ".[dev]"
+python -m pytest -q
 
-真正 latent communication 与“把 crop 再发给另一个 Agent”不是一回事。
-vLLM 服务路径通常不适合任意中间 hidden-state 注入，因此 latent channel 必须单独做 backend 适配。
+python scripts/validate_phase5.py \
+  --evidence evidence/2026-09-03_phase5_routing
 
-详细见 `GUIDE.md` 和 `AI_IMPLEMENTATION_PROMPT.md`。
+python scripts/audit_phase0_5.py \
+  --output evidence/2026-09-03_phase0_5_completion_audit \
+  --run-tests
+```
+
+## 训练 Phase 5 Controller
+
+```bash
+python scripts/train_phase5_routing.py \
+  --config configs/experiments/phase5_routing.yaml
+```
+
+该训练只更新 7×21 的离散 `LearnedRoutingPolicy`，不更新 VLM 或 Cognitive
+Expert。输出包含 `checkpoint.json`、逐 episode 事件、奖励分解、审计与 checksums。
+
+将 checkpoint 用于真实遥感多 Agent 推理：
+
+```bash
+python scripts/run_real_multi_agent.py \
+  --manifest configs/experiments/vrsbench20_manifest.jsonl \
+  --model-config configs/models/qwen38_27b_q4_local.yaml \
+  --routing-checkpoint evidence/2026-09-03_phase5_routing/checkpoint.json \
+  --output-dir outputs/learned-routing-smoke \
+  --limit 1
+```
+
+## Ascend / lws2
+
+当前离散 Controller 在 CPU 训练，以节省 NPU 时间。lws2 仍保存相同代码、配置、
+checkpoint 和证据；4×Ascend 留给后续 token-policy/VLM 训练和 Phase 6。
+
+```bash
+python scripts/train_npu.py verify \
+  --checkpoint evidence/2026-09-03_phase5_routing/checkpoint.json \
+  --output evidence/ascend-environment.json \
+  --require-npu --require-verl
+
+docker compose --env-file configs/docker/compose.defaults.env \
+  -f docker-compose.pfs.yml run --rm train-phase5
+```
+
+本地完成审计见 `evidence/2026-09-03_phase0_5_completion_audit/`。服务器实机部署
+必须另外保留 SSH、镜像、挂载和运行日志，不能用本地 compose 配置校验替代。
+
+完整部署见 [DEPLOY.md](DEPLOY.md)，当前架构与验收边界见
+[EVORS_COMM_ARCHITECTURE_V2.md](doc/论文/1指导书/EVORS_COMM_ARCHITECTURE_V2.md)
+和 [EVORS_PHASE5_RL_SPEC.md](doc/论文/1指导书/EVORS_PHASE5_RL_SPEC.md)。

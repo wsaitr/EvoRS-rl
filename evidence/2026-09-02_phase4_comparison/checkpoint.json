@@ -1,0 +1,26 @@
+{
+  "completed_sample_ids": [
+    "vrsbench-val-000",
+    "vrsbench-val-001",
+    "vrsbench-val-002",
+    "vrsbench-val-003",
+    "vrsbench-val-004",
+    "vrsbench-val-005",
+    "vrsbench-val-006",
+    "vrsbench-val-007",
+    "vrsbench-val-008",
+    "vrsbench-val-009",
+    "vrsbench-val-010",
+    "vrsbench-val-011",
+    "vrsbench-val-012",
+    "vrsbench-val-013",
+    "vrsbench-val-014",
+    "vrsbench-val-015",
+    "vrsbench-val-016",
+    "vrsbench-val-017",
+    "vrsbench-val-018",
+    "vrsbench-val-019"
+  ],
+  "remaining_sample_ids": [],
+  "schema_version": "evors.phase4-comparison-checkpoint.v1"
+}

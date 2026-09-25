@@ -1,0 +1,48 @@
+phase: 1
+
+dataset:
+  manifest: tests/fixtures/phase0/manifest.jsonl
+  limit: 1
+
+backend:
+  type: mock
+  # openai_compatible: Docker Model Runner, llama.cpp, vLLM, or another
+  # local server exposing POST /v1/chat/completions.
+  model: null
+  base_url: http://127.0.0.1:12434/engines
+  api_key_env: null
+  timeout_seconds: 120
+  max_tokens: 256
+  enable_thinking: false
+  preserve_thinking: false
+  extra_body: {}
+  # qwen_vl: legacy in-process Transformers backend.
+  model_path: null
+  revision: null
+  device: cpu
+  local_files_only: true
+  max_new_tokens: 256
+  min_pixels: 200704
+  max_pixels: 401408
+
+runtime:
+  max_steps: 4
+  require_tool: true
+
+budget:
+  max_agent_calls: 1
+  max_tool_calls: 2
+  max_model_calls: 4
+  max_model_input_tokens: 65536
+  max_model_output_tokens: 1024
+  max_message_text_tokens: 0
+  max_message_structure_bytes: 0
+  max_message_latent_bytes: 0
+  max_billed_compute_ms: 600000
+  max_wall_time_ms: 600000
+  max_errors: 2
+  max_retries: 1
+  max_invalid_actions: 2
+
+logging:
+  output: outputs/phase1/events.jsonl

@@ -1,0 +1,54 @@
+{
+  "latent_encoder": "pixel_stats_smoke_v1",
+  "learned_visual_representation": false,
+  "output": "evidence\\2026-08-22_rs-hmcomm_phase0-4\\phase3\\representation-summary.json",
+  "phase": 3,
+  "results": [
+    {
+      "artifact_descriptor_count": 1,
+      "cost": {
+        "agent_calls": 0,
+        "billed_compute_ms": 0.0,
+        "errors": 0,
+        "invalid_actions": 0,
+        "message_latent_bytes": 48,
+        "message_structure_bytes": 0,
+        "message_text_tokens": 0,
+        "model_calls": 0,
+        "model_input_tokens": 0,
+        "model_output_tokens": 0,
+        "retries": 0,
+        "tool_calls": 0
+      },
+      "latent_bytes_loaded": 48,
+      "latent_consumed": true,
+      "latent_enabled": true,
+      "latent_value_count": 12,
+      "latent_value_sha256": "ff828761357bc2bfeafe08d33012101ea817141be8ca9d0b1fa8314800b180ff",
+      "object_parent_level": "scene",
+      "sample_id": "synthetic-airport-001",
+      "scoped_visible_record_ids": [
+        "answer-synthetic-airport-001",
+        "claim-synthetic-airport-001",
+        "evidence-synthetic-airport-001",
+        "latent-synthetic-airport-001",
+        "object-synthetic-airport-001",
+        "scene-synthetic-airport-001",
+        "task-synthetic-airport-001"
+      ],
+      "spatial_levels": [
+        "scene",
+        "object"
+      ],
+      "unrelated_record_hidden": true,
+      "workspace_contains_binary_payload": false,
+      "workspace_record_count": 8,
+      "workspace_version": 1
+    }
+  ],
+  "sample_count": 1,
+  "schema_version": "evors.phase3-representation-summary.v1",
+  "scientific_claim": false,
+  "status": "passed",
+  "validation_scope": "representation_mechanism_smoke"
+}
