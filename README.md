@@ -27,6 +27,10 @@ Agent，信息通过受控 Workspace 引用和显式 MessageEnvelope 披露。
 
 Phase 4 的 20 样本结果和 Phase 5 的确定性 fixture 都是开发门禁，不是论文级统计结论。
 
+2026-10-08 文档更新：[阶段工作报告](doc/reports/EVORS_PHASE_REPORT_2026-10-08.md)、
+[中文 PDF 论文初稿](output/pdf/EvoRS-Comm_Paper_Draft_2026-10-08.pdf)、
+[可编辑源码与编译说明](doc/paper/README.md)。文稿汇总已有证据，并说明 latent、路由学习和正式评测的当前边界。
+
 ## 快速验证
 
 ```bash

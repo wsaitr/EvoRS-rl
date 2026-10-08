@@ -1,0 +1,329 @@
+\documentclass[UTF8,a4paper,zihao=5,fontset=fandol]{ctexart}
+\usepackage[margin=22mm,top=21mm,bottom=22mm,headheight=14pt,headsep=6mm]{geometry}
+\usepackage{amsmath,amssymb,booktabs,tabularx,array,graphicx}
+\usepackage{xcolor,hyperref,xurl,fancyhdr,enumitem,tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\definecolor{ink}{HTML}{20364D}
+\definecolor{accent}{HTML}{286C83}
+\definecolor{pale}{HTML}{EEF4F6}
+\hypersetup{colorlinks=true,linkcolor=accent,urlcolor=accent,citecolor=accent,
+ pdftitle={EvoRS-Comm：面向遥感视觉理解的内部演化与受控多智能体协作},
+ pdfauthor={EvoRS-Comm 项目组},pdfsubject={基于已保存开发证据的中文论文初稿，2026-10-08}}
+\ctexset{section={format=\large\bfseries\color{ink}},subsection={format=\normalsize\bfseries\color{ink}}}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{3pt}
+\setlength{\emergencystretch}{2em}
+\linespread{1.16}
+\setlist{nosep,leftmargin=2em,topsep=4pt}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.2}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{ink}EvoRS-Comm}
+\fancyhead[R]{\small\color{ink}中文论文初稿 · 2026-10-08}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\newcommand{\ours}{\textsc{EvoRS-Comm}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\evref}[2]{\href{https://github.com/wsaitr/EvoRS-rl/blob/530914e2d39847de29249cecf0dd1a663cea5f1c/#1}{#2}}
+\begin{document}
+\begin{center}
+{\LARGE\bfseries\color{ink}EvoRS-Comm：面向遥感视觉理解的\\[4pt]内部演化与受控多智能体协作}\par
+\vspace{5pt}
+{\large 层次空间证据、视觉制品与集中式路由学习}\par
+\vspace{6pt}
+{\small EvoRS-Comm 项目组\quad |\quad 内部讨论稿\quad |\quad 2026 年 10 月 8 日}
+\end{center}
+\vspace{2pt}
+\noindent\textbf{摘要：}
+遥感图像中的小目标与重复结构使单次视觉语言模型问答面临漏检、重复计数和证据定位困难。本文提出 \ours，将单 Agent 的多视图主动感知与私有候选演化，同控制层调度的多专家协作结合。系统用任务相关的稀疏层次描述组织证据，以版本化 Workspace 保存已提交记录，以 ArtifactStore 保存图像、裁剪和视觉向量，并通过显式消息限定专家可见的信息。在冻结专家的条件下，线性 softmax 控制策略学习是否调用知识专家、选择推理上下文模态及何时终止。保存的 20 样本开发对照中，Direct VLM、单 Agent、多 Agent 的正确数分别为 10、12、14，平均模型调用为 1.00、2.35、4.35；结果显示局部改进及额外成本，尚无统计显著性。在独立的确定性路由环境中，720 条训练轨迹使六个留出任务的平均奖励从 0.235730 提升至 0.569049，平均专家调用从 4.000 降至 3.333。本文报告实现与初步证据，并明确连续视觉表示融合、真实任务路由训练及大规模独立评测的后续要求。
+
+\noindent\textbf{关键词：}遥感视觉问答；主动感知；多智能体；层次空间表示；路由强化学习
+
+\section{引言与研究目标}
+一个遥感 Agent 的价值首先体现在能否帮助基础模型获得更有用的视觉观察。把同一张图反复交给不同角色并不自然带来增益；若小目标在缩放后不可辨认，额外文字推理无法恢复未被观察到的信息。因此，我们先构建单 Agent 的图像--工具--证据--答案闭环，再逐步加入表示层与协作控制。
+
+本文研究三个相互关联的问题：如何根据问题改变观察尺度；如何使不同专家复用可定位的视觉证据；如何在已有证据与预算约束下选择协作路径。为此，系统将内部候选演化与外部协作控制分开实现。前者评价并选择同一 Agent 的局部候选，后者按状态调度认知角色；控制器本身不属于专家池。
+
+本文的研究贡献组织为：第一，建立主动感知、内部演化和外层控制相连的运行原型；第二，建立具有空间地址、来源和访问范围的通信表示；第三，构建冻结专家条件下的集中式路由学习与执行审计；第四，提供带成本和配对检验的开发结果及可追溯证据。这些贡献目前属于系统机制与初步实验层面，规模化准确率和效率结论仍需独立评测。
+
+\subsection{与相关工作的关系}
+ReAct 将推理与外部动作交替执行，为工具驱动的 Agent 提供基本范式\cite{react}。AutoGen 提供多角色对话与可编程交互方式\cite{autogen}。本文采用这些工作的系统视角，重点研究遥感证据的空间定位、受控披露和任务相关调度。VRSBench 覆盖遥感描述、定位与视觉问答，为本工作选择开发任务提供来源\cite{vrsbench}。路由训练采用 REINFORCE 风格策略梯度\cite{reinforce}；HybridFlow/verl 是后续大模型策略训练的工程方向\cite{hybridflow}。本文未完成与全部相关多智能体方法的实验比较，亦不据此主张首创性或最优性能。
+
+\newpage
+\section{问题定义与系统结构}
+给定图像 $I$、问题 $q$ 与执行预算 $B$，目标是生成答案 $\hat y$，并保留形成答案的证据与成本。四类认知专家构成
+\[
+\mathcal A=\{A_{\mathrm{vis}},A_{\mathrm{know}},A_{\mathrm{reason}},A_{\mathrm{verify}}\}.
+\]
+控制器观察任务、共享记录摘要、执行路径和预算，输出专家调度、上下文约束或结束决定。专家共享底层 VLM 服务，但其提示、职责和可见记录分别设置。
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Latex,font=\small,
+ box/.style={draw=accent,rounded corners=2pt,fill=pale,align=center,minimum height=12mm,text width=40mm},
+ arr/.style={->,thick,draw=ink}]
+\node[box] (ws) at (0,0) {版本化 Workspace\\证据、节点、候选、引用};
+\node[box] (ctrl) at (5.5,0) {Evolution Controller\\状态摘要与预算};
+\node[box] (router) at (11,0) {Context Router\\范围、模态、接收者};
+\node[box] (store) at (0,-2.1) {ArtifactStore\\image / crop / latent};
+\node[box] (reducer) at (5.5,-2.1) {Reducer\\校验并提交更新};
+\node[box] (expert) at (11,-2.1) {一个被激活的 Expert\\感知、推理或验证};
+\draw[arr] (ws)--(ctrl);
+\draw[arr] (ctrl)--(router);
+\draw[arr] (router)--node[right,font=\scriptsize]{授权观察}(expert);
+\draw[arr] (expert)--node[above,font=\scriptsize]{$\Delta W$}(reducer);
+\draw[arr] (reducer.north west)--(ws.south east);
+\draw[arr,<->] (ws)--node[left,font=\scriptsize]{制品引用}(store);
+\end{tikzpicture}
+\caption{系统执行关系。外层经 Controller、Router 和 Reducer 循环；专家内部可以执行视觉工具和私有候选选择。Finish 由控制层处理。}
+\end{figure}
+
+\subsection{共享状态与私有状态}
+一个 episode 对应一组图像与问题。Workspace 保存已提交的 Evidence、Claim、AnswerCandidate、SpatialNode 和 VisualArtifact 描述。私有候选与中间草稿留在专家内部；图像与向量实体放入 ArtifactStore。专家返回增量 $\Delta W_t$，经引用与版本校验后更新：
+\begin{equation}
+ W_{t+1}=\operatorname{Reduce}(W_t,\Delta W_t).
+\end{equation}
+这一边界使外层能够记录“何时新增哪条证据”，并避免某个专家直接覆写其他专家的公共记录。版本、哈希与引用检查保障记录一致性，但不保证视觉结论本身正确。
+
+\subsection{按需层次空间描述}
+空间词汇采用 Scene、Region、Group、Object 四个尺度。每个节点保存标识、层级、语义、边界框、父节点、置信度、证据与制品引用。层级按问题需要稀疏建立，中间层允许缺省。例如，计数任务可以只建立 Scene 与候选 Object，并在需要区域汇总时补充 Region 或 Group。
+
+与完整世界模型相比，该设计把工作集中到当前问题相关的图像区域。它也限定了结构能提供的保证：父子引用与坐标可以检查，机场或飞机等语义仍依赖模型观察；结构一致性不能替代感知准确率。
+
+\subsection{共享存储与显式通信}
+消息记录 sender、receiver、scope、modalities、workspace refs 和 step。Router 产生访问授权，ObservationBuilder 基于授权构建可见记录及其依赖。Workspace 提供记录归集，消息决定本次披露范围，两者共同定义通信。
+
+Visual 提交证据、空间节点和制品描述；Reasoning 提出答案；Verification 形成验证候选；Controller 选择有效结束。运行图由 LangGraph 调度。当前专家按步骤串行激活，异步并发专家及任意角色互调不在已验证范围内。
+
+\newpage
+\section{主动感知、内部演化与视觉制品}
+\subsection{让 VLM 获得新的视觉观察}
+单 Agent 从整图问答开始，依据任务及中间结果调用裁剪、网格观察、联系图或空间拼接工具。工具输出作为新的图像输入送回 VLM，记录每次观察的来源和成本。联系图将候选 ROI 汇集到一张带实例索引的图中，便于验证小目标，结构节点则保留其与原图坐标的对应关系。
+
+这条路径的核心作用是改变可见证据。对计数任务，需要额外处理重叠裁剪和重复目标；对存在性任务，需要允许反证而不是只累计正例。本文保存的主动感知开发对照只覆盖计数与存在性，尚不能推及所有遥感任务。
+
+\subsection{有谱系的候选变异与选择}
+候选 $c$ 包含答案及其证据来源。内部演化模块记录种子、变异算子、父子关系、每代评价与选中候选。整合运行器从多视图结果生成有证据支持的替代答案，通过有限代数与预算选择保留候选。无可用替代候选时直接复用已有结果，不能把这种执行记为完成了有效变异。
+
+当前整合运行器的无标签评价函数可写为
+\begin{equation}
+ F(c)=S(c)+4A(c)+0.75G(c)+0.25L(c)+0.10E(c)+0.10V(c).
+ \label{eq:fitness}
+\end{equation}
+其中，$S$ 为不同观察来源的加权支持，$A$ 表示是否等于主动感知选定答案，$G$ 表示整数答案是否等于非零空间对象数，$L$ 表示整数答案是否等于非零 ROI latent 数；$E=1/(1+\text{source cost rank})$，$V$ 表示答案非空。参考答案不参与式\eqref{eq:fitness}。
+
+这一函数是可复现的启发式实现。$4A$ 对已有主动感知结论给予较强先验，$L$ 只使用制品数量，并未利用向量语义。候选来源也受已有多视图结果限制。因此，演化引擎的存在与可重放性已经建立，但它相对同预算重试或 Best-of-N 的优势仍需单独验证。
+
+\subsection{视觉 latent 的生成与使用边界}
+视觉编码器接收图像或 ROI 像素，经过本地视觉塔与池化产生表示
+\begin{equation}
+ z_i=\operatorname{Normalize}\!\left(\operatorname{MeanPool}(E_{\mathrm{vis}}(I[b_i]))\right),
+ \qquad z_i\in\mathbb R^{5120}.
+\end{equation}
+向量以 float32 保存，单个制品大小为 $5120\times4=20{,}480$ 字节。描述符记录 encoder、层、shape、dtype、ROI、消费者和校验和；空间节点保存其引用，接收方在被授权后读取实体。
+
+当前 Reasoning 实现读取向量并在宿主程序中计算范数及 ROI--Scene 相似性诊断，但 VLM 提示只包含已消费描述符数量。向量尚未作为视觉 token、投影特征或 cross-attention 输入进入接收 VLM。实际视觉推理仍使用原图、ROI 或联系图。因此，现阶段可验证的是表示生成、索引、受控消费与计费链路；连续表示提升接收端任务能力是待验证研究假设。
+
+模型身份仍需核验。实验服务别名为 \code{evors/qwen3.8-27b-q4}。视觉编码器采用 \code{Qwen3\_5VisionModel}，其 processor 指向 \code{Qwen/Qwen3.5-27B}。本文将基础服务称为“本地 Qwen 27B 级 Q4 服务”。在确认权重和配置对应关系之前，不主张视觉塔与生成模型共享同一表示空间已经得到证明。
+
+\newpage
+\section{集中式路由策略与训练}
+\subsection{状态与受约束动作空间}
+控制观察被编码为 $x_t\in\mathbb R^{21}$，包含任务类型、问题信号、证据可用性、候选状态、兼容 latent、已执行专家及累计调用信息。状态不含参考答案。动作集合为
+\begin{align}
+\mathcal U=\{&\operatorname{Visual},\operatorname{Knowledge},
+\operatorname{Reason}_{T+S},\operatorname{Reason}_{Hybrid},\nonumber\\
+&\operatorname{Verify},\operatorname{Finish},\operatorname{Abort}\}.
+\end{align}
+策略采用带有效动作掩码的线性 softmax：
+\begin{equation}
+\pi_\theta(a\mid x_t,M_t)=
+\frac{M_t(a)\exp((Wx_t+b)_a)}{\sum_j M_t(j)\exp((Wx_t+b)_j)},
+\quad W\in\mathbb R^{7\times21},\ b\in\mathbb R^7.
+\end{equation}
+参数共 154 个。掩码限制无证据推理、无候选验证、无验证结束和无可用 latent 的 Hybrid。当前依赖基本固定为 Visual、可选 Knowledge、Reasoning、Verification、Finish，策略在这一骨架内选择路径、模态或中止。任意专家重排、逐 ROI payload 选择及工具策略尚未纳入学习动作。
+
+\subsection{奖励与成本口径}
+冻结专家作为环境组成部分，episode 结束后由环境使用标签评分。奖励为
+\begin{equation}
+R=r_{\mathrm{task}}+\lambda_e q_{\mathrm{evidence}}+\lambda_s q_{\mathrm{structure}}
+-C_{\mathrm{comm}}-C_{\mathrm{calls}}-C_{\mathrm{repeat}}-C_{\mathrm{failure}}.
+\label{eq:reward}
+\end{equation}
+证据质量由链接/摘要可用性和置信度形成；结构质量由单根、父引用和证据绑定形成。它们是启发式质量代理，均在终态计算一次。调用成本包含 Agent、模型与工具；失败成本覆盖无效动作、执行错误和未完成。
+
+通信代理量为 $C_{\mathrm{comm}}=\alpha T+\beta B_s+\gamma B_l$。当前 $T$ 是消息 envelope 的正则分词计数，$B_s$ 是 envelope 序列化字节，$B_l$ 是显式引用 latent 的描述大小之和。$T$ 不等于 VLM tokenizer 数；$B_s$ 不覆盖所有展开记录；这些量也不包含完整图像带宽。本文按此口径报告已有记录，后续正式效率实验需补齐实际上下文、视觉 token、图像字节、缓存与物理传输指标。
+
+\subsection{训练更新与审计}
+训练使用 episode 回报和按任务维护的移动基线 $b_k$，形成 $\hat A=R-b_k$。以 REINFORCE 风格的策略梯度加熵项为目标\cite{reinforce}：
+\begin{equation}
+J(\theta)=\mathbb E\!\left[\hat A\sum_t\log\pi_\theta(a_t\mid x_t,M_t)
++\eta\sum_t\mathcal H(\pi_\theta(\cdot\mid x_t,M_t))\right].
+\end{equation}
+实现逐条轨迹样本更新参数，裁剪 logit 梯度并更新移动基线；不是 PPO 式批量更新。每次动作在对应环境转移前记录，后续轨迹关联 Workspace 前态版本、动作及成本。训练检查参数摘要变化、专家指纹不变、评估无参数更新和标签隔离。
+
+当前学习器运行于 CPU。verl 适配用于后续把结构化动作扩展为 token policy 的接口准备；保存的机制实验环境未安装 verl。四卡 PPO/GRPO 或专家参数联合训练没有被此次实验验证。
+
+\newpage
+\section{真实视觉问答开发实验}
+\subsection{设置与可比较范围}
+使用 VRSBench 的 20 个开发样本，计数与存在性各 10 个，seed 为 20260831。不同角色使用同一本地 Qwen 27B 级 Q4 服务。参考答案只提供给评测器，不作为运行时 TaskContext 的输入。Direct 使用一次 VLM 问答，Single 使用主动感知流程；Multi 使用冻结的感知记录再执行 Reasoning 与 Verification。
+
+该设计采用 \emph{paired frozen perception}：复用先前保存的 Direct 与 Single 输出，控制感知差异并考察新增下游协作。Multi 的时间和成本包含历史感知部分与新增执行记录。它不是三种系统同一轮从零运行的部署测速，且 Single 这一对照没有隔离内部演化或 latent 的贡献。
+
+\begin{table}[h]
+\centering\small
+\caption{20 个开发样本的结果。调用和时间均为每题平均；区间为 Wilson 95\% 置信区间。}
+\begin{tabularx}{\textwidth}{Yrrrr}
+\toprule
+配置 & 正确数 & 准确率及区间 & 模型 / 工具调用 & 累计时间 (s)\\
+\midrule
+Direct VLM & 10/20 & 50.0\% [29.9,70.1] & 1.00 / 0.00 & 8.05\\
+Single Agent & 12/20 & 60.0\% [38.7,78.1] & 2.35 / 0.75 & 43.63\\
+Multi Agent & 14/20 & 70.0\% [48.1,85.5] & 4.35 / 0.75 & 65.95\\
+\bottomrule
+\end{tabularx}
+\label{tab:main}
+\end{table}
+
+\begin{table}[h]
+\centering\small
+\caption{配对结果及双侧精确 McNemar 检验。平局包含共同正确及共同错误。}
+\begin{tabularx}{\textwidth}{Yrrrr}
+\toprule
+比较 & 新增正确 & 退化为错误 & 平局 & $p$ 值\\
+\midrule
+Single 对 Direct & 2 & 0 & 18 & 0.500\\
+Multi 对 Direct & 4 & 0 & 16 & 0.125\\
+Multi 对 Single & 2 & 0 & 18 & 0.500\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{收益、代价与失败样本}
+计数任务中 Direct、Single、Multi 分别答对 4、6、6 题；存在性任务分别答对 6、6、8 题。Single 的增益集中在计数，新增协作的净收益集中在存在性。所有比较的 $p$ 值均大于 0.05，开发样本又参与过方法迭代，因此这些差值不能代替独立测试集上的显著增益。
+
+表\ref{tab:main}同时显示成本增加：Single 与 Multi 的模型调用分别为 Direct 的 2.35 与 4.35 倍。Multi 的平均文本通信代理量为 260.8 token，结构为 771.35 字节，latent 为零。这里的准确率变化不能归因于 latent，也不足以支持已降低整体推理成本的主张。Direct/Single 的通信为零仅表示无跨专家消息，其模型输入 token 并非零。
+
+样本 \code{vrsbench-val-004} 中，Single 回答 3，Multi 改为 4，而参考答案为 2：协作改变了答案但仍未纠错。样本 015 和 016 从 Yes 修正为 No，形成两个新增正确答案。这说明验证角色可以修正部分判断，也可能在错误证据上继续推理；有验证步骤不等于结论必然正确。
+
+\subsection{与完整表示层实验的区别}
+另一个风机计数样本中，完整 Text+Structure 与 latent 配置均输出 6。latent 配置保存七个 5120 维向量，相关计费为 143,360 字节。该实验验证了私有候选记录、空间制品与多专家交接；只有一个样本且两臂都正确，无法证明 latent 或演化的独立性能收益。
+
+\newpage
+\section{路由学习与真实模型接入实验}
+\subsection{确定性机制环境}
+路由训练使用 18 个确定性任务：计数、分类、存在性各 6 个；留出任务共 6 个，各类型 2 个。训练 40 轮，共 720 条轨迹，seed 为 17，每题最多 6 个控制步骤。学习率为 0.1，移动基线率 0.1，熵系数 0.015，logit 梯度裁剪幅度为 5.0。
+
+所用奖励配置中，任务系数为 1.0，证据与结构质量各 0.04；Agent、模型、工具调用惩罚分别为 0.12、0.01、0.005；文本、结构、latent 单位成本分别为 $5\times10^{-5}$、$2\times10^{-6}$、$10^{-6}$。这些是保存的本次运行配置，不应与代码默认值混用。
+
+\begin{table}[h]
+\centering\small
+\caption{确定性机制环境的六个留出任务。该表不报告真实遥感 benchmark 精度。}
+\begin{tabularx}{\textwidth}{Yrr}
+\toprule
+指标 & 初始策略 & 学习后策略\\
+\midrule
+平均奖励 & 0.235730 & 0.569049\\
+准确率 & 66.7\% & 100.0\%\\
+平均 Agent 调用 & 4.000 & 3.333\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[h]
+\centering\small
+\caption{学习后贪心策略在留出任务中的路径。V/K/R/Q 分别指视觉、知识、推理、验证。}
+\begin{tabularx}{\textwidth}{Yllr}
+\toprule
+任务 & 专家路径 & Reasoning 模态 & 例数\\
+\midrule
+目标计数 & V $\to$ R $\to$ Q & Text+Structure & 2\\
+目标存在性 & V $\to$ R $\to$ Q & Hybrid & 2\\
+机场分类 & V $\to$ K $\to$ R $\to$ Q & Text+Structure & 2\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+这些结果说明训练参数能够改变实际调度与模态选择，并在该环境下降低平均专家调用。动作前态关联、专家冻结和评估参数不变均通过保存的审计。环境中的任务关系和专家行为由 fixture 预先构造，策略学习结果不能作为未见真实图像上的泛化证明。
+
+\subsection{checkpoint 接入真实 VLM}
+两个额外 smoke 各执行一个真实图像问题。计数样本输出 2，采用 Text+Structure，消息不授权 latent；存在性样本输出 Yes，采用 Hybrid，授权并计入 20,480 字节 latent。两者均执行 Visual、Reasoning、Verification 并答对。
+
+这表明 checkpoint 和通信权限能够影响真实运行路径，连通了训练输出与实际 runtime。不过样本量为每种配置一例，没有初始与训练后策略的大样本对照，故还不能估计真实 VLM 任务上的学习增益。
+
+\subsection{已知局限}
+当前主要限制包括小样本开发集上的选择偏差、更多调用带来的混杂、启发式 fitness 与奖励、结构语义错误传播、受约束的动作顺序以及连续 latent 尚未融合。通信账本也未覆盖所有视觉输入成本。进一步实验应优先分离这些因素，避免把多次看图的收益归因于尚未被因果验证的机制。
+
+\newpage
+\section{复现交付与后续正式评测}
+\subsection{代码、证据与云端运行}
+实现基线为提交 \code{530914e}，位于 \code{codex/phase0-5-modelarts}。代码按 agents、runtime、evolution、workspace、spatial、artifacts、communication、control、rl 等模块组织。实验保存 manifest、运行配置、事件 JSONL、汇总、checkpoint 与校验和。部分历史实验来自未提交工作区，因此复现还应结合当时源文件哈希和证据快照，不能将基线提交日期视为实验发生日期。
+
+2026-09-19 的发布证据记载：ARM64 Ascend 实验镜像上传华为云 SWR 并注册 ModelArts，注册核验状态为 ACTIVE。默认入口检查 NPU 和依赖；routing 入口运行 CPU 控制器。后续可把输出指向已挂载的 lws2 以保存结果。镜像发布只证明运行环境交付，四卡训练、实际设备利用率及并行文件系统挂载仍需作业级证据。
+
+发布时保存的轻量回归记录为 321 passed、3 skipped，另排除三个加载本地模型的重型测试。本稿未重新执行模型实验，也未据历史结果声明云端作业已经完成。可编辑源码与 PDF 一起提供，便于继续修改研究表述和实验章节。
+
+\subsection{Phase 6 的评测设计}
+正式实验首先应冻结模型、视觉塔、权重哈希、processor、量化、图像缩放和解码设置，解决当前模型命名不一致。数据按照图像划分训练、开发与测试，避免同一原图的不同问答或裁剪跨集合泄漏。路由训练仅使用训练集，超参数只由开发集确定，最终测试集在方法冻结后运行。
+
+\begin{table}[h]
+\centering\small
+\caption{后续实验矩阵。此表为待执行方案，无未测结果填充。}
+\begin{tabularx}{\textwidth}{p{27mm}YY}
+\toprule
+研究问题 & 必要对照 & 主要观察\\
+\midrule
+主动感知收益 & Direct、同预算重问、多视图 Single & 计数/存在性准确率、观察与调用成本\\
+演化独立贡献 & 无演化、重试、Best-of-N、完整候选选择 & 同预算准确率、选择变化、候选谱系\\
+层次描述价值 & 文本、平坦对象列表、稀疏层次 & 空间任务表现、结构错误、上下文长度\\
+受控通信价值 & 全量共享、消息复制、受控引用 & 展开上下文、重复信息、准确率与带宽\\
+视觉 latent 价值 & 相同 ROI 的图像通信、无 latent、有实际融合的 latent & 去除/扰动 latent 的因果效应、带宽\\
+学习路由价值 & 固定全专家、规则、未训练与训练策略 & 未见任务回报、路径分布、停止行为\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+正式结果需至少报告多 seed 的均值与离散度、配对置信区间、显著性、失败率、模型/工具调用、实际输入输出 token、视觉 token、延迟及峰值内存。预算以多个档位扫描，绘制准确率--成本曲线；用同模型、同分辨率、同预算对照区分算法收益与额外计算。开发 20 样本可保留为回归集，但不再承担最终测试角色。
+
+\section{结论}
+\ours 已形成从单 Agent 主动感知到共享空间证据、受控专家协作和路由策略学习的实现链路。初步真实样本显示部分错误得到修正，同时增加了推理开销；确定性实验验证了控制参数更新和任务相关调度。下一步研究的重点是验证各机制的独立贡献，补齐连续视觉表示的接收端使用，并在独立真实任务上建立准确率与成本结论。
+
+\newpage
+\begin{thebibliography}{9}
+\small
+\bibitem{react} Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, Yuan Cao. ReAct: Synergizing Reasoning and Acting in Language Models. ICLR, 2023. \url{https://arxiv.org/abs/2210.03629}.
+\bibitem{autogen} Qingyun Wu, Gagan Bansal, Jieyu Zhang, et al. AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation. arXiv, 2023. \url{https://arxiv.org/abs/2308.08155}.
+\bibitem{vrsbench} Xiang Li, Jian Ding, Mohamed Elhoseiny. VRSBench: A Versatile Vision-Language Benchmark Dataset for Remote Sensing Image Understanding. arXiv, 2024. \url{https://arxiv.org/abs/2406.12384}.
+\bibitem{reinforce} Ronald J. Williams. Simple statistical gradient-following algorithms for connectionist reinforcement learning. Machine Learning, 8:229--256, 1992. \url{https://doi.org/10.1007/BF00992696}.
+\bibitem{hybridflow} Guangming Sheng, Chi Zhang, Zilingfeng Ye, et al. HybridFlow: A Flexible and Efficient RLHF Framework. arXiv, 2024. \url{https://arxiv.org/abs/2409.19256}.
+\end{thebibliography}
+
+\appendix
+\section{证据索引与实现定位}
+\noindent 本稿的结果取自已保存记录，超链接固定到代码基线。正式评测可沿这些入口追溯配置、逐题结果和执行事件。
+
+\begin{table}[h]
+\centering\small
+\begin{tabularx}{\textwidth}{p{15mm}YY}
+\toprule
+编号 & 证据入口（可点击） & 支持内容\\
+\midrule
+E1 & \evref{evidence/2026-09-01_single_agent_perception_gate/README.md}{单 Agent 感知门禁，2026-09-01} & 20 样本，Direct 10/20、Single 12/20\\
+E2 & \evref{evidence/2026-09-02_phase4_comparison/summary.json}{三臂对照汇总，2026-09-02} & 表 1--2、调用成本与任务分组\\
+E3 & \evref{evidence/2026-09-01_multi_agent_framework/VERIFICATION.md}{完整协作 smoke，2026-09-01} & 内部演化、层次、七个向量消费\\
+E4 & \evref{evidence/2026-09-03_phase5_routing/summary.json}{路由训练汇总，2026-09-03} & 720 轨迹、六个留出任务与回报\\
+E5 & \evref{evidence/2026-09-03_phase5_routing/run_config.json}{路由运行配置及同目录审计} & 学习率、奖励权重、数据 ID、seed\\
+E6 & \evref{evidence/2026-09-03_phase5_real_qwen_smoke/summary.json}{Text+Structure 真实运行} / \evref{evidence/2026-09-03_phase5_real_qwen_hybrid_smoke/summary.json}{Hybrid 真实运行} & 各一个真实图像样本与授权计费\\
+E7 & \evref{evidence/2026-09-19_modelarts_image/REPORT.md}{ModelArts 镜像发布记录} & 历史注册结果、镜像摘要与回归范围\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent 关键实现入口：\evref{src/rs_hmcomm/runtime/integrated_single_agent.py}{整合单 Agent 与式 (2) fitness}；\evref{src/rs_hmcomm/runtime/multi_agent.py}{多 Agent runtime}；\evref{src/rs_hmcomm/control/learned_policy.py}{状态、动作与策略更新}；\evref{src/rs_hmcomm/rl/routing.py}{奖励与训练审计}；\evref{src/rs_hmcomm/experts/vlm_mechanisms.py}{VLM 专家与 latent 使用}；\evref{src/rs_hmcomm/communication/routing.py}{消息授权与计费}。
+
+\vspace{6pt}
+\noindent\textbf{版本说明。} 本文为当前实现的研究初稿，参考文献元数据于 2026-10-08 查验。后续版本需要扩展相关工作比较、确定作者信息与投稿格式，并用正式评测替换开发阶段证据的主结果角色。本文中的部署信息以历史发布记录为准。
+\end{document}
